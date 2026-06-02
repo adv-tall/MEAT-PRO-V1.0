@@ -97,10 +97,60 @@ export default function AiCopilot() {
       {/* USER GUIDE FLOATING TAB */}
       <UserGuideButton onClick={() => setIsGuideOpen(true)} />
 
-      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="SMART CERT GUIDE" subtitle="CERTIFICATION ASSISTANT GUIDE">
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.ShieldCheck size={16} className="text-[#b7a159]" /> 1. CERTIFICATION ANALYSIS
+                </h3>
+                <p className="mb-4">AI สามารถช่วยคุณวิเคราะห์ใบรับรอง มาตรฐานอุตสาหกรรม และระบุความเสี่ยงการหมดอายุ :</p>
+                <div className="space-y-3">
+                    <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-3">
+                        <Icons.FileText size={16} className="text-[#3f809e] mt-0.5 shrink-0" />
+                        <div>
+                            <span className="font-bold text-[#3f809e]">Document Review: </span>
+                            ตรวจสอบคู่มือขั้นตอนการปฏิบัติงานกับมาตรฐานที่จัดเก็บ
+                        </div>
+                    </div>
+                    <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl flex items-start gap-3">
+                        <Icons.AlertTriangle size={16} className="text-[#688a58] mt-0.5 shrink-0" />
+                        <div className="text-[#688a58]">
+                            <span className="font-bold">Audit Compliance: </span>
+                            ตรวจสอบข้อกำหนดและสอดคล้องกับระเบียบปฏิบัติต่างๆ
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Search size={16} className="text-[#d55a6d]" /> 2. RESEARCH & SUPPORT
+                </h3>
+                <p className="mb-4">ให้ AI เป็นผู้ช่วยในการเตรียมข้อมูลเบื้องต้นสำหรับงานตรวจสอบและจัดการเอกสาร :</p>
+                <ul className="space-y-3 list-disc pl-5">
+                    <li><span className="font-bold text-[#d55a6d]">Draft Summaries:</span> สร้างสรุปใจความสำคัญของมาตรฐานฉบับใหม่</li>
+                    <li><span className="font-bold text-[#45516b]">Action Items:</span> ช่วยระบุแนวทางการเตรียมความพร้อมจากการตรวจประเมินครั้งก่อน</li>
+                    <li><span className="font-bold text-[#688a58]">Requirement Matching:</span> จับคู่เงื่อนไขกับเอกสารที่มีอยู่ในระบบ</li>
+                </ul>
+            </div>
+            
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.HelpCircle size={16} className="text-[#3f809e]" /> 3. HOW TO ASK
+                </h3>
+                <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl">
+                    เลือก <span className="font-bold">Prompt Recommendations</span> ที่เราเตรียมไว้ให้ หรือพิมพ์คำสั่ง เช่น "สรุปข้อกำหนดในการรักษาใบรับรอง ISO 9001" เพื่อรับข้อมูลที่แม่นยำและรวดเร็ว
+                </div>
+            </div>
+        </div>
+      </UserGuidePanel>
 
       {/* HEADER SECTION (Matching User Permission) */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
           <div className="flex items-center gap-5">
               <div className="relative flex items-center justify-center group cursor-default shrink-0">
                   <div className="absolute inset-0 bg-[#b7a159] blur-[15px] opacity-30 rounded-full group-hover:opacity-70 transition-all duration-700 animate-pulse-subtle"></div>
@@ -131,13 +181,13 @@ export default function AiCopilot() {
           </div>
       </div>
 
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-2 flex-1 min-h-0 flex flex-col">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-2 flex-1 min-h-0 flex flex-col">
         <div className="w-full flex-1 flex flex-col gap-6 lg:flex-row h-full min-h-0">
             
             {/* Left Panel: Sidebar / Prompts */}
             <div className="w-full lg:w-80 flex flex-col gap-5 shrink-0 animate-fadeIn h-full">
                 
-                <div className="bg-white/90 p-4 rounded-3xl shadow-lg border border-[#eaeaec] flex flex-col items-center justify-center text-center">
+                <div className="bg-white/90 p-4 rounded-xl shadow-lg border border-[#eaeaec] flex flex-col items-center justify-center text-center">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#212c46] to-[#414757] flex items-center justify-center shadow-xl border-4 border-white mb-3 relative">
                         <Icons.Bot size={30} className="text-white" />
                         <span className="absolute bottom-1 right-1 w-3 h-3 bg-[#657f4d] rounded-full border-2 border-white shadow-sm"></span>
@@ -146,7 +196,7 @@ export default function AiCopilot() {
                     <p className="text-[10px] text-[#7a8b95] font-bold mt-1 uppercase tracking-wider">Ready to help</p>
                 </div>
 
-                <div className="bg-white/90 rounded-3xl shadow-lg border border-[#eaeaec] flex-1 overflow-hidden flex flex-col min-h-0">
+                <div className="bg-white/90 rounded-xl shadow-lg border border-[#eaeaec] flex-1 overflow-hidden flex flex-col min-h-0">
                     <div className="p-5 border-b border-[#eaeaec] bg-[#f8f9fa]">
                         <h4 className="text-[12px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-2">
                             <Icons.Lightbulb size={16} className="text-[#b58c4f]"/> Suggested Prompts
@@ -156,7 +206,7 @@ export default function AiCopilot() {
                         {suggestedPrompts.map(prompt => {
                             const IconComponent = Icons[prompt.icon as keyof typeof Icons] as any || Icons.MessageSquare;
                             return (
-                                <button key={prompt.id} onClick={() => handleSendMessage(prompt.text)} className="w-full text-left bg-white border border-[#eaeaec] p-2.5 px-3 rounded-2xl hover:border-[#b58c4f] hover:shadow-md transition-all group">
+                                <button key={prompt.id} onClick={() => handleSendMessage(prompt.text)} className="w-full text-left bg-white border border-[#eaeaec] p-2.5 px-3 rounded-xl hover:border-[#b58c4f] hover:shadow-md transition-all group">
                                     <div className="flex items-center gap-3 mb-1">
                                         <div className="bg-[#f8f9fa] p-1.5 rounded-lg text-[#b58c4f] group-hover:bg-[#b58c4f] group-hover:text-white transition-colors">
                                             <IconComponent size={14} />
@@ -174,7 +224,7 @@ export default function AiCopilot() {
 
             {/* Right Panel: Chat Interface */}
             {activeMode === 'chat' ? (
-                <div className="flex-1 bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn relative">
+                <div className="flex-1 bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn relative">
                     {/* Chat Header */}
                     <div className="h-14 border-b border-[#eaeaec] bg-[#f8f9fa] flex items-center justify-between px-5 shrink-0 z-10">
                         <div className="flex items-center gap-3">
@@ -242,7 +292,7 @@ export default function AiCopilot() {
 
                     {/* Chat Input */}
                     <div className="p-4 sm:p-6 bg-white border-t border-[#eaeaec] z-10 shrink-0">
-                        <div className="max-w-4xl mx-auto relative flex items-end gap-3 bg-[#f8f9fa] p-2 rounded-3xl border border-[#eaeaec] shadow-inner focus-within:border-[#b7a159] focus-within:ring-2 focus-within:ring-[#b7a159]/20 transition-all">
+                        <div className="max-w-4xl mx-auto relative flex items-end gap-3 bg-[#f8f9fa] p-2 rounded-xl border border-[#eaeaec] shadow-inner focus-within:border-[#b7a159] focus-within:ring-2 focus-within:ring-[#b7a159]/20 transition-all">
                             <button onClick={() => {
                                 const input = document.createElement('input');
                                 input.type = 'file';
@@ -270,7 +320,7 @@ export default function AiCopilot() {
                             <button 
                                 onClick={() => handleSendMessage(inputText)}
                                 disabled={!inputText.trim() || isTyping}
-                                className={`p-3 rounded-2xl shrink-0 transition-all shadow-sm ${(!inputText.trim() || isTyping) ? 'bg-[#eaeaec] text-[#a0aec0] cursor-not-allowed' : 'bg-[#212c46] text-[#b7a159] hover:bg-[#b7a159] hover:text-[#212c46] active:scale-95 hover:shadow-md'}`}
+                                className={`p-3 rounded-xl shrink-0 transition-all shadow-sm ${(!inputText.trim() || isTyping) ? 'bg-[#eaeaec] text-[#a0aec0] cursor-not-allowed' : 'bg-[#212c46] text-[#b7a159] hover:bg-[#b7a159] hover:text-[#212c46] active:scale-95 hover:shadow-md'}`}
                             >
                                 <Icons.Send size={20} />
                             </button>
@@ -279,7 +329,7 @@ export default function AiCopilot() {
                     </div>
                 </div>
             ) : (
-                <div className="flex-1 bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col justify-center items-center text-center p-8 animate-fadeIn">
+                <div className="flex-1 bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col justify-center items-center text-center p-8 animate-fadeIn">
                     <div className="w-24 h-24 bg-[#f8f9fa] rounded-full flex items-center justify-center border border-[#eaeaec] shadow-inner mb-6 relative">
                         <Icons.SearchCode size={40} className="text-[#b58c4f]" />
                         <div className="absolute -bottom-2 -right-2 bg-[#212c46] text-[#b7a159] text-[9px] font-black px-2 py-1 rounded-md border border-[#b7a159]/30 uppercase tracking-widest">SOON</div>

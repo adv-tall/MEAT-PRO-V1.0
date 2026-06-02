@@ -171,75 +171,85 @@ export default function AiPlannerAsst() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-        title="AI PLANNER MANUAL"
-        subtitle="คู่มือระบบวางแผนการผลิตอัจฉริยะ (AI-Driven Capacity Planning Guide)"
+        title="PLANNER ASST GUIDE"
+        subtitle="AUTOMATED CAPACITY PLANNING"
       >
-        <div className="space-y-6">
-          
-          {/* Section 1: Objective */}
-          <section className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-              <Info size={16} className="text-[#a94228]" />
-              1. ระบบ AI PLANNER แนะนำ (Hub Overview)
-            </h4>
-            <p className="leading-relaxed text-[11.5px] text-[#414757] font-bold">
-              เมนู **AI Planner Assistant** ทำหน้าที่เชื่อมโยงความต้องการทางตลาดจากกระดานออเดอร์ (Demand Input) เข้ากับกำลังพล และสถานะเครื่องจักรจริงหน้าไลน์เปรียบเทียบ โดยใช้โครงสร้างแบบจำลอง AI Machine-Capacity ในการคำนวณรวบยอด
-            </p>
-          </section>
-
-          {/* Section 2: Key Benefits */}
-          <section className="space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-              <Sparkles size={16} className="text-[#a94228]" />
-              2. ประโยชน์ที่พึงได้รับ
-            </h4>
-            <div className="space-y-2">
-              <div className="p-3 bg-white border border-[#eaeaec] rounded-xl text-[11px]">
-                <strong className="text-primary block font-mono">MINIMIZE CHANGEOVER</strong>
-                <p className="text-slate-500 mt-1">คัดกลุ่มกลุ่มเนื้อหรือบรรจุภัณฑ์คล้ายกัน เพื่อลดเวลาทำความสะอาดหัวฉีด/แม่พิมพ์สายผลิตได้ถึง 15%</p>
-              </div>
-              <div className="p-3 bg-white border border-[#eaeaec] rounded-xl text-[11px]">
-                <strong className="text-emerald-700 block font-mono">SAFETY STOCK BUFFER</strong>
-                <p className="text-slate-500 mt-1">จัดสำรองปริมาณสินค้าคงคลังสำรองสำหรับกลุ่มตลาดอุปสงค์แปรปรวนป้องกันปัญหาอุตสาหกรรมในอนาคต</p>
-              </div>
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Sparkles size={16} className="text-[#d55a6d]" /> 1. การทำงานของระบบ AI Planner
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    ระบบนี้จะทำหน้าที่เปรียบเสมือนผู้ช่วยส่วนตัวของฝ่ายวางแผน (Planning) โดยจะนำ <span className="font-bold text-[#212c46]">ความต้องการสินค้า (Demand)</span> มาจับคู่กับ <span className="font-bold text-[#212c46]">กำลังการผลิต (Capacity)</span> เพื่อสร้างแผนที่มีความเป็นไปได้มากที่สุด อิงจากทรัพยากรที่มีในปัจจุบัน แบบไม่มีความผิดพลาดจากการคำนวณของมนุษย์
+                </p>
+                <div className="space-y-3">
+                    <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4">
+                        <Icons.Calculator size={24} className="text-[#3f809e] mt-1 shrink-0 bg-[#e6eff3] p-1 rounded" />
+                        <div>
+                            <div className="font-bold text-[#212c46] mb-1">ปุ่ม "วางแผนแบบระยะสั้น"</div>
+                            <div className="text-[#414757] leading-relaxed">
+                                (Short-Term Planning) จะถูกคลิกเมื่อต้องการจัดตารางการผลิตรายสัปดาห์หรือรายวันอย่างรวดเร็ว AI จะเน้นแก้ปัญหาคอขวด ณ ปัจจุบัน หรือคำสั่งซื้อด่วน โดยจำกัดการสูญเสียเวลาสูญเปล่า
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-4 bg-[#fdfaf2] border border-[#f5ebcb] rounded-xl flex items-start gap-4">
+                        <Icons.BarChart2 size={24} className="text-[#d55a6d] mt-1 shrink-0 bg-[#fdf2f2] p-1 rounded" />
+                        <div>
+                            <div className="font-bold text-[#212c46] mb-1">ปุ่ม "คาดการณ์ล่วงหน้า"</div>
+                            <div className="text-[#414757] leading-relaxed">
+                                (Forecasting) ใช้เพื่อประเมินความต้องการล่วงหน้า เหมาะสำหรับการแจ้งฝ่ายจัดซื้อเพื่อสั่งซื้อวัตถุดิบ (Material Requirement Planning) ล่วงหน้า จะไม่ลงตารางปฏิบัติการจริงๆ จนกว่าเราจะยืนยัน
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </section>
 
-          {/* Section 3: Wizard Configurator */}
-          <section className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-1.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-1.5 font-mono">
-              <Layers size={16} className="text-[#a94228]" />
-              3. คำอธิบายขั้นตอนในหน้าต่างแก้ไขการตั้งค่า (Wizard Core)
-            </h4>
-            <p className="text-[11.5px] text-[#414757] font-bold">
-              ระบบ Configurator ออกแบบแบ่งออกเป็น 3 ขั้นตอนเชิงลึก (Standard Wizard Step) ดั่งนี้:
-            </p>
-            <ul className="list-disc pl-5 space-y-1.5 text-[11px] text-[#414757]">
-              <li><strong className="text-primary font-mono">STEP 1: Horizon & Metrics</strong> - ปรับเปลี่ยนกรอบประยุกต์รายเวลา (Short-term บายวีค หรือ Forecasting รายเดือน) พร้อมกำหนดระดับจำกัดรักษาสต็อคปลอดภัย</li>
-              <li><strong className="text-primary font-mono">STEP 2: Priority Nodes</strong> - จัดน้ำหนักเป้าหมาย (ให้สิทธิ์เวลาจัดส่ง หรือการรดต้นทุนการสลับชุดพิมพ์เป็นสำคัญ) เพื่อคัดสรรค์โมเดลพยากรณ์</li>
-              <li><strong className="text-primary font-mono">STEP 3: Engine Tuners</strong> - เลือกรุ่นเอ็นจิ้น AI และปรับปรุง Max Iterations สำหรับชุดเซตคำนวณขั้นสูง</li>
-            </ul>
-          </section>
+            <div className="h-px bg-[#eaeaec] w-full" />
 
-          {/* Section 4: Operational Guidelines */}
-          <section className="space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-              <Cog size={16} className="text-[#a94228]" />
-              4. วิธีรับมือคอขวดสะสมไลน์ผลิต (Bottlenecks Action)
-            </h4>
-            <p className="text-[11.5px] text-[#414757] leading-relaxed font-bold">
-              ในแถบคอขวดขวาของจอ (Bottlenecks) จะดึงสถิติตรงจากบอร์ดเครื่องจักรแจ้งเครื่องเสีย เมื่อชิ้นงานหรือสายพานล่าช้า ให้กดดูเพื่อทวนเวลาทำงานหรือสั่ง Override การวางแผน แต่อาจเกิดปัญหาในสายพานจริงของฝ่ายปฏิบัติการ
-            </p>
-          </section>
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.AlertTriangle size={16} className="text-[#d55a6d]" /> 2. การรับมือกับข้อจำกัด (Constraints Handling)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    AI จะทำงานร่วมกับโมดูลอื่นๆ อัตโนมัติ หากเครื่องจักรเสีย หรือวัตถุดิบขาด ระบบจะหยุดการลากตารางงานลงเครื่องจักรนั้นๆ ก่อน และแจ้งเตือนในหน้ากระดาน <span className="font-bold text-[#212c46]">ข้อจำกัดที่พบ</span> ให้เราทราบเหตุผลก่อนเสมอ
+                </p>
+                <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757]">
+                    <div className="font-bold text-[#d55a6d] mb-2">สิ่งที่คุณต้องทำ:</div>
+                    <ul className="list-disc pl-5 space-y-2">
+                        <li>อ่านข้อควรระวังในช่องสีขวาที่ AI แจ้งขึ้นมาเสมอ</li>
+                        <li>หากจำเป็นต้องดันแผน สามารถข้ามข้อความเตือนได้ (Override) แต่อาจเกิดปัญหาในสายพานการผลิต</li>
+                    </ul>
+                </div>
+            </div>
 
-          <div className="pt-4 border-t border-slate-200 text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-            MES ระดับผู้ช่วยแผนงานผลิตอเนกประสงค์อัตโนมัติ • VER 1.2.0
-          </div>
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Calculator size={16} className="text-[#d55a6d]" /> 3. ACTION BUTTONS (ปุ่มคำสั่ง)
+                </h3>
+                <div className="space-y-3">
+                    <div className="p-4 bg-[#f1f0ee] border border-[#eaeaec] rounded-xl flex items-start gap-4">
+                        <div className="bg-[#3f809e] text-white p-2 rounded-lg shrink-0"><Icons.Sparkles size={16} /></div>
+                        <div>
+                            <div className="font-bold text-[#212c46] mb-1 flex items-center gap-2">เริ่มประมวลผลแผนการผลิต</div>
+                            <div className="text-[#7a8b95]">กดเพื่อยืนยันให้ AI สร้างตารางการผลิตทันทีตามเป้าหมาย (Active) ที่ตั้งไว้</div>
+                        </div>
+                    </div>
+                    <div className="p-4 bg-[#f1f0ee] border border-[#eaeaec] rounded-xl flex items-start gap-4">
+                        <div className="bg-[#212c46] text-white p-2 rounded-lg shrink-0"><Icons.ChevronRight size={16} /></div>
+                        <div>
+                            <div className="font-bold text-[#212c46] mb-1 flex items-center gap-2">Draft Plan (รอตรวจสอบ)</div>
+                            <div className="text-[#7a8b95]">คลิกเพื่อดูรายละเอียดแผนที่ระบบล่างร่างไว้ก่อนการอนุมัติ (Approve) ใช้งานจริง</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
       </UserGuidePanel>
 
       {/* UNIFIED COHERENT HEADER */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -274,7 +284,7 @@ export default function AiPlannerAsst() {
       </div>
 
       {/* MAIN CONTENT GRID */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-2 transition-all">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-2 transition-all">
         
         {/* KPI CARDS BAR */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 shrink-0">
@@ -287,7 +297,7 @@ export default function AiPlannerAsst() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Main Action Panel */}
-          <div className="lg:col-span-2 bg-white rounded-3xl border border-[#eaeaec] p-8 shadow-lg flex flex-col space-y-4">
+          <div className="lg:col-span-2 bg-white rounded-xl border border-[#eaeaec] p-8 shadow-lg flex flex-col space-y-4">
             
             <div className="flex items-center justify-between border-b border-[#eaeaec] pb-4 mb-4">
               <div>
@@ -339,7 +349,7 @@ export default function AiPlannerAsst() {
                         showConfirmButton: false
                       });
                     }}
-                    className={`bg-white border rounded-2xl p-5 shadow-sm transition-all cursor-pointer group flex flex-col justify-between min-h-[140px] hover:shadow-md ${
+                    className={`bg-white border rounded-xl p-5 shadow-sm transition-all cursor-pointer group flex flex-col justify-between min-h-[140px] hover:shadow-md ${
                       planningHorizon === 'weekly' ? 'border-[#b7a159] bg-[#b7a159]/5' : 'border-[#eaeaec] hover:border-[#b7a159]'
                     }`}
                   >
@@ -370,7 +380,7 @@ export default function AiPlannerAsst() {
                         showConfirmButton: false
                       });
                     }}
-                    className={`bg-white border rounded-2xl p-5 shadow-sm transition-all cursor-pointer group flex flex-col justify-between min-h-[140px] hover:shadow-md ${
+                    className={`bg-white border rounded-xl p-5 shadow-sm transition-all cursor-pointer group flex flex-col justify-between min-h-[140px] hover:shadow-md ${
                       planningHorizon === 'forecast' ? 'border-[#a94228] bg-[#a94228]/5' : 'border-[#eaeaec] hover:border-[#a94228]'
                     }`}
                   >
@@ -389,7 +399,7 @@ export default function AiPlannerAsst() {
                 </div>
 
                 {/* Target Configurations */}
-                <div className="bg-[#f8f9fa] rounded-2xl p-6 border border-[#eaeaec]">
+                <div className="bg-[#f8f9fa] rounded-xl p-6 border border-[#eaeaec]">
                   <h4 className="text-[11.5px] font-black text-[#212c46] mb-4 uppercase tracking-widest flex items-center gap-2 font-mono">
                     <Layers size={14} className="text-[#b7a159]" />
                     เกณฑ์ประเมินและเป้าหมายกำลังประมวล (Target Goals)
@@ -478,7 +488,7 @@ export default function AiPlannerAsst() {
               <div className="space-y-6 animate-fadeIn">
                 
                 {/* Result Highlights */}
-                <div className="bg-[#657f4d]/5 border border-[#657f4d]/30 rounded-2xl p-5 shadow-inner">
+                <div className="bg-[#657f4d]/5 border border-[#657f4d]/30 rounded-xl p-5 shadow-inner">
                   <div className="flex items-start gap-4 mb-5">
                     <div className="w-10 h-10 rounded-xl bg-[#657f4d]/10 flex items-center justify-center text-[#657f4d] border border-[#657f4d]/20 shadow-sm shrink-0">
                       <CheckCircle2 size={22} className="animate-bounce" />
@@ -510,7 +520,7 @@ export default function AiPlannerAsst() {
                   <h4 className="text-[11.5px] font-black text-[#212c46] px-1 uppercase tracking-widest font-mono">แผนการผลิตที่แนะนำโดยสมองกล (Suggested Schedules)</h4>
                   
                   {/* Option 1: Main alpha */}
-                  <div className="bg-white p-5 rounded-2xl border-2 border-[#b7a159] shadow-md relative overflow-hidden group">
+                  <div className="bg-white p-5 rounded-xl border-2 border-[#b7a159] shadow-md relative overflow-hidden group">
                     <div className="absolute top-0 right-0 bg-[#b7a159] text-white text-[9.5px] font-black uppercase tracking-widest px-4 py-1.5 rounded-bl-xl shadow-sm font-mono flex items-center gap-1">
                       <Sparkles size={11} /> TOP OPTIMIZED MATCH
                     </div>
@@ -584,7 +594,7 @@ export default function AiPlannerAsst() {
                   </div>
 
                   {/* Option 2: Alternate beta */}
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+                  <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden group">
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h5 className="font-extrabold text-[#212c46] text-[13px] uppercase tracking-tight flex items-center gap-1.5">
@@ -637,7 +647,7 @@ export default function AiPlannerAsst() {
 
                 </div>
 
-                <div className="mt-4 flex justify-between items-center border-t border-slate-100 pt-4 font-sans">
+                <div className="mt-4 flex justify-between items-center border-t-[1.5px] border-slate-100 pt-4 font-sans">
                   <button 
                     onClick={() => setAnalysisComplete(false)} 
                     className="text-[#a94228] hover:text-[#212c46] text-xs font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors"
@@ -656,7 +666,7 @@ export default function AiPlannerAsst() {
           <div className="space-y-6 h-full flex flex-col">
             
             {/* BOTTLENECKS LIMITS */}
-            <div className="bg-white rounded-3xl p-6 border border-[#eaeaec] shadow-lg flex-1 min-h-[300px]">
+            <div className="bg-white rounded-xl p-6 border border-[#eaeaec] shadow-lg flex-1 min-h-[300px]">
               
               <div className="flex items-center gap-3 border-b border-[#eaeaec] pb-4 mb-4">
                 <AlertTriangle size={18} className="text-[#a94228] animate-pulse" />
@@ -708,7 +718,7 @@ export default function AiPlannerAsst() {
             </div>
 
             {/* DRAFT PLANS */}
-            <div className="bg-[#212c46] rounded-3xl border border-transparent p-6 text-[#d7d7d7] shadow-lg shrink-0">
+            <div className="bg-[#212c46] rounded-xl border border-transparent p-6 text-[#d7d7d7] shadow-lg shrink-0">
               <div className="flex items-center gap-3 mb-4 border-b border-white/10 pb-4">
                 <FileCheck size={20} className="text-[#b7a159]" />
                 <div>
@@ -734,7 +744,7 @@ export default function AiPlannerAsst() {
                     confirmButtonColor: THEME.primary
                   });
                 }}
-                className="w-full text-left bg-white/5 hover:bg-white/10 p-4 border border-white/10 rounded-2xl transition-all flex items-center justify-between group"
+                className="w-full text-left bg-white/5 hover:bg-white/10 p-4 border border-white/10 rounded-xl transition-all flex items-center justify-between group"
               >
                 <div>
                   <p className="text-xs font-black text-white mb-0.5 font-mono">Plan #4092</p>
@@ -978,7 +988,7 @@ export default function AiPlannerAsst() {
                 }
                >
                   <div className="p-8 bg-[#f8f9fa] max-h-[500px] overflow-auto select-none">
-                     <div className="bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm">
+                     <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
                         <CsvUpload 
                             requiredHeaders={['order_no', 'product', 'quantity', 'deadline']}
                             onUpload={(data) => {

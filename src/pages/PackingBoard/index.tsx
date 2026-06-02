@@ -229,96 +229,83 @@ export default function PackingBoard() {
                 </div>
             )}
 
-            <UserGuidePanel isOpen={showGuide} onClose={() => setShowGuide(false)} title="PACKING MANUAL" subtitle="คู่มือควบคุมแผงงานบรรจุสำเร็จรูป (Finished Goods Manual)">
-                <div className="space-y-6">
-                  <section className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                    <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-                      <Icons.Info size={16} className="text-[#a94228]"/>
-                      1. บทนำและวัตถุประสงค์ระบบบรรจุสำเร็จรูป
-                    </h4>
-                    <p className="leading-relaxed text-[11.5px] text-[#414757] font-bold">
-                      ระบบ **Packing Board** ออกแบบมาเพื่อให้ผู้ควบคุมงานบริหารจัดการ แผนส่งจัดบรรจุขั้นสุดท้าย (Finished Goods Packing Phase) โดยการดึงสต๊อกจากห้องเย็นบรรจุสินค้ากึ่งสำเร็จรูป (**SFG - Semi-Finished Goods**) ตัดผ่านชุดเครื่องจักรสู่สินค้าพร้อมขาย (**FG - Finished Goods**) ครอบคลุมปริมาตร ล๊อตผลิต และวงจรชีวิตค้ำประกันความเสถียร
-                    </p>
-                  </section>
-
-                  <section className="space-y-3">
-                    <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-                      <Icons.Cpu size={16} className="text-[#a94228]"/>
-                      2. อัตราความสามารถเครื่องจักร (Packing Machines capability)
-                    </h4>
-                    <p className="text-[11px] text-slate-500 font-bold">ระบบจดทะเบียนเครื่องจักรประมวลผล 4 รายการประกอบด้วย:</p>
-                    <div className="grid grid-cols-1 gap-2">
-                      <div className="p-2.5 bg-white border border-[#eaeaec] rounded-xl flex justify-between items-center text-[11px]">
-                        <div>
-                          <strong className="text-[#212c46]">Thermoformer Lines (Line 1/2)</strong>
-                          <p className="text-slate-400 font-medium">ชุดแพ็คขึ้นรูปแบบถาดหนาความร้อน</p>
+            <UserGuidePanel isOpen={showGuide} onClose={() => setShowGuide(false)} title="PACKING GUIDE" subtitle="PACKING BOARD MANAGEMENT">
+                <div className="space-y-8 font-sans">
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Package size={16} className="text-[#3f809e]" /> 1. OVERVIEW BOARD
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            ระบบนี้ออกแบบมาเพื่อให้ผู้ควบคุมงานบริหารจัดการ แผนส่งจัดบรรจุขั้นสุดท้าย (Finished Goods Packing) โดยการดึงสต๊อกจากห้องเย็นบรรจุสินค้ากึ่งสำเร็จรูป (SFG) มาตัดผ่านชุดเครื่องจักรสู่สินค้าพร้อมขาย (FG)
+                        </p>
+                        <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#7a8b95] mt-1.5 shrink-0"></div>
+                                <div className="text-[#414757]"><span className="font-bold text-[#212c46]">Pending:</span> งานรอสายบรรจุ ค้างจัดการเนื่องจากรอความพร้อมพนักงาน หรือรอ SFG</div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#3f809e] mt-1.5 shrink-0"></div>
+                                <div className="text-[#414757]"><span className="font-bold text-[#212c46]">In Progress:</span> เครื่องจักรกำลังทำงาน ขึ้นรูปบรรจุ ตอกบาร์โค้ด หักยอดสต๊อก</div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#688a58] mt-1.5 shrink-0"></div>
+                                <div className="text-[#414757]"><span className="font-bold text-[#212c46]">Completed:</span> สิ้นสุดกระบวนการบรรจุ ตรวจรับและปิด Lot 100% เรียบร้อยแล้ว</div>
+                            </div>
                         </div>
-                        <span className="font-mono font-black text-[#a94228] bg-[#a94228]/5 px-2.5 py-1 rounded-md border border-[#a94228]/20">600 - 800 kg/hr</span>
-                      </div>
-                      <div className="p-2.5 bg-white border border-[#eaeaec] rounded-xl flex justify-between items-center text-[11px]">
-                        <div>
-                          <strong className="text-[#212c46]">Flow Pack (Line A)</strong>
-                          <p className="text-slate-400 font-medium font-bold">ชุดซีลห่อพันซองเรียบต่อเนื่อง</p>
-                        </div>
-                        <span className="font-mono font-black text-[#3f809e] bg-[#3f809e]/5 px-2.5 py-1 rounded-md border border-[#3f809e]/20">400 kg/hr</span>
-                      </div>
-                      <div className="p-2.5 bg-white border border-[#eaeaec] rounded-xl flex justify-between items-center text-[11px]">
-                        <div>
-                          <strong className="text-[#212c46]">Vacuum Chamber (B)</strong>
-                          <p className="text-slate-400 font-medium">ชุดแพ็คดูดปิดสุญญากาศยืดอายุอาหาร</p>
-                        </div>
-                        <span className="font-mono font-black text-[#657f4d] bg-[#657f4d]/5 px-2.5 py-1 rounded-md border border-[#657f4d]/20">300 kg/hr</span>
-                      </div>
                     </div>
-                  </section>
 
-                  <section className="space-y-3">
-                    <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-                      <Icons.Layers size={16} className="text-[#a94228]"/>
-                      3. สถานะควบคุมการผลิต (Job Status lifecycles)
-                    </h4>
-                    <div className="space-y-2 text-[11px]">
-                      <div className="flex gap-2.5 items-start p-2.5 bg-[#f3f3f1] border border-slate-200 rounded-lg">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#7a8b95] shrink-0 mt-0.5 animate-pulse" />
-                        <div>
-                          <strong className="text-slate-700">Pending:</strong> งานรอสายการบรรจุ ค้างจัดการเนื่องจากรอส่งจ่าย SFG กึ่งสำเร็จรูปจากแผนกก่อนหน้า
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Cpu size={16} className="text-[#b58c4f]" /> 2. PACKING MACHINES
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            ระบบมีการจำแนกเครื่องจักรตามประเภทบรรจุภัณฑ์ ซึ่งมีอัตราการเดินเครื่องและความเร็วที่แตกต่างกันไป:
+                        </p>
+                        <div className="space-y-3">
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex justify-between items-center text-[12px]">
+                                <div>
+                                    <strong className="text-[#212c46]">Thermoformer (Line 1/2)</strong>
+                                    <p className="text-[#7a8b95]">แพ็คขึ้นรูปแบบถาด</p>
+                                </div>
+                                <span className="font-bold text-[#b58c4f]">600 - 800 kg/hr</span>
+                            </div>
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex justify-between items-center text-[12px]">
+                                <div>
+                                    <strong className="text-[#212c46]">Flow Pack (Line A)</strong>
+                                    <p className="text-[#7a8b95]">ห่อพันซองเรียบต่อเนื่อง</p>
+                                </div>
+                                <span className="font-bold text-[#b58c4f]">400 kg/hr</span>
+                            </div>
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex justify-between items-center text-[12px]">
+                                <div>
+                                    <strong className="text-[#212c46]">Vacuum Chamber (B)</strong>
+                                    <p className="text-[#7a8b95]">แพ็คดูดปิดสุญญากาศ</p>
+                                </div>
+                                <span className="font-bold text-[#b58c4f]">300 kg/hr</span>
+                            </div>
                         </div>
-                      </div>
-                      <div className="flex gap-2.5 items-start p-2.5 bg-[#3f809e]/10 border border-[#3f809e]/30 rounded-lg">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#3f809e] shrink-0 mt-0.5 animate-pulse" />
-                        <div>
-                          <strong className="text-sky-700">In Progress:</strong> ดำเนินการขึ้นรูปบรรจุ ตอกบาร์โค้ด และคำนวณหักลบสต๊อกเปรียบเป็นเวลาจริง
-                        </div>
-                      </div>
-                      <div className="flex gap-2.5 items-start p-2.5 bg-[#657f4d]/10 border border-[#657f4d]/30 rounded-lg">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#657f4d] shrink-0 mt-0.5 animate-pulse" />
-                        <div>
-                          <strong className="text-emerald-700">Completed:</strong> กระบวนการบรรจุสิ้นสุด ดำเนินการตรวจรับและปิด Lot ผลิต 100% เรียบร้อย
-                        </div>
-                      </div>
                     </div>
-                  </section>
 
-                  <section className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-                    <h4 className="text-[13px] font-black text-[#212c46] mb-1.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-1.5 font-mono">
-                      <Icons.Play size={16} className="text-[#a94228]"/>
-                      4. ขั้นตอนและคำแนะการประมวลผลงาน (Operations Guides)
-                    </h4>
-                    <ul className="list-decimal pl-5 space-y-1.5 text-[11px] text-[#414757]">
-                      <li>เลือกแผนงานหลักที่ต้องการผลิต โดยระบบจะเปรียบเทียบรหัสสินค้าและสต๊อกของ SFG ของผู้ผลิต</li>
-                      <li>ใช้ตัวเลือก **Sim Speed** เร่งอัตราเวลาจัดทำงานจำลอง (1 เท่า, 10 เท่า หรือ 60 เท่า) เพื่อสังเกตจุดการชนกันของกำลังผลิต</li>
-                      <li>กรณีล๊อตค้างอยู่หรือต้องการทดสอบรอบด่วน สามารถใช้คำสั่ง **Force Finish** เพื่อทดสอบจำลองงานบรรจุล๊อตรอบนั้นได้ทันที</li>
-                    </ul>
-                  </section>
+                    <div className="h-px bg-[#eaeaec] w-full" />
 
-                  <div className="pt-4 border-t border-slate-200 text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    MES บอร์ดบรรจุและการตัดบัญชีล๊อควัตถุจำลองระบบ • VER 3.5.0
-                  </div>
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Settings size={16} className="text-[#d55a6d]" /> 3. ACTION BUTTONS 
+                        </h3>
+                        <div className="space-y-3 p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757]">
+                            <ul className="list-disc pl-5 space-y-2">
+                                <li><strong>กดปุ่ม Start:</strong> เพื่อสั่งเดินเครื่อง Packing หักยอดสต๊อกทีละรอบ</li>
+                                <li><strong>กดปุ่ม Force Finish:</strong> กรณีที่เดินงานเสร็จแล้ว ให้กดปุ่มนี้เพื่อจบงานและบันทึกข้อมูลเข้าสู่ระบบสต๊อกหลัก</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </UserGuidePanel>
 
             {/* HEADER SECTION - Unified MES Navy Header */}
-            <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
                     <div className="relative flex items-center justify-center group cursor-default shrink-0">
                         <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -354,7 +341,7 @@ export default function PackingBoard() {
             </div>
 
             {/* MAIN CONTENT WRAPPER */}
-            <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px] transition-all">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px] transition-all">
                 
                 {/* KPI STATS - Styled like UserPermissions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 shrink-0">
@@ -366,7 +353,7 @@ export default function PackingBoard() {
 
                 {activeTab === 'overview' ? (
                     /* --- OVERVIEW TABLE VIEW --- */
-                    <div className="bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+                    <div className="bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
                         <div className="p-6 flex flex-row justify-between items-center bg-[#f8f9fa] border-b border-[#eaeaec] shrink-0">
                             <div className="flex items-center gap-3 text-sm font-black text-[#212c46] uppercase tracking-widest">
                                 <Icons.ListTree size={20} className="text-[#b7a159]" /> Daily Packing Plan List
@@ -376,16 +363,16 @@ export default function PackingBoard() {
                             </span>
                         </div>
                         <div className="overflow-auto custom-scrollbar">
-                            <table className="w-full text-left font-sans border-collapse">
-                                <thead className="sys-table-header bg-[#212c46] text-white border-[#b7a159]">
-                                    <tr>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest whitespace-nowrap pl-8 text-[11px]">Job Plan ID</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest whitespace-nowrap text-[11px]">Finished Product Description (SKU)</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-center whitespace-nowrap text-[11px]">Target (Packs)</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-center whitespace-nowrap text-[11px]">Packed (Packs)</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-center whitespace-nowrap text-[11px]">WIP (Packs)</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-center w-48 text-[11px]">Progress Rate</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-center whitespace-nowrap pr-8 text-[11px]">Status State</th>
+                            <table className="w-full text-left border-collapse table-font">
+                                <thead className="sys-table-header [#b7a159] ">
+                    <tr>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap pl-8 ">Job Plan ID</th>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap ">Finished Product Description (SKU)</th>
+                                        <th className="font-black uppercase tracking-widest text-center whitespace-nowrap ">Target (Packs)</th>
+                                        <th className="font-black uppercase tracking-widest text-center whitespace-nowrap ">Packed (Packs)</th>
+                                        <th className="font-black uppercase tracking-widest text-center whitespace-nowrap ">WIP (Packs)</th>
+                                        <th className="font-black uppercase tracking-widest text-center w-48 ">Progress Rate</th>
+                                        <th className="font-black uppercase tracking-widest text-center whitespace-nowrap pr-8 ">Status State</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-[#eaeaec]">
@@ -393,23 +380,23 @@ export default function PackingBoard() {
                                         const pct = Math.min(100, Math.round((p.packedPacks / p.targetPacks) * 100));
                                         return (
                                             <tr key={p.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 font-sans">
-                                                <td className="py-4 px-6 pl-8 font-mono font-black text-[#a94228] text-[12px]">{p.id}</td>
-                                                <td className="py-4 px-6">
+                                                <td className="px-4 pl-8 font-mono font-black text-[#a94228] text-[12px] py-2.5">{p.id}</td>
+                                                <td className="px-4 py-2.5">
                                                     <div className="font-extrabold text-[#212c46] text-[12.5px] uppercase tracking-tight">{p.fgName}</div>
                                                     <div className="text-[10px] text-slate-400 font-mono font-bold mt-1 tracking-widest">{p.sku}</div>
                                                 </td>
-                                                <td className="py-4 px-6 text-center font-mono font-black text-[#212c46] text-[12px]">{p.targetPacks.toLocaleString()}</td>
-                                                <td className="py-4 px-6 text-center font-mono font-black text-emerald-600 text-[12px]">{p.packedPacks.toLocaleString()}</td>
-                                                <td className="py-4 px-6 text-center font-mono font-black text-slate-500 text-[12px]">{p.wipPacks.toLocaleString()}</td>
-                                                <td className="py-4 px-6 text-center w-48">
-                                                    <div className="flex items-center gap-3 justify-center">
+                                                <td className="px-4 text-center font-mono font-black text-[#212c46] text-[12px] py-2.5">{p.targetPacks.toLocaleString()}</td>
+                                                <td className="px-4 text-center font-mono font-black text-emerald-600 text-[12px] py-2.5">{p.packedPacks.toLocaleString()}</td>
+                                                <td className="px-4 text-center font-mono font-black text-slate-500 text-[12px] py-2.5">{p.wipPacks.toLocaleString()}</td>
+                                                <td className="px-4 text-center w-48 py-2.5">
+                                                    <div className="flex items-center gap-[1px] justify-center">
                                                         <div className="flex-1 bg-slate-100 border border-[#eaeaec] h-3.5 rounded-full overflow-hidden shadow-inner max-w-[120px]">
                                                             <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-full transition-all duration-500 rounded-full" style={{ width: `${pct}%` }}></div>
                                                         </div>
                                                         <span className="font-mono text-[11px] font-black text-[#212c46] w-8">{pct}%</span>
                                                     </div>
                                                 </td>
-                                                <td className="py-4 px-6 pr-8 text-center">
+                                                <td className="px-4 pr-8 text-center py-2.5">
                                                     <span className={`px-4 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest border shadow-inner ${
                                                         p.status === 'Completed' ? 'bg-[#657f4d]/10 text-[#657f4d] border-[#657f4d]/30' :
                                                         p.status === 'In Progress' ? 'bg-[#3f809e]/10 text-[#3f809e] border-[#3f809e]/30' :
@@ -468,7 +455,7 @@ export default function PackingBoard() {
                                     </div>
                                 </div>
 
-                                <div className="bg-[#f8f9fa] border border-[#eaeaec] p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div className="bg-[#f8f9fa] border border-[#eaeaec] p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div className="flex flex-col">
                                         <p className="text-[9px] font-black text-[#7a8b95] uppercase tracking-widest leading-none mb-1">Available Sfg Stock</p>
                                         <div className="flex items-baseline gap-1">
@@ -532,7 +519,7 @@ export default function PackingBoard() {
                         <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 w-full overflow-hidden">
                             
                             {/* Summary Left Sidebar - MES Styled Navy Side bar */}
-                            <div className="w-full lg:w-72 bg-[#212c46] text-white flex flex-col p-6 shadow-xl relative overflow-hidden shrink-0 rounded-3xl border border-[#212c46] transition-all duration-300">
+                            <div className="w-full lg:w-72 bg-[#212c46] text-white flex flex-col p-6 shadow-xl relative overflow-hidden shrink-0 rounded-xl border border-[#212c46] transition-all duration-300">
                                 <div className="absolute -right-8 -bottom-8 text-white/5 transform rotate-12 pointer-events-none">
                                     <Icons.Package size={200} />
                                 </div>
@@ -551,7 +538,7 @@ export default function PackingBoard() {
                                         </div>
                                     </div>
                                     
-                                    <div className="mt-8 pt-6 border-t border-white/10 w-full bg-black/20 backdrop-blur-sm rounded-2xl py-4 flex flex-col items-center">
+                                    <div className="mt-8 pt-6 border-t border-white/10 w-full bg-black/20 backdrop-blur-sm rounded-xl py-4 flex flex-col items-center">
                                         <div className="flex items-center justify-center gap-2 mb-3">
                                             <Icons.Activity size={14} className="text-amber-500 animate-pulse" />
                                             <span className="text-[9px] font-black uppercase tracking-[0.15em] text-white">SIMULATION SPEED CONTROL</span>
@@ -566,7 +553,7 @@ export default function PackingBoard() {
                             </div>
 
                             {/* Active Processes Board */}
-                            <div className="flex-1 overflow-hidden flex flex-col bg-white border border-[#eaeaec] rounded-3xl shadow-lg transition-all">
+                            <div className="flex-1 overflow-hidden flex flex-col bg-white border border-[#eaeaec] rounded-xl shadow-lg transition-all">
                                 <div className="px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#f8f9fa] shrink-0 border-b border-[#eaeaec]">
                                     <h3 className="font-black text-[12px] text-[#212c46] flex items-center gap-2 uppercase tracking-widest">
                                         <Icons.Cpu size={16} className="text-[#a94228]" /> ACTIVE PACKING MACHINE MONITORS
@@ -590,7 +577,7 @@ export default function PackingBoard() {
                                             {activeLots.filter(l => showCompleted ? true : l.status !== 'Completed').map(lot => {
                                                 const progress = 100 - ((lot.timeLeft / lot.totalTime) * 100);
                                                 return (
-                                                    <div key={lot.id} className={`bg-white border border-[#eaeaec] rounded-2xl p-4 relative group hover:shadow-md transition-all flex flex-col h-[185px] leading-tight select-none ${lot.status === 'Completed' ? 'opacity-65 saturate-50 bg-[#f8f9fa]' : ''}`}>
+                                                    <div key={lot.id} className={`bg-white border border-[#eaeaec] rounded-xl p-4 relative group hover:shadow-md transition-all flex flex-col h-[185px] leading-tight select-none ${lot.status === 'Completed' ? 'opacity-65 saturate-50 bg-[#f8f9fa]' : ''}`}>
                                                         <div className="flex justify-between items-start mb-2 gap-2">
                                                             <div className="flex flex-col flex-1 min-w-0">
                                                                 <span className="font-mono font-black text-[#a94228] text-[12px]">{lot.id}</span>

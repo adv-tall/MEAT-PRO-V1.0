@@ -28,7 +28,7 @@ const THEME = {
 };
 
 const GlassCard = ({ children, className = '', hoverEffect = true, style = {} }: any) => (
-    <div className={`rounded-2xl p-4 backdrop-blur-xl shadow-[0_8px_30px_rgba(31,42,68,0.06)] border border-white/60 ${hoverEffect ? 'hover:-translate-y-1 transition-transform duration-300' : ''} ${className}`}
+    <div className={`rounded-xl p-4 backdrop-blur-xl shadow-[0_8px_30px_rgba(31,42,68,0.06)] border border-white/60 ${hoverEffect ? 'hover:-translate-y-1 transition-transform duration-300' : ''} ${className}`}
         style={{ backgroundColor: THEME.glassWhite, ...style }}>
         {children}
     </div>
@@ -148,7 +148,7 @@ export default function PerformanceDashboard() {
   };
 
   return (
-    <div className="pt-4 flex flex-col gap-6 animate-fadeIn max-w-[1532px] mx-auto px-4 sm:px-8 w-full">
+    <div className="pt-4 flex flex-col gap-6 animate-fadeIn  mx-auto px-4 sm:px-8 w-full">
       <div className="flex flex-row justify-between items-center gap-4">
           <div className="flex flex-col justify-center">
               <h1 className="text-3xl md:text-4xl text-[#212c46] tracking-tight uppercase font-black leading-none">

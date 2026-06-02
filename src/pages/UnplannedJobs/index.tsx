@@ -254,64 +254,70 @@ export default function UnplannedJobs() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-        title="UNPLANNED JOBS HANDY-GUIDE"
-        subtitle="ระบบแจ้งรายงานความเสื่อมคุณภาพ และขอปริมาณชดเชยกำลังจัดสรรใหม่ (Loss Management Guide)"
+        title="UNPLANNED GUIDE"
+        subtitle="LOSS MANAGEMENT GUIDE"
       >
-        <div className="space-y-6">
-          
-          {/* Section 1 */}
-          <section className="bg-[#a94228]/5 p-4 rounded-xl border border-[#a94228]/20">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2 uppercase flex items-center gap-2 border-b border-[#a94228]/20 pb-2 font-mono">
-              <Icons.Info size={16} className="text-[#a94228]" />
-              1. ความเข้าใจระบบการรายงาน (Overview Process)
-            </h4>
-            <p className="leading-relaxed text-[11px] text-[#414757] font-semibold">
-              เมื่อมีข้อผิดพลาดหน้าเตาผสม (Mixing Line) หรือด่านควบคุม QC เช่น ตรวจสอบพบเศษส่วนตกหล่น (Spill/Dropped) หรือน้ำหนักสายผลิตไม่คงที่ต่ำกว่าตัวมาตรฐาน (QC Failed Weight Var) ผู้ปฏิบัติงานต้องกด **REPORT PROBLEM** เพื่อจดความจุสุทธิสูญเสีย ค้างชดเชย
-            </p>
-          </section>
-
-          {/* Section 2 */}
-          <section className="space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-              <Icons.Sparkles size={16} className="text-[#b7a159]" />
-              2. ปลั๊กอินการประมวลอัจฉริยะ (IA Replan Algorithm)
-            </h4>
-            <div className="space-y-2">
-              <div className="p-3 bg-white border border-[#eaeaec] rounded-xl text-[11px]">
-                <strong className="text-primary block font-mono">REPLACEMENT QUEUE DISPATCH</strong>
-                <p className="text-slate-500 mt-1">เครื่องจักรจะได้รับ Plan รหัสชดเชยขึ้นต้นด้วย **RP-PLAN** สลับเข้าเพื่อรีดผลงานทดแทนออเดอร์ให้ตรงกับใบส่งงานเดิมโดยด่วน</p>
-              </div>
-              <div className="p-3 bg-white border border-[#eaeaec] rounded-xl text-[11px]">
-                <strong className="text-[#a94228] block font-mono">SUPERVISOR LOCK SIGN</strong>
-                <p className="text-slate-500 mt-1">ตั้งเกณฑ์เพื่อความมั่นคง หากรายงานความเสียหายเกินขนาด (ตามค่าที่ระบุในการตั้งค่า) ระบบจะเปิดหน้าต่างเตือนให้หัวหน้าเข้ายืนยันพาสสิฟิตี้</p>
-              </div>
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.AlertTriangle size={16} className="text-[#a94228]" /> 1. ความเข้าใจระบบการรายงาน (Overview)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    เมื่อมีข้อผิดพลาดหน้าเตาผสม (Mixing Line) หรือด่านควบคุม QC เช่น ตรวจสอบพบเศษส่วนตกหล่น (Spilled/Dropped) หรือน้ำหนักสายผลิตไม่คงที่ต่ำกว่ามาตรฐาน ผู้ปฏิบัติงานจะต้องรายงานลงในระบบเพื่อเข้าสู่กระบวนการจัดสรรใหม่ทันที
+                </p>
+                <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757]">
+                    <div className="font-bold text-[#a94228] mb-2 flex items-center gap-2"><Icons.Siren size={16} /> ACTION POINT</div>
+                    ระบบจะบังคับให้กรอกความจุสุทธิที่สูญเสียไป (สุญเสียจริง) พร้อมล๊อตหมายเลขอ้างอิง และเหตุผลที่ตก QC เสมอ เพื่อการสอบกลับข้อมูลได้ 100%
+                </div>
             </div>
-          </section>
 
-          {/* Section 3 */}
-          <section className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-1 uppercase flex items-center gap-2 border-b border-[#212c46]/20 pb-1.5 font-mono">
-              <Icons.Sliders size={16} className="text-primary" />
-              3. โครงสร้างการตั้งค่าวิดเซต (Standard Configuration Wizard)
-            </h4>
-            <p className="text-[11px] text-[#414757] font-bold">
-              ปุ่มตั้งค่าระบบด่วน (Settings) ในหน้าต่าง Draggable เป็นแบบ multi-step สากล:
-            </p>
-            <ul className="list-disc pl-5 space-y-1.5 text-[10.5px] text-[#414757]">
-              <li><strong className="text-primary font-mono">STEP 1: Default Variables</strong> - ค่าหัวแถวด่วนในการคำนวณ เช่น Priority หลัก, ขีดจำกัดล่างเพื่อการ Replan อัตโนมัติ</li>
-              <li><strong className="text-primary font-mono">STEP 2: Controls Rules</strong> - สวิทช์เปิดแจ้งเตือน และล็อกความมั่นคงสเปคตรวจส่วน</li>
-              <li><strong className="text-primary font-mono">STEP 3: Engine Selectors</strong> - เลือกรุ่น Engine คำนวณรื้อตาราง และประเภทการส่ง Alarm แจ้งเตือน</li>
-            </ul>
-          </section>
+            <div className="h-px bg-[#eaeaec] w-full" />
 
-          <footer className="pt-4 border-t border-slate-200 text-center text-[10px] text-slate-400 font-black uppercase tracking-wider">
-            MES SYSTEM MODULE INSTRUCTION • UNPLANNED v1.4
-          </footer>
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Cpu size={16} className="text-[#3f809e]" /> 2. ปลั๊กอินการประมวลผลอัจฉริยะ (IA REPLAN)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    ระบบจะวิเคราะห์ความเบี่ยงเบนจากออเดอร์เดิม หากปริมาณสูญเสียเกินขีดจำกัดล่าง จะรันระบบ Auto-Replan อัตโนมัติ:
+                </p>
+                <div className="space-y-3">
+                    <div className="flex items-start gap-4 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl">
+                        <div className="p-2 bg-[#3f809e] text-white rounded-lg shrink-0"><Icons.RefreshCw size={16} /></div>
+                        <div>
+                            <div className="text-[#212c46] font-bold text-[12px] mb-1">REPLACEMENT QUEUE</div>
+                            <div className="text-[#7a8b95] text-[12px]">เครื่องจักรจะได้รับ Plan รหัสชดเชยขึ้นต้นด้วย RP-PLAN สอดแทรกเข้ามาเพื่อรีดผลผลิตทดแทนโดยด่วนให้ทันกำหนดส่ง</div>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-4 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl">
+                        <div className="p-2 bg-[#b58c4f] text-white rounded-lg shrink-0"><Icons.Lock size={16} /></div>
+                        <div>
+                            <div className="text-[#212c46] font-bold text-[12px] mb-1">SUPERVISOR LOCK SIGN</div>
+                            <div className="text-[#7a8b95] text-[12px]">ตั้งเกณฑ์เพื่อความแม่นยำ หากรายงานความเสียหายมีมูลค่าสูง ระบบจะเปิดหน้าต่างให้ Supervisor อนุมัติรหัสก่อนข้ามพาสทำงาน</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Settings size={16} className="text-[#b58c4f]" /> 3. การตั้งค่าระบบ (SETTINGS FORM)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    คุณสามารถกำหนดสูตรคำนวณและข้อจำกัดได้ในปุ่มตั้งค่า (Settings):
+                </p>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#3f809e]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Step 1: Variables</strong> - กฎเกณฑ์และขีดจำกัดรับน้ำหนักความเสียหาย</span></div>
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#d55a6d]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Step 2: Control Rules</strong> - การเตือนภัยบนกระดานกลาง, บังคับลายเซ็นหัวหน้า</span></div>
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#688a58]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Step 3: Engine Selecors</strong> - โมดูล AI เลือกประเภทอัลกอริทึมในการทำสอบซ้ำและ Replan</span></div>
+                </div>
+            </div>
         </div>
       </UserGuidePanel>
 
       {/* DISTINCT UNIFIED HEADER */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#a94228] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -346,7 +352,7 @@ export default function UnplannedJobs() {
       </div>
 
       {/* KPI GRID */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-2">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <KpiCard 
             label="Pending Replans" 
@@ -383,7 +389,7 @@ export default function UnplannedJobs() {
         </div>
 
         {/* DATA ACTIONS AND TABLE */}
-        <div className="bg-white rounded-3xl border border-[#eaeaec] shadow-lg overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl border border-[#eaeaec] shadow-lg overflow-hidden flex flex-col">
           
           <div className="p-6 border-b border-[#eaeaec] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white">
             <div className="relative w-full sm:w-96">
@@ -406,36 +412,36 @@ export default function UnplannedJobs() {
           </div>
 
           <div className="overflow-x-auto custom-scrollbar bg-slate-50">
-            <table className="w-full text-left min-w-[1000px] border-collapse bg-white">
-              <thead>
-                <tr className="bg-[#212c46] text-[#d7d7d7] border-b-2 border-[#b7a159]">
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Report ID</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Date</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Original Plan ID</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Product</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Issue / Type</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-right border-r border-white/5">Loss (Kg)</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-center border-r border-white/5">Status</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-center">IA Replan</th>
+            <table className="w-full text-left min-w-[1000px] border-collapse bg-white table-font">
+              <thead className="sys-table-header">
+                <tr className="bg-[#212c46] text-[#d7d7d7]  [#b7a159]">
+                  <th className="font-black uppercase tracking-widest ">Report ID</th>
+                  <th className="font-black uppercase tracking-widest ">Date</th>
+                  <th className="font-black uppercase tracking-widest ">Original Plan ID</th>
+                  <th className="font-black uppercase tracking-widest ">Product</th>
+                  <th className="font-black uppercase tracking-widest ">Issue / Type</th>
+                  <th className="font-black uppercase tracking-widest text-right ">Loss (Kg)</th>
+                  <th className="font-black uppercase tracking-widest text-center ">Status</th>
+                  <th className="font-black uppercase tracking-widest text-center">IA Replan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#eaeaec]">
                 {filteredProblems.length > 0 ? (
                   filteredProblems.map(p => (
                     <tr key={p.id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="py-4 px-6 font-mono font-black text-[#a94228] text-xs">{p.id}</td>
-                      <td className="py-4 px-6 text-slate-500 font-bold text-xs">{p.date}</td>
-                      <td className="py-4 px-6 font-mono text-[#212c46] font-black text-xs">{p.planId}</td>
-                      <td className="py-4 px-6 text-[#212c46] font-black text-xs uppercase tracking-tight">{p.product}</td>
-                      <td className="py-4 px-6">
+                      <td className="px-4 font-mono font-black text-[#a94228] text-xs py-2.5">{p.id}</td>
+                      <td className="px-4 text-slate-500 font-bold text-xs py-2.5">{p.date}</td>
+                      <td className="px-4 font-mono text-[#212c46] font-black text-xs py-2.5">{p.planId}</td>
+                      <td className="px-4 text-[#212c46] font-black text-xs uppercase tracking-tight py-2.5">{p.product}</td>
+                      <td className="px-4 py-2.5">
                         <span className="bg-red-50 text-[#932c2e] border border-red-100 px-2.5 py-1 rounded-md text-[9.5px] font-black uppercase tracking-wider">
                           {p.type}
                         </span>
                       </td>
-                      <td className="py-4 px-6 text-right font-mono font-black text-[#932c2e] text-xs">
+                      <td className="px-4 text-right font-mono font-black text-[#932c2e] text-xs py-2.5">
                         -{p.lossKg} <span className="text-[10px] text-slate-400">Kg</span>
                       </td>
-                      <td className="py-4 px-6 text-center">
+                      <td className="px-4 text-center py-2.5">
                         <span className={`px-3 py-1 rounded-full text-[9.5px] font-black uppercase tracking-widest border ${
                           p.status === 'Replanned' 
                             ? 'bg-emerald-50 text-[#657f4d] border-emerald-200' 
@@ -444,7 +450,7 @@ export default function UnplannedJobs() {
                           {p.status}
                         </span>
                       </td>
-                      <td className="py-4 px-6 text-center">
+                      <td className="px-4 text-center py-2.5">
                         {p.status === 'Pending Replan' ? (
                           <button 
                             onClick={() => handleGenerateReplan(p.id, p.lossKg)} 
@@ -462,7 +468,7 @@ export default function UnplannedJobs() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-xs font-black text-slate-400 uppercase tracking-widest">
+                    <td className="text-center text-xs font-black text-slate-400 uppercase tracking-widest py-2.5 px-4">
                       <Icons.Database className="mx-auto text-slate-300 mb-2" size={32} />
                       No registered loss problems found matching query
                     </td>

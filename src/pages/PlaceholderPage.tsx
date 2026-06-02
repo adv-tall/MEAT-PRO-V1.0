@@ -29,7 +29,7 @@ export default function PlaceholderPage({ title }: PlaceholderPageProps) {
             </div>
         </div>
 
-        <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+        <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
             {/* KPI STATS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
                 <KpiCard label="Module Status" value="Pending" icon="clock" colorAccent="#4d87a8" colorValue="#212c46" desc="Construction Phase" />

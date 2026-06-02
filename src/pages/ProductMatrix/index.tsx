@@ -202,7 +202,7 @@ function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
 
     return (
         <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-2xl" hideDefaultHeader>
-            <div className="bg-white rounded-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white rounded-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="p-5 border-b border-slate-200 flex justify-between items-center bg-[#212c46] text-white">
                     <h3 className="font-black flex items-center gap-2 uppercase tracking-widest text-sm"><LucideIcon name="upload-cloud" /> Import CSV</h3>
                     <button onClick={onClose} className="hover:bg-white/20 p-1.5 rounded-lg transition-colors"><LucideIcon name="x" /></button>
@@ -218,20 +218,20 @@ function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
                         </div>
                     ) : (
                         <div className="overflow-x-auto border border-slate-200 rounded-lg max-h-[300px] custom-scrollbar shadow-inner text-[12px]">
-                            <table className="w-full text-left whitespace-nowrap">
-                                <thead className="sys-table-header sticky top-0 z-10">
-                                    <tr>
-                                        <th className="p-3 sys-table-th">SFG_ID</th>
-                                        <th className="p-3 sys-table-th">FG_SKU</th>
-                                        <th className="p-3 sys-table-th">FG_Name</th>
+                            <table className="w-full text-left whitespace-nowrap table-font">
+                                <thead className="sys-table-header sticky top-0 z-10 ">
+                    <tr>
+                                        <th className="p-3 sys-table-th   ">SFG_ID</th>
+                                        <th className="p-3 sys-table-th   ">FG_SKU</th>
+                                        <th className="p-3 sys-table-th   ">FG_Name</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 bg-white">
                                     {previewData.slice(0, 10).map((row, i) => (
                                         <tr key={i} className="hover:bg-slate-50">
-                                            <td className="p-3 font-mono font-bold text-red-600">{row.SFG_ID || '-'}</td>
-                                            <td className="p-3 font-mono text-[#212c46] font-bold">{row.FG_SKU || '-'}</td>
-                                            <td className="p-3 text-slate-500">{row.FG_Name || '-'}</td>
+                                            <td className="p-3 font-mono font-bold text-red-600 py-2.5 px-4">{row.SFG_ID || '-'}</td>
+                                            <td className="p-3 font-mono text-[#212c46] font-bold py-2.5 px-4">{row.FG_SKU || '-'}</td>
+                                            <td className="p-3 text-slate-500 py-2.5 px-4">{row.FG_Name || '-'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -308,7 +308,7 @@ function MatrixConfigModal({ isOpen, onClose, sfgData, onSave, batters, fgDataba
 
     return (
         <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-5xl" hideDefaultHeader>
-            <div className="bg-white rounded-2xl w-full overflow-hidden flex flex-col h-[85vh]">
+            <div className="bg-white rounded-xl w-full overflow-hidden flex flex-col h-[85vh]">
                 <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#212c46]">
                     <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20">
@@ -470,13 +470,69 @@ export default function ProductMatrix() {
                 <Icons.HelpCircle size={18} className="shrink-0 group-hover:rotate-12 transition-transform text-[#7a8b95] group-hover:text-white" />
                 <span className="font-black tracking-[0.3em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap uppercase text-[11px]">USER GUIDE</span>
             </button>
-            <UserGuidePanel isOpen={showGuide} onClose={() => setShowGuide(false)} />
+            <UserGuidePanel
+                isOpen={showGuide}
+                onClose={() => setShowGuide(false)}
+                title="PRODUCT MATRIX GUIDE"
+                subtitle="RECIPE & BOM LINKING"
+            >
+                <div className="space-y-8 font-sans">
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Network size={16} className="text-[#3f809e]" /> 1. ความเข้าใจระบบ Product Matrix
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            Matrix นี้ทำหน้าที่เป็นแกนกลางในการเชื่อมโยงโครงสร้างสูตรการผลิตทั้งหมด (Bill Of Materials - BOM) โดยเชื่อมโยง 3 ระดับเข้าด้วยกันแบบ Tree Structure:
+                        </p>
+                        <div className="space-y-3">
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                                <div className="bg-[#b58c4f] text-white p-2 rounded-lg shrink-0 w-12 flex justify-center"><Icons.Droplets size={16} /></div>
+                                <div>
+                                    <strong className="text-[#212c46]">ระดับที่ 1: ส่วนผสมน้ำเนื้อ (BATTER)</strong>
+                                    <p className="text-[#7a8b95]">เนื้อบดผสมตามสูตรแล้ว รอนำไปขึ้นรูป</p>
+                                </div>
+                            </div>
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                                <div className="bg-[#3f809e] text-white p-2 rounded-lg shrink-0 w-12 flex justify-center"><Icons.Box size={16} /></div>
+                                <div>
+                                    <strong className="text-[#212c46]">ระดับที่ 2: สินค้ากึ่งสำเร็จ (SFG)</strong>
+                                    <p className="text-[#7a8b95]">เช่นไส้กรอกที่ตัดแล้ว, ลูกชิ้น ที่พร้อมจะนำไปแพคและติดแบรนด์ต่างๆ</p>
+                                </div>
+                            </div>
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                                <div className="bg-[#a94228] text-white p-2 rounded-lg shrink-0 w-12 flex justify-center"><Icons.Package size={16} /></div>
+                                <div>
+                                    <strong className="text-[#212c46]">ระดับที่ 3: สินค้าสำเร็จรูปพร้อมขาย (FG)</strong>
+                                    <p className="text-[#7a8b95]">สินค้าสำเร็จรูปพร้อมจำหน่าย บรรจุในภาชนะบรรจุที่มีแบรนด์เรียบร้อยแล้ว</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Settings size={16} className="text-[#b58c4f]" /> 2. การจัดการและแก้ไขความเชื่อมโยง (CONFIG MODE)
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            ในตารางหลัก คุณสามารถกดปุ่ม <strong className="text-[#b58c4f]">Configure</strong> ที่ท้ายรายการของแต่ละ SFG เพื่อเข้าสู่โหมดการแก้ไขโครงสร้าง:
+                        </p>
+                        <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757] text-[12px]">
+                            <ul className="list-decimal pl-5 space-y-2">
+                                <li><strong>แท็บ Batter Recipes:</strong> สัดส่วนเนื้อหรือเครื่องปรุงที่ใช้ผสมเพื่อสร้าง SFG ตัวนั้น 100% (กำหนด Ratio ให้รวมได้ 100%)</li>
+                                <li><strong>แท็บ Packaged SKUs:</strong> เพิ่มหรือนำออกรายการสินค้า FG ที่เชื่อมกับเนื้อ SFG นี้</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </UserGuidePanel>
             
             <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={(d: any) => { setMatrixData([...matrixData, ...d]); }} />
             <MatrixConfigModal isOpen={modal.isOpen} onClose={() => setModal({ isOpen: false, data: null })} sfgData={modal.data} onSave={handleSave} batters={batters} fgDatabase={masterItems} />
 
             {/* Header Bar */}
-            <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
                     <div className="relative flex items-center justify-center group cursor-default shrink-0">
                         <div className="absolute inset-0 bg-[#932c2e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -514,7 +570,7 @@ export default function ProductMatrix() {
                 </div>
             </div>
 
-            <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
                 {/* KPI STATS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
                     <KpiCard label="Total Matrices" value={matrixData.length} icon="git-merge" colorAccent="#4d87a8" colorValue="#212c46" desc="Configured Formulations" />
@@ -524,10 +580,10 @@ export default function ProductMatrix() {
                 </div>
 
                 <div className="w-full flex-1 flex flex-col min-h-[500px]">
-                    <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-3xl border">
+                    <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-xl border">
                     
                     {/* TOOLBAR */}
-                    <div className="py-4 px-5 border-b border-slate-200 flex flex-col md:flex-row justify-between items-center bg-white gap-4">
+                    <div className="py-4 px-4 border-b border-slate-200 flex flex-col md:flex-row justify-between items-center bg-white gap-4">
                         <div className="flex items-center gap-4 w-full md:w-auto">
                             <div className="flex items-center gap-2 text-[12px] font-black text-[#212c46] uppercase tracking-widest">
                                 <LucideIcon name="list" size={16} className="text-red-700"/>
@@ -553,13 +609,13 @@ export default function ProductMatrix() {
                     {/* TABLE */}
                     <div className="flex-1 overflow-auto flex flex-col bg-white">
                         <div className="overflow-y-auto flex-1 custom-scrollbar">
-                            <table className="w-full text-left min-w-[1000px] border-collapse relative">
-                                <thead className="sys-table-header sticky top-0 z-10 shadow-sm border-b-2 border-slate-200 bg-[#212c46] text-white">
-                                    <tr>
-                                        <th className="py-4 px-4 pl-6 w-[25%] whitespace-nowrap font-black uppercase tracking-widest text-[12px]">SFG Code & Name</th>
-                                        <th className="py-4 px-4 w-[25%] whitespace-nowrap font-black uppercase tracking-widest text-[12px]">Source Batter(s) & Formula</th>
-                                        <th className="py-4 px-4 w-[40%] min-w-[400px] font-black uppercase tracking-widest text-[12px]">Mapped FGs</th>
-                                        <th className="py-4 px-4 pr-6 text-right w-24 font-black uppercase tracking-widest text-[12px]">Action</th>
+                            <table className="w-full text-left min-w-[1000px] border-collapse relative table-font">
+                                <thead className="sys-table-header sticky top-0 z-10 shadow-sm slate-200 ">
+                    <tr>
+                                        <th className="pl-6 w-[25%] whitespace-nowrap font-black uppercase tracking-widest ">SFG Code & Name</th>
+                                        <th className="w-[25%] whitespace-nowrap font-black uppercase tracking-widest ">Source Batter(s) & Formula</th>
+                                        <th className="w-[40%] min-w-[400px] font-black uppercase tracking-widest ">Mapped FGs</th>
+                                        <th className="pr-6 text-right w-24 font-black uppercase tracking-widest ">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white">
@@ -567,7 +623,7 @@ export default function ProductMatrix() {
                                         <tr key={item.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 group">
                                             
                                             {/* Col 1: SFG Code & Name */}
-                                            <td className="sys-table-td py-2.5 px-4 pl-6 align-middle border-b border-slate-100">
+                                            <td className="sys-table-td px-4 pl-6 align-middle border-b border-slate-100 py-2.5">
                                                 <div className="flex flex-col items-start gap-1">
                                                     <span className="font-bold text-[#212c46] text-[12px] leading-tight font-exception-header">{item.name}</span>
                                                     <span className="bg-slate-100 text-slate-500 border border-slate-200 px-2 py-0.5 rounded text-[11px] font-mono shadow-sm">{item.id}</span>
@@ -575,7 +631,7 @@ export default function ProductMatrix() {
                                             </td>
 
                                             {/* Col 2: Batter Config */}
-                                            <td className="sys-table-td py-2.5 px-4 align-middle border-b border-slate-100">
+                                            <td className="sys-table-td px-4 align-middle border-b border-slate-100 py-2.5">
                                                 <div className="flex flex-wrap gap-2">
                                                     {item.batterConfig?.map((b: any, i: number) => {
                                                         const std = batters.find((x: any) => x.id === b.id);
@@ -600,7 +656,7 @@ export default function ProductMatrix() {
                                             </td>
 
                                             {/* Col 3: Mapped FGs */}
-                                            <td className="sys-table-td py-2.5 px-4 align-middle border-b border-slate-100">
+                                            <td className="sys-table-td px-4 align-middle border-b border-slate-100 py-2.5">
                                                 <div className="flex flex-wrap gap-1.5">
                                                     {item.fgs?.map((f: any, i: number) => (
                                                         <div key={i} className="flex items-center gap-1.5 bg-white border border-slate-200 rounded px-1.5 py-0.5 shadow-sm shrink-0 w-fit">
@@ -614,7 +670,7 @@ export default function ProductMatrix() {
                                             </td>
 
                                             {/* Col 4: Action */}
-                                            <td className="sys-table-td py-2.5 px-4 pr-6 align-middle border-b border-slate-100">
+                                            <td className="sys-table-td px-4 pr-6 align-middle border-b border-slate-100 py-2.5">
                                                 <div className="flex justify-end gap-[1px] transition-opacity">
                                                     <button onClick={() => setModal({ isOpen: true, data: item })} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90" title="Edit"><LucideIcon name="pencil" size={16} /></button>
                                                     <button onClick={() => handleDelete(item.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#932c2e] hover:border-[#932c2e] hover:bg-[#932c2e]/10 transition-all shadow-sm bg-white active:scale-90" title="Delete"><LucideIcon name="trash-2" size={16} /></button>
@@ -625,7 +681,7 @@ export default function ProductMatrix() {
                                     ))}
                                     {currentItems.length === 0 && (
                                         <tr>
-                                            <td colSpan={4} className="py-16 text-center text-slate-400 font-bold uppercase tracking-widest text-[12px] opacity-70">
+                                            <td className="text-center text-slate-400 font-bold uppercase tracking-widest text-[12px] opacity-70 py-2.5 px-4">
                                                 No Records Found
                                             </td>
                                         </tr>

@@ -4,6 +4,7 @@
 @theme {
   --font-sans: "Inter", "Noto Sans Thai", sans-serif;
   --font-mono: "JetBrains Mono", "Noto Sans Thai", monospace;
+  --font-table: "JetBrains Mono", "Noto Sans Thai", sans-serif;
 }
 
 body { 
@@ -11,8 +12,26 @@ body {
 }
 
 /* Typography Utility Classes */
+#sys-main-content:not(:has(#home-page-wrapper)) button,
+#sys-main-content:not(:has(#home-page-wrapper)) input,
+#sys-main-content:not(:has(#home-page-wrapper)) select,
+#sys-main-content:not(:has(#home-page-wrapper)) textarea {
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
+}
+
+#sys-main-content:not(:has(#home-page-wrapper)) input::placeholder,
+#sys-main-content:not(:has(#home-page-wrapper)) textarea::placeholder {
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
+}
+
 .font-ui, .font-technical, .font-exception-header, .font-exception-system, .font-exception-hero, .font-exception-greeting {
   font-family: var(--font-sans) !important;
+}
+
+.table-font {
+  font-family: var(--font-table) !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 5px; }
@@ -44,9 +63,6 @@ body {
 .sys-header-icon-box {
   @apply bg-red-50 p-3 rounded-2xl border border-red-100 shadow-inner;
 }
-.sys-tab-btn {
-  @apply px-5 py-2 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all h-9 bg-white;
-}
 .sys-tab-active {
   @apply bg-[#212c46] text-white shadow-md border-transparent;
 }
@@ -59,30 +75,109 @@ body {
 
 /* Updated Table UI Standard */
 .sys-table-card {
-  @apply bg-white shadow-lg overflow-hidden flex flex-col flex-1 border border-slate-200 rounded-2xl;
+  @apply bg-white shadow-sm overflow-hidden flex flex-col flex-1 border border-slate-200 rounded-xl;
 }
 .sys-table-toolbar {
-  @apply bg-white p-4 shrink-0 flex flex-col md:flex-row justify-between items-center gap-4;
+  @apply bg-white py-4 px-4 shrink-0 flex flex-col md:flex-row justify-between items-center gap-4;
 }
-.sys-table-header {
-  @apply sticky top-0 z-10 shadow-sm border-b-2;
+
+table {
+  border-collapse: separate !important;
+  border-spacing: 0;
 }
-.sys-table-header th {
-  @apply py-4 px-4 text-[12px] font-black uppercase tracking-widest;
+
+table thead, .sys-table-header {
+  background: #212c46 linear-gradient(to right, #b91c1c, #dc2626) bottom left / 100% 2px no-repeat !important;
+  color: white !important;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
+
+table thead th, .sys-table-header th {
+  padding: 1rem 1rem !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  font-family: var(--font-table) !important;
+  color: white !important;
+  border-bottom: none !important;
+  text-align: left;
+  white-space: nowrap;
+}
+
+table thead th:first-child, .sys-table-header th:first-child {
+  padding-left: 1.5rem !important;
+}
+
+table thead th:last-child, .sys-table-header th:last-child {
+  padding-right: 1.5rem !important;
+}
+
 .sys-table-td {
-  @apply py-2.5 px-4 text-[12px] border-b border-slate-100;
+  @apply py-2.5 px-4 text-[12px] border-b border-[#eaeaec];
+  font-family: var(--font-table) !important;
+}
+
+table tbody td:first-child, .sys-table-td:first-child {
+  padding-left: 1.5rem !important;
+}
+
+table tbody td:last-child, .sys-table-td:last-child {
+  padding-right: 1.5rem !important;
+}
+
+
+
+table.table-font, .table-font th, .table-font td {
+  font-family: var(--font-table) !important;
+}
+.sys-table-badge {
+  @apply px-2 py-0.5 rounded-full text-[11px] font-black uppercase tracking-widest;
 }
 .sys-table-action-btn {
   @apply w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:border-slate-300 transition-colors shadow-sm bg-slate-50;
 }
+.sys-table-action-group {
+  @apply flex justify-center items-center gap-[1px];
+}
 .sys-table-pagination {
-  @apply py-3 px-4 bg-[#F0EAE1]/80 border-t-[1.5px] border-[#adb2b0]/50 flex justify-between items-center font-bold text-slate-500 uppercase tracking-widest shrink-0 text-[10px];
+  @apply py-3 px-4 bg-white border-t-[1.5px] border-[#eaeaec] flex justify-between items-center font-bold text-slate-500 uppercase tracking-widest shrink-0 text-[10px];
 }
 
 .sys-input {
-  @apply border border-slate-200 rounded-xl px-4 py-2 text-[12px] font-bold outline-none transition-all text-[#212c46];
+  @apply border border-slate-200 rounded-xl px-4 py-2 font-bold outline-none transition-all text-[#212c46];
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
+}
+.sys-input::placeholder {
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
 }
 .sys-btn-primary {
-  @apply bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl px-6 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all shadow-md shadow-red-600/20 hover:shadow-lg hover:shadow-red-600/30 flex items-center justify-center;
+  @apply bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl px-6 py-2.5 font-black uppercase tracking-widest transition-all shadow-md shadow-red-600/20 hover:shadow-lg hover:shadow-red-600/30 flex items-center justify-center;
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
+}
+.sys-tab-btn {
+  @apply px-5 py-2 font-bold uppercase tracking-widest rounded-xl transition-all h-9 bg-white;
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
+}
+.sys-table-toolbar button {
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
+}
+.sys-table-toolbar input {
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
+}
+.sys-table-toolbar input::placeholder {
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
+}
+.sys-table-toolbar select {
+  font-family: var(--font-table) !important;
+  font-size: 12px !important;
 }

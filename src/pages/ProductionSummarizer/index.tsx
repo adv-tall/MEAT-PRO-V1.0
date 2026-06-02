@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { createPortal } from "react-dom";
 import * as Icons from "lucide-react";
 import UserGuideButton from "@/src/components/shared/UserGuideButton";
+import { UserGuidePanel } from "@/src/components/shared/UserGuidePanel";
 
 const THEME = {
   primary: "#212c46",
@@ -16,125 +16,6 @@ interface SummaryResult {
   keyTakeaways: string[];
   risks: string[];
   actionItems: string[];
-}
-
-function UserGuidePanel({ isOpen, onClose }: any) {
-  if (typeof document === "undefined") return null;
-  return createPortal(
-    <>
-      <div
-        className={`fixed inset-0 z-[190] bg-[#212c46]/60 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-        onClick={onClose}
-      />
-      <div
-        className={`fixed inset-y-0 right-0 z-[200] w-full md:w-[500px] bg-white shadow-2xl transform transition-transform duration-500 ease-in-out flex flex-col border-l-2 border-[${THEME.gold}] ${isOpen ? "translate-x-0" : "translate-x-full"}`}
-      >
-        <div className="flex justify-between items-center p-5 px-6 border-b-2 border-[#b7a159] bg-[#212c46] text-white shrink-0">
-          <div>
-            <h3 className="font-black flex items-center gap-3 uppercase tracking-widest text-lg">
-              <Icons.ClipboardList size={22} className="text-[#b7a159]" /> AI
-              PRODUCTION SUMMARIZER GUIDE
-            </h3>
-            <p className="text-[12px] font-bold text-[#d7d7d7] uppercase tracking-widest mt-1.5">
-              User Manual
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-white/50 hover:text-[#932c2e] hover:bg-white/10 rounded-xl transition-colors"
-          >
-            <Icons.X size={24} />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 text-[#414757] text-[12px] leading-relaxed custom-scrollbar bg-white">
-          <section className="animate-fadeIn">
-            <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#d7d7d7] pb-2 font-mono">
-              <Icons.FileText size={18} className="text-[#b7a159]" /> 1.
-              การนำเข้าข้อมูล (Data Input)
-            </h4>
-            <p className="text-[12px] mb-3">
-              AI
-              สามารถช่วยคุณย่อยเนื้อหาประกาศหรือเอกสารที่ซับซ้อนให้เข้าใจง่ายขึ้น:
-            </p>
-            <ul className="list-none pl-0 space-y-3">
-              <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec]">
-                <Icons.Copy
-                  size={16}
-                  className="shrink-0 text-[#4d87a8] mt-0.5"
-                />
-                <div>
-                  <strong className="text-[#4d87a8]">Paste Text:</strong>{" "}
-                  คัดลอกและวางเนื้อหาของประกาศหรือร่างข้อกำหนดที่ต้องการ
-                </div>
-              </li>
-              <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec]">
-                <Icons.FileSearch
-                  size={16}
-                  className="shrink-0 text-[#657f4d] mt-0.5"
-                />
-                <div>
-                  <strong className="text-[#657f4d]">Context Analysis:</strong>{" "}
-                  ระบบจะประมวลผลตามบริบทอุตสาหกรรม
-                </div>
-              </li>
-            </ul>
-          </section>
-
-          <section
-            className="animate-fadeIn"
-            style={{ animationDelay: "0.1s" }}
-          >
-            <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#d7d7d7] pb-2 font-mono">
-              <Icons.BrainCircuit size={18} className="text-[#d96245]" /> 2.
-              การวิเคราะห์อัจฉริยะ (Smart Analysis)
-            </h4>
-            <p className="text-[12px] mb-3">
-              ให้ AI เป็นผู้สรุปใจความสำคัญและระบุจุดที่ต้องระวัง:
-            </p>
-            <ul className="list-disc pl-5 mt-2 space-y-2 text-[12px]">
-              <li>
-                <strong className="text-[#d96245]">Executive Summary:</strong>{" "}
-                สรุปเนื้อหาสำคัญไม่ให้พลาดประเด็นหลัก
-              </li>
-              <li>
-                <strong className="text-[#212c46]">Risk Identification:</strong>{" "}
-                ระบุจุดที่มีความเสี่ยงต่อการผิดข้อบังคับ
-              </li>
-              <li>
-                <strong className="text-[#657f4d]">Penalty Review:</strong>{" "}
-                ตรวจสอบบทลงโทษและความรับผิดที่อาจเกิดขึ้น
-              </li>
-            </ul>
-          </section>
-
-          <section
-            className="animate-fadeIn"
-            style={{ animationDelay: "0.2s" }}
-          >
-            <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#d7d7d7] pb-2 font-mono">
-              <Icons.Zap size={18} className="text-[#3f809e]" /> 3.
-              แนวทางการปฏิบัติ (Action Items)
-            </h4>
-            <p className="text-[12px] bg-[#3f809e]/10 p-3 rounded-xl border border-[#3f809e]/30 text-[#212c46]">
-              ระบบจะเสนอแนะขั้นตอนถัดไป (Next Steps)
-              เพื่อให้คุณนำไปปรับใช้ในองค์กรหรือแจ้งฝ่ายที่เกี่ยวข้องได้อย่างรวดเร็วและแม่นยำ
-            </p>
-          </section>
-        </div>
-
-        <div className="p-4 bg-[#f8f9fa] border-t border-[#eaeaec] flex justify-end shrink-0">
-          <button
-            onClick={onClose}
-            className="px-8 py-2.5 bg-[#212c46] text-white font-black rounded-xl uppercase text-[12px] hover:bg-[#414757] hover:text-white transition-all shadow-md tracking-[0.1em]"
-          >
-            เข้าใจแล้ว (Understood)
-          </button>
-        </div>
-      </div>
-    </>,
-    document.body,
-  );
 }
 
 export default function ProductionSummarizer() {
@@ -180,10 +61,55 @@ export default function ProductionSummarizer() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-      />
+        title="SUMMARIZER GUIDE"
+        subtitle="AI PRODUCTION SUMMARIZER MANUAL"
+      >
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.FileText size={16} className="text-[#b58c4f]" /> 1. การนำเข้าข้อมูล (DATA INPUT)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    คัดลอกและวางเนื้อหา ประกาศ หรือร่างข้อกำหนดทางกฎหมายที่ยาวและซับซ้อน เพื่อให้ AI ช่วยสรุปใจความสำคัญและดึงข้อมูลออกมาให้:
+                </p>
+                <div className="space-y-3">
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4 text-[12px]">
+                        <div className="bg-[#3f809e] text-white p-2 rounded-lg shrink-0"><Icons.Copy size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">Paste Text</strong>
+                            <p className="text-[#7a8b95]">รองรับการวาง Text ปริมาณมาก รวมถึงประกาศของบริษัทหรือนโยบายใหม่</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.BrainCircuit size={16} className="text-[#a94228]" /> 2. การวิเคราะห์อัจฉริยะ (SMART ANALYSIS)
+                </h3>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#688a58]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Executive Summary</strong> - สรุปใจความสำคัญแบบกระชับไม่กี่บรรทัด</span></div>
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#a94228]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Risk Identification</strong> - ระบุความเสี่ยงและจุดอ่อนจากเอกสาร</span></div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Zap size={16} className="text-[#3f809e]" /> 3. แนวทางการปฏิบัติ (ACTION ITEMS)
+                </h3>
+                <div className="p-4 bg-[#e8f1f5] border border-[#d1e6ee] rounded-xl text-[#3f809e] text-[12px]">
+                    ระบบจะเสนอแนะขั้นตอนถัดไป (Next Steps) เพื่อให้คุณนำไปเปิด Ticket งานต่อ หรือส่งต่อพนักงานคุมเครื่องจักรได้อย่างมีประสิทธิภาพสูงสุด
+                </div>
+            </div>
+        </div>
+      </UserGuidePanel>
 
       {/* HEADER SECTION */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#b7a159] blur-[15px] opacity-30 rounded-full group-hover:opacity-70 transition-all duration-700 animate-pulse-subtle"></div>
@@ -215,10 +141,10 @@ export default function ProductionSummarizer() {
         </div>
       </div>
 
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           {/* Input Card */}
-          <div className="bg-white/90 p-6 rounded-3xl shadow-lg border border-[#eaeaec] animate-fadeIn">
+          <div className="bg-white/90 p-6 rounded-xl shadow-lg border border-[#eaeaec] animate-fadeIn">
             <div className="flex items-center justify-between mb-4 border-b border-[#eaeaec] pb-3">
               <h4 className="text-[13px] font-black text-[#212c46] uppercase tracking-widest flex items-center gap-2">
                 <Icons.FileText size={18} className="text-[#b58c4f]" /> Input
@@ -237,7 +163,7 @@ export default function ProductionSummarizer() {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder="วางข้อความ ข่าวประกาศ หรือแนวทางปฏิบัติที่ต้องการให้สรุปที่นี่..."
-                className="w-full h-80 p-5 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl outline-none focus:border-[#b58c4f] focus:ring-2 focus:ring-[#b58c4f]/10 transition-all text-[#212c46] text-[14px] leading-relaxed resize-none"
+                className="w-full h-80 p-5 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl outline-none focus:border-[#b58c4f] focus:ring-2 focus:ring-[#b58c4f]/10 transition-all text-[#212c46] text-[14px] leading-relaxed resize-none"
               />
               {inputText.length === 0 && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none opacity-30">
@@ -255,7 +181,7 @@ export default function ProductionSummarizer() {
             <button
               onClick={handleSummarize}
               disabled={!inputText.trim() || isProcessing}
-              className={`w-full mt-6 py-4 rounded-2xl font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center gap-3 shadow-md ${!inputText.trim() || isProcessing ? "bg-[#eaeaec] text-[#a0aec0] cursor-not-allowed" : "bg-[#212c46] text-[#b7a159] hover:bg-[#b7a159] hover:text-[#212c46]"}`}
+              className={`w-full mt-6 py-4 rounded-xl font-black uppercase tracking-widest text-[12px] transition-all flex items-center justify-center gap-3 shadow-md ${!inputText.trim() || isProcessing ? "bg-[#eaeaec] text-[#a0aec0] cursor-not-allowed" : "bg-[#212c46] text-[#b7a159] hover:bg-[#b7a159] hover:text-[#212c46]"}`}
             >
               {isProcessing ? (
                 <>
@@ -271,7 +197,7 @@ export default function ProductionSummarizer() {
           </div>
 
           {/* Result Card */}
-          <div className="bg-[#1d2636] p-6 rounded-3xl shadow-xl border border-[#414757] animate-fadeIn min-h-[500px] flex flex-col">
+          <div className="bg-[#1d2636] p-6 rounded-xl shadow-xl border border-[#414757] animate-fadeIn min-h-[500px] flex flex-col">
             {!result && !isProcessing ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-12">
                 <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center border border-white/10 mb-6 group">

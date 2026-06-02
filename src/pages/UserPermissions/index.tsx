@@ -355,11 +355,60 @@ export default function UserPermission() {
       {/* USER GUIDE FLOATING TAB */}
       <UserGuideButton onClick={() => setIsGuideOpen(true)} />
 
-      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="PERMISSION GUIDE" subtitle="ACCESS CONTROL MANAGEMENT">
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Shield size={16} className="text-[#b7a159]" /> 1. CONFIDENTIAL RESTRICTED
+                </h3>
+                <p className="mb-4">ระบบอนุญาตให้คุณกำหนดความลับของข้อมูลได้ทั้งระดับ <span className="font-bold">โมดูลหลัก</span> และ <span className="font-bold">เมนูย่อย</span> :</p>
+                <div className="space-y-3">
+                    <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-3">
+                        <Icons.Eye size={16} className="text-[#3f809e] mt-0.5 shrink-0" />
+                        <div>
+                            <span className="font-bold text-[#3f809e]">Public Node: </span>
+                            ทุกคนในระบบได้รับสิทธิ์ในการเข้าถึงและมองเห็นเบื้องต้น (Viewer) ยกเว้นโดนจำกัดสิทธิ์รายบุคคล
+                        </div>
+                    </div>
+                    <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl flex items-start gap-3">
+                        <Icons.Lock size={16} className="text-[#932c2e] mt-0.5 shrink-0" />
+                        <div className="text-[#932c2e]">
+                            <span className="font-bold">Restricted Area: </span>
+                            ปิดกั้นการมองเห็นโดยสมบูรณ์ เมนูจะถูกซ่อน ต้องกำหนดสิทธิ์รายบุคคลแบบเจาะจงเท่านั้น
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Key size={16} className="text-[#d55a6d]" /> 2. PERMISSION LEVELS
+                </h3>
+                <p className="mb-4">สิทธิ์การใช้งานแต่ละโมดูล แบ่งออกเป็น 4 ระดับ (สามารถรับสิทธิ์ทับซ้อนกันได้) :</p>
+                <ul className="space-y-3 list-disc pl-5">
+                    <li><span className="font-bold text-[#3f809e]">Viewer (สิทธิ์การดู):</span> สามารถเข้าถึงหน้านั้นๆ ได้ แต่อ่านข้อมูลได้อย่างเดียว</li>
+                    <li><span className="font-bold text-[#d55a6d]">Editor (สิทธิ์แก้ไข):</span> สามารถสร้าง หรือแก้ไขข้อมูลและฟอร์มต่างๆ ภายในโมดูลได้</li>
+                    <li><span className="font-bold text-[#45516b]">Verifier (สิทธิ์ตรวจสอบ):</span> มีอำนาจตรวจสอบความถูกต้อง (Verify) ก่อนส่งให้อนุมัติ</li>
+                    <li><span className="font-bold text-[#688a58]">Approver (สิทธิ์อนุมัติ):</span> อำนาจขั้นสูงสุดในการอนุมัติเอกสารและคำสั่ง (Approve)</li>
+                </ul>
+            </div>
+            
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.RefreshCw size={16} className="text-[#3f809e]" /> 3. SYSTEM SYNC
+                </h3>
+                <p className="mb-4">การตั้งค่าที่ถูกอัปเดตในหน้านี้จะทำการ <span className="font-bold">ซิงค์กับแถบเมนู (Sidebar) หลัก</span> ของระบบ MEAT PRO โดยอัตโนมัติ การจำกัดสิทธิ์ส่งผลแบบ Real-time</p>
+            </div>
+        </div>
+      </UserGuidePanel>
       <EditUserModal isOpen={editModal.isOpen} onClose={() => setEditModal({isOpen: false, user: null})} user={editModal.user} onSave={saveUserPermissions} />
 
       {/* HEADER SECTION */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
           <div className="flex items-center gap-5">
               <div className="relative flex items-center justify-center group cursor-default shrink-0">
                   <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -389,7 +438,7 @@ export default function UserPermission() {
           </div>
       </div>
 
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="w-full">
             
             {/* KPI STATS */}
@@ -403,14 +452,14 @@ export default function UserPermission() {
             {activeTab === 'registry' ? (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     {/* ACCESS POLICIES CARD */}
-                    <div className="lg:col-span-4 bg-white/90 p-6 rounded-3xl shadow-lg border border-[#eaeaec] animate-fadeIn h-fit">
+                    <div className="lg:col-span-4 bg-white/90 p-6 rounded-xl shadow-lg border border-[#eaeaec] animate-fadeIn h-fit">
                         <h3 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest flex items-center gap-3 border-b-2 border-[#b7a159] pb-4 mb-6"><Icons.ShieldAlert size={20} className="text-[#b7a159]" /> ACCESS POLICIES</h3>
                         <div className="space-y-5">
-                            <div className="p-5 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl shadow-sm hover:border-[#4d87a8] transition-colors">
+                            <div className="p-5 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl shadow-sm hover:border-[#4d87a8] transition-colors">
                                 <div className="flex items-center gap-2 text-[#4d87a8] font-black text-[12px] uppercase tracking-widest mb-2"><Icons.Eye size={18}/> Public Node</div>
                                 <p className="text-[12px] text-[#414757] font-bold leading-relaxed">โมดูลมาตรฐาน: พนักงานจะได้รับสิทธิ์อ่าน (Viewer) เบื้องต้นโดยอัตโนมัติ</p>
                             </div>
-                            <div className="p-5 bg-[#932c2e]/10 border border-[#932c2e]/30 rounded-2xl shadow-sm hover:border-[#932c2e] transition-colors">
+                            <div className="p-5 bg-[#932c2e]/10 border border-[#932c2e]/30 rounded-xl shadow-sm hover:border-[#932c2e] transition-colors">
                                 <div className="flex items-center gap-2 text-[#932c2e] font-black text-[12px] uppercase tracking-widest mb-2"><Icons.Lock size={18}/> Restricted Area</div>
                                 <p className="text-[12px] text-[#414757] font-bold leading-relaxed">พื้นที่จำกัด: เมนูจะถูกซ่อนจากผู้ใช้ทั่วไป ต้องได้รับสิทธิ์แบบเจาะจงรายบุคคลเท่านั้น</p>
                             </div>
@@ -418,14 +467,14 @@ export default function UserPermission() {
                     </div>
 
                     {/* GLOBAL MODULE REGISTRY (SYNCED) */}
-                    <div className="lg:col-span-8 bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden">
+                    <div className="lg:col-span-8 bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden">
                         <div className="p-6 bg-[#f8f9fa] border-b border-[#eaeaec]">
                             <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3"><Icons.ListTree size={20} className="text-[#b7a159]"/> GLOBAL MODULE REGISTRY</h4>
                         </div>
                         <div className="p-6 space-y-3 custom-scrollbar">
                             {SYSTEM_MODULES.map(mod => (
                                 <div key={mod.id} className="space-y-2">
-                                    <div className={`flex items-center justify-between px-4 py-2.5 rounded-2xl border transition-all ${confidentialityMap[mod.id] ? 'bg-[#932c2e]/5 border-[#932c2e]/30 shadow-sm' : 'bg-white border-[#eaeaec] hover:border-[#4d87a8]'}`}>
+                                    <div className={`flex items-center justify-between px-4 py-2.5 rounded-xl border transition-all ${confidentialityMap[mod.id] ? 'bg-[#932c2e]/5 border-[#932c2e]/30 shadow-sm' : 'bg-white border-[#eaeaec] hover:border-[#4d87a8]'}`}>
                                         <div className="flex items-center gap-4">
                                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm ${confidentialityMap[mod.id] ? 'bg-[#932c2e]/20 text-[#932c2e] border-[#932c2e]/30' : 'bg-[#f8f9fa] text-[#212c46] border-[#eaeaec]'}`}>
                                                 <LucideIcon name={mod.icon} size={22}/>
@@ -469,8 +518,8 @@ export default function UserPermission() {
                     </div>
                 </div>
             ) : (
-                <div className="bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
-                    <div className="px-8 py-4 border-b border-[#eaeaec] bg-[#f8f9fa] flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+                <div className="bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+                    <div className="px-4 py-4 border-b border-[#eaeaec] bg-white flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
                         <div className="flex items-center gap-3">
                             <div className="flex bg-[#f8f9fa] border border-[#eaeaec] p-1 rounded-full shadow-sm inline-flex">
                                 <button onClick={()=>setViewMode('list')} className={`px-5 py-2 text-[11px] font-black uppercase tracking-widest rounded-full transition-all flex items-center gap-2 ${viewMode==='list'?'bg-[#212c46] text-[#d7d7d7] shadow-md':'text-[#7a8b95] hover:text-[#a94228]'}`}>
@@ -494,38 +543,38 @@ export default function UserPermission() {
 
                     <div className="overflow-auto custom-scrollbar">
                         {viewMode === 'list' ? (
-                            <table className="w-full text-left font-sans border-collapse">
-                                <thead className="sys-table-header bg-[#212c46] text-white border-[#b7a159]">
-                                    <tr>
-                                        <th className="font-black uppercase tracking-widest whitespace-nowrap">Personnel Identity</th>
-                                        <th className="font-black uppercase tracking-widest whitespace-nowrap">Responsibility Node</th>
-                                        <th className="font-black uppercase tracking-widest whitespace-nowrap">E-Mail Channel</th>
-                                        <th className="font-black uppercase tracking-widest text-center">Authorization</th>
-                                        <th className="font-black uppercase tracking-widest text-center">Action</th>
+                            <table className="w-full text-left border-collapse table-font">
+                                <thead className="sys-table-header [#b7a159] ">
+                    <tr>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Personnel Identity</th>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Responsibility Node</th>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap   ">E-Mail Channel</th>
+                                        <th className="font-black uppercase tracking-widest text-center   ">Authorization</th>
+                                        <th className="font-black uppercase tracking-widest text-center   ">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-[#eaeaec]">
                                     {currentData.map(user => (
                                         <tr key={user.id} className="hover:bg-[#f8f9fa] transition-colors group">
-                                            <td className="sys-table-td font-black text-[#212c46] uppercase tracking-tight">
+                                            <td className="sys-table-td font-black text-[#212c46] uppercase tracking-tight py-2.5 px-4">
                                                 <div className="flex items-center gap-4">
                                                     <img src={user.avatar} className="w-8 h-8 rounded-lg object-cover border border-[#eaeaec] shadow-sm" />
                                                     <span>{user.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="sys-table-td font-bold text-[#4d87a8] uppercase">{user.position}</td>
-                                            <td className="sys-table-td font-mono text-[#7a8b95]">{user.email}</td>
-                                            <td className="sys-table-td text-center">
+                                            <td className="sys-table-td font-bold text-[#4d87a8] uppercase py-2.5 px-4">{user.position}</td>
+                                            <td className="sys-table-td font-mono text-[#7a8b95] py-2.5 px-4">{user.email}</td>
+                                            <td className="sys-table-td text-center py-2.5 px-4">
                                                 <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase border tracking-widest ${user.isDev ? 'bg-[#b7a159]/10 text-[#d96245] border-[#b7a159]/30' : 'bg-[#212c46]/5 text-[#212c46] border-[#eaeaec]'}`}>
                                                     {user.isDev ? 'Developer' : 'General'}
                                                 </span>
                                             </td>
-                                            <td className="sys-table-td text-center">
+                                            <td className="sys-table-td text-center py-2.5 px-4">
                                                 <div className="flex justify-center items-center gap-[1px]">
-                                                    <button onClick={()=>setEditModal({isOpen: true, user: user})} className="sys-table-action-btn text-[#4d87a8] hover:bg-[#4d87a8]/10 border-transparent">
+                                                    <button onClick={()=>setEditModal({isOpen: true, user: user})} className="sys-table-action-btn w-8 h-8 text-[#4d87a8] hover:bg-[#4d87a8]/10 border-transparent">
                                                         <Icons.UserCog size={14} />
                                                     </button>
-                                                    <button className="sys-table-action-btn text-[#932c2e] hover:bg-[#932c2e]/10 border-transparent">
+                                                    <button className="sys-table-action-btn w-8 h-8 text-[#932c2e] hover:bg-[#932c2e]/10 border-transparent">
                                                         <Icons.Trash2 size={14} />
                                                     </button>
                                                 </div>
@@ -535,12 +584,12 @@ export default function UserPermission() {
                                 </tbody>
                             </table>
                         ) : (
-                            <table className="w-full text-left font-sans border-collapse min-w-[900px]">
-                                <thead className="bg-[#091d38] text-white">
-                                    <tr className="border-b-[3px] border-[#b7a159]">
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-[11px] border-r border-[#ffffff20] w-72">Module / Sub-Module</th>
+                            <table className="w-full text-left border-collapse min-w-[900px] table-font">
+                                <thead className="sys-table-header">
+                    <tr className="-[3px] [#b7a159]">
+                                        <th className="font-black uppercase tracking-widest  r [#ffffff20] w-72">Module / Sub-Module</th>
                                         {currentData.map(user => (
-                                            <th key={user.id} className="py-3 px-4 text-center border-r border-[#ffffff20] last:border-0 min-w-[140px]">
+                                            <th className="text-center r [#ffffff20] last:0 min-w-[140px] ">
                                                 <div className="flex flex-col items-center justify-center gap-1.5">
                                                     <img src={user.avatar} className="w-10 h-10 rounded-xl object-cover border-2 border-white/20 shadow-sm" />
                                                     <span className="text-[10px] uppercase tracking-widest font-black text-[#d7d7d7]">{user.name.split(' ')[0]}</span>
@@ -553,7 +602,7 @@ export default function UserPermission() {
                                     {SYSTEM_MODULES.map(mod => (
                                         <React.Fragment key={mod.id}>
                                             <tr className="hover:bg-[#f8f9fa] transition-colors group">
-                                                <td className="py-3 px-6 border-r border-[#eaeaec]">
+                                                <td className="px-4 border-r border-[#eaeaec] py-2.5">
                                                     <div className="flex items-center gap-3">
                                                         {mod.subItems ? (
                                                             <button onClick={() => toggleExpand(mod.id)} className="text-[#4d87a8] p-0.5 rounded outline-none">
@@ -565,21 +614,21 @@ export default function UserPermission() {
                                                     </div>
                                                 </td>
                                                 {currentData.map(user => (
-                                                    <td key={user.id} className="py-3 px-4 text-center border-r border-[#eaeaec] last:border-0">
+                                                    <td className="px-4 text-center border-r border-[#eaeaec] last:border-0 py-2.5">
                                                         <PermissionBadges user={user} moduleId={mod.id} />
                                                     </td>
                                                 ))}
                                             </tr>
                                             {mod.subItems && expandedModules[mod.id] && mod.subItems.map((sub: any) => (
                                                 <tr key={sub.id} className="bg-[#f8f9fa]/50 hover:bg-[#f8f9fa] transition-colors border-b border-[#eaeaec]/50 last:border-b-0">
-                                                    <td className="py-3 px-6 pl-14 border-r border-[#eaeaec]">
+                                                    <td className="px-4 pl-14 border-r border-[#eaeaec] py-2.5">
                                                         <div className="flex items-center gap-3">
                                                             <div className="w-1 h-1 rounded-full bg-[#7a8b95]"></div>
                                                             <span className="font-bold text-[#414757] uppercase text-[11px] tracking-wider">{sub.label}</span>
                                                         </div>
                                                     </td>
                                                     {currentData.map(user => (
-                                                        <td key={user.id} className="py-3 px-4 text-center border-r border-[#eaeaec] last:border-0">
+                                                        <td className="px-4 text-center border-r border-[#eaeaec] last:border-0 py-2.5">
                                                             <PermissionBadges user={user} moduleId={sub.id} />
                                                         </td>
                                                     ))}

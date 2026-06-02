@@ -5,6 +5,7 @@ import {
   Eye, X, FileText, AlertTriangle, CheckCircle, Server, Database, 
   ChevronLeft, ChevronRight, HelpCircle, ChevronDown, MapPin
 } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import { useCollection } from '../../services/useFirestore';
 
 const THEME = {
@@ -78,14 +79,14 @@ function LogDetailsModal({ isOpen, onClose, log }: any) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-white p-5 rounded-2xl border border-[#eaeaec] shadow-sm space-y-4">
+                        <div className="bg-white p-5 rounded-xl border border-[#eaeaec] shadow-sm space-y-4">
                             <h4 className="text-[11px] font-black text-[#212c46] uppercase tracking-widest border-b border-[#d7d7d7] pb-2 flex items-center gap-2"><UserCheck size={14} className="text-[#4d87a8]"/> User Identity</h4>
                             <div className="space-y-3">
                                 <div><p className="text-[9px] font-black text-[#7a8b95] uppercase tracking-widest">Username / ID</p><p className="text-[13px] font-black text-[#212c46] font-mono">{log.user}</p></div>
                                 <div><p className="text-[9px] font-black text-[#7a8b95] uppercase tracking-widest">Access Role</p><p className="text-[12px] font-bold text-[#b7a159]">{log.role}</p></div>
                             </div>
                         </div>
-                        <div className="bg-white p-5 rounded-2xl border border-[#eaeaec] shadow-sm space-y-4">
+                        <div className="bg-white p-5 rounded-xl border border-[#eaeaec] shadow-sm space-y-4">
                             <h4 className="text-[11px] font-black text-[#212c46] uppercase tracking-widest border-b border-[#d7d7d7] pb-2 flex items-center gap-2"><Server size={14} className="text-[#4d87a8]"/> Network & Device</h4>
                             <div className="space-y-3">
                                 <div><p className="text-[9px] font-black text-[#7a8b95] uppercase tracking-widest">IP Address</p><p className="text-[13px] font-black text-[#3f809e] font-mono">{log.ip}</p></div>
@@ -94,7 +95,7 @@ function LogDetailsModal({ isOpen, onClose, log }: any) {
                         </div>
                     </div>
 
-                    <div className="bg-white p-5 rounded-2xl border border-[#eaeaec] shadow-sm space-y-4">
+                    <div className="bg-white p-5 rounded-xl border border-[#eaeaec] shadow-sm space-y-4">
                         <h4 className="text-[11px] font-black text-[#212c46] uppercase tracking-widest border-b border-[#d7d7d7] pb-2 flex items-center gap-2"><Database size={14} className="text-[#4d87a8]"/> Action Payload</h4>
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div><p className="text-[9px] font-black text-[#7a8b95] uppercase tracking-widest">Target Module</p><p className="text-[12px] font-bold text-[#212c46]">{log.module}</p></div>
@@ -193,10 +194,57 @@ export default function AccessLogs() {
           <span className="font-black tracking-[0.3em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap uppercase text-[11px]">USER GUIDE</span>
       </button>
 
-            <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+            <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="AUDIT GUIDE" subtitle="คู่มือการตรวจสอบบันทึกการใช้งาน">
+                <div className="space-y-8">
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Activity size={16} className="text-[#b7a159]" /> 1. PURPOSE OF ACCESS LOGS
+                        </h3>
+                        <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl">
+                            <p className="mb-4">หน้าต่าง Access Logs ใช้สำหรับการตรวจสอบความเคลื่อนไหวและประวัติการเข้าถึงระบบทั้งหมด เพื่อให้สอดคล้องกับมาตรฐานความปลอดภัย (Security Audit)</p>
+                            <ul className="space-y-3 list-disc pl-5">
+                                <li>เก็บบันทึกการเข้าสู่ระบบ (Login) ทั้งสำเร็จและล้มเหลว</li>
+                                <li>ติดตามการแก้ไขข้อมูลสำคัญ (Create, Update, Delete)</li>
+                                <li>บันทึกหมายเลข IP และอุปกรณ์ที่ใช้เข้าถึง</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Filter size={16} className="text-[#3f809e]" /> 2. STATUS INDICATORS
+                        </h3>
+                        <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="px-3 py-1 bg-[#eef5e9] border border-[#cfdfc3] text-[#688a58] rounded text-[10px] font-black shrink-0">SUCCESS</div>
+                                <div>การทำงานเสร็จสมบูรณ์ ไม่มีข้อผิดพลาด</div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="px-3 py-1 bg-[#fdf2f2] border border-[#f5c6cb] text-[#d55a6d] rounded text-[10px] font-black shrink-0">WARNING</div>
+                                <div>การเข้าถึงที่ควรจับตามอง เช่น สิทธิ์ไม่เพียงพอ</div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="px-3 py-1 bg-[#fcf4f5] border border-[#e8c6cb] text-[#932c2e] rounded text-[10px] font-black shrink-0">FAILED</div>
+                                <div>การทำงานล้มเหลว หรือการพยายามเจาะระบบ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Download size={16} className="text-[#688a58]" /> 3. DATA EXPORT
+                        </h3>
+                        <p>ผู้ดูแลระบบสามารถกดปุ่ม <span className="font-bold">EXPORT LOGS</span> เพื่อดาวน์โหลดข้อมูลเป็นไฟล์ CSV สำหรับนำไปวิเคราะห์ต่อในระบบภายนอก หรือเก็บเป็นหลักฐานรายงาน (Audit Report)</p>
+                    </div>
+                </div>
+            </UserGuidePanel>
             <LogDetailsModal isOpen={!!selectedLog} onClose={() => setSelectedLog(null)} log={selectedLog} />
 
-            <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
                     <div className="relative flex items-center justify-center group cursor-default shrink-0">
                         <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -217,7 +265,7 @@ export default function AccessLogs() {
                 </div>
             </div>
 
-            <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
                 <div className="w-full">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-5 shrink-0">
                         <KpiCard label="Total Requests" value={totalLogs.toLocaleString()} icon={Activity} colorAccent={THEME.primaryLight} colorValue={THEME.primary} desc="All Logged Events" />
@@ -226,9 +274,9 @@ export default function AccessLogs() {
                         <KpiCard label="Unique Users" value={uniqueUsers} icon={UserCheck} colorAccent={THEME.accent} colorValue={THEME.primary} desc="Active Identities" />
                     </div>
 
-                    <div className="bg-white rounded-2xl shadow-sm border border-[#eaeaec]/60 overflow-hidden flex flex-col animate-fadeIn">
+                    <div className="bg-white rounded-xl shadow-sm border border-[#eaeaec]/60 overflow-hidden flex flex-col animate-fadeIn">
                         
-                        <div className="px-8 py-4 border-b border-[#eaeaec] bg-[#f8f9fa] flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+                        <div className="px-4 py-4 border-b border-[#eaeaec] bg-white flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
                             <div className="flex items-center gap-3 w-full md:w-auto">
                                 <div className="relative">
                                     <button onClick={() => setFilterDropdownOpen(!filterDropdownOpen)} className="flex items-center gap-3 bg-[#f8f9fa] px-4 py-2.5 rounded-xl border border-[#eaeaec] shadow-sm hover:border-[#b7a159] hover:bg-white transition-all min-w-[180px]">
@@ -239,7 +287,7 @@ export default function AccessLogs() {
                                     {filterDropdownOpen && (
                                         <>
                                             <div className="fixed inset-0 z-40" onClick={() => setFilterDropdownOpen(false)}></div>
-                                            <div className="absolute top-[110%] left-0 w-full bg-white border border-[#eaeaec] shadow-2xl rounded-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2">
+                                            <div className="absolute top-[110%] left-0 w-full bg-white border border-[#eaeaec] shadow-2xl rounded-xl p-2 z-50 animate-in fade-in slide-in-from-top-2">
                                                 {['All', 'Success', 'Failed', 'Warning'].map(status => (
                                                     <button key={status} onClick={() => { setStatusFilter(status); setFilterDropdownOpen(false); }} className={`w-full flex items-center p-3 rounded-xl transition-all ${statusFilter === status ? 'bg-[#f8f9fa] text-[#212c46]' : 'hover:bg-[#f8f9fa] text-[#7a8b95]'}`}>
                                                         <span className="text-[11px] font-black uppercase tracking-wider">{status === 'All' ? 'All Statuses' : status}</span>
@@ -251,57 +299,57 @@ export default function AccessLogs() {
                                 </div>
                                 <div className="relative flex-1 md:w-80">
                                     <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a8b95]" />
-                                    <input type="text" value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} placeholder="Search user, IP, or module..." className="w-full pl-12 pr-4 py-2.5 text-[12px] font-bold rounded-2xl border border-[#eaeaec] focus:outline-none focus:border-[#b7a159] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#212c46] transition-all" />
+                                    <input type="text" value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} placeholder="Search user, IP, or module..." className="w-full pl-12 pr-4 py-2.5 text-[12px] font-bold rounded-xl border border-[#eaeaec] focus:outline-none focus:border-[#b7a159] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#212c46] transition-all" />
                                 </div>
                             </div>
                             <div className="flex gap-3 shrink-0 w-full md:w-auto">
-                                <button className="w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-[#212c46] to-[#414757] text-white rounded-2xl text-[11px] font-black tracking-widest uppercase shadow-md hover:scale-105 transition-all flex items-center justify-center gap-2 border border-[#212c46]">
+                                <button className="w-full md:w-auto px-6 py-2.5 bg-gradient-to-r from-[#212c46] to-[#414757] text-white rounded-xl text-[11px] font-black tracking-widest uppercase shadow-md hover:scale-105 transition-all flex items-center justify-center gap-2 border border-[#212c46]">
                                     <Download size={16} /> EXPORT LOGS
                                 </button>
                             </div>
                         </div>
 
                         <div className="overflow-x-auto custom-scrollbar bg-[#f8f9fa]">
-                            <table className="w-full text-left font-sans border-collapse">
-                                <thead className="bg-[#212c46] text-white sticky top-0 z-10 border-b-2 border-[#b7a159]">
-                                    <tr>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] whitespace-nowrap">Date / Time</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] whitespace-nowrap">User Identity</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] whitespace-nowrap">IP Address</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] whitespace-nowrap">Module & Action</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] text-center whitespace-nowrap">Status</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] text-center whitespace-nowrap">Action</th>
+                            <table className="w-full text-left border-collapse table-font">
+                                <thead className="sys-table-header sticky top-0 z-10 [#b7a159] ">
+                    <tr>
+                                        <th className="font-black uppercase tracking-widest  whitespace-nowrap">Date / Time</th>
+                                        <th className="font-black uppercase tracking-widest  whitespace-nowrap">User Identity</th>
+                                        <th className="font-black uppercase tracking-widest  whitespace-nowrap">IP Address</th>
+                                        <th className="font-black uppercase tracking-widest  whitespace-nowrap">Module & Action</th>
+                                        <th className="font-black uppercase tracking-widest  text-center whitespace-nowrap">Status</th>
+                                        <th className="font-black uppercase tracking-widest  text-center whitespace-nowrap">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-[#eaeaec] bg-white">
                                     {paginatedLogs.length > 0 ? paginatedLogs.map((log) => (
                                         <tr key={log.id} className="hover:bg-[#f8f9fa] transition-colors group">
-                                            <td className="py-3 px-6 text-[12px]">
+                                            <td className="px-4 text-[12px] py-2.5">
                                                 <div className="flex items-center gap-2 font-mono text-[#7a8b95]">
                                                     <Clock size={14}/> <span>{log.timestamp}</span>
                                                 </div>
                                             </td>
-                                            <td className="py-3 px-6">
+                                            <td className="px-4 py-2.5">
                                                 <div className="flex flex-col">
                                                     <span className={`font-black text-[12px] font-mono tracking-tight ${log.user === 'UNKNOWN_USER' ? 'text-[#932c2e]' : 'text-[#212c46]'}`}>{log.user}</span>
                                                     <span className="text-[10px] font-bold text-[#7a8b95] mt-0.5 uppercase tracking-wider">{log.role}</span>
                                                 </div>
                                             </td>
-                                            <td className="py-3 px-6 font-mono text-[12px] font-bold text-[#4d87a8]">
+                                            <td className="px-4 font-mono text-[12px] font-bold text-[#4d87a8] py-2.5">
                                                 <div className="flex items-center gap-1.5"><MapPin size={12} className="text-[#7a8b95]"/> {log.ip}</div>
                                             </td>
-                                            <td className="py-3 px-6">
+                                            <td className="px-4 py-2.5">
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-[12px] text-[#212c46]">{log.module}</span>
                                                     <span className="font-mono text-[10px] font-black text-[#b7a159] mt-0.5 tracking-tight">{log.action}</span>
                                                 </div>
                                             </td>
-                                            <td className="py-3 px-6 text-center">
+                                            <td className="px-4 text-center py-2.5">
                                                 <span className={`px-3 py-1 rounded-full border font-black text-[11px] uppercase tracking-widest whitespace-nowrap ${getStatusStyle(log.status)}`}>
                                                     {log.status}
                                                 </span>
                                             </td>
-                                            <td className="py-3 px-6 text-center">
+                                            <td className="px-4 text-center py-2.5">
                                                 <div className="flex justify-center items-center gap-[1px]">
                                                     <button onClick={() => setSelectedLog(log)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-[#eaeaec] text-[#4d87a8] hover:bg-[#d7d7d7] hover:border-[#4d87a8] transition-all active:scale-90" title="View Details">
                                                         <Eye size={14} />
@@ -311,7 +359,7 @@ export default function AccessLogs() {
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan="6" className="py-12 text-center text-[#7a8b95] font-bold text-[12px]">
+                                            <td className="text-center text-[#7a8b95] font-bold text-[12px] py-2.5 px-4">
                                                 No logs found matching your criteria.
                                             </td>
                                         </tr>

@@ -218,7 +218,7 @@ const BirthdayModalContent = ({ bday, onClose }: any) => {
 const HeroBanner = () => {
   const bgImage = "https://t4.ftcdn.net/jpg/18/84/61/59/360_F_1884615948_JTno5zhY2QgPBKpkKhYoOGX84ucB2lXQ.jpg";
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden shadow-xl group bg-[#212c46] border border-[#414757]">
+    <div className="relative w-full rounded-xl overflow-hidden shadow-xl group bg-[#212c46] border border-[#414757]">
       <div className="absolute inset-0 transform transition-transform duration-[2000ms] group-hover:scale-105">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-80"
@@ -381,7 +381,7 @@ export default function Home() {
   };
 
   return (
-    <div className="pt-4 flex flex-col gap-6 animate-fadeIn max-w-[1532px] mx-auto px-4 sm:px-8 w-full font-sans">
+    <div id="home-page-wrapper" className="pt-4 flex flex-col gap-6 animate-fadeIn  mx-auto px-4 sm:px-8 w-full font-sans">
       <div className="flex flex-row justify-between items-center gap-4">
           <div className="flex flex-col justify-center">
               <h1 className="text-3xl md:text-4xl text-[#212c46] tracking-tight uppercase font-black leading-none font-sans">
@@ -410,7 +410,7 @@ export default function Home() {
       </div>
 
       {/* LATEST NEWS FEEDS CAROUSEL */}
-      <div className="bg-[#edece8] border border-[#dcdad4] rounded-2xl p-4 shadow-sm flex flex-col mt-2">
+      <div className="bg-[#edece8] border border-[#dcdad4] rounded-xl p-4 shadow-sm flex flex-col mt-2">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-[#212c46] text-sm font-black uppercase tracking-widest flex items-center gap-2">
              <Newspaper size={16} className="text-[#3f809e]"/> LATEST NEWS FEEDS
@@ -463,7 +463,7 @@ export default function Home() {
       {/* NEW SECTIONS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* OUR NEW FAMILY MEMBERS */}
-        <div className="lg:col-span-2 bg-[#edece8] border border-[#dcdad4] rounded-2xl p-4 shadow-sm flex flex-col">
+        <div className="lg:col-span-2 bg-[#edece8] border border-[#dcdad4] rounded-xl p-4 shadow-sm flex flex-col">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-[#212c46] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <UserPlus size={16} className="text-[#3f809e]"/> OUR NEW FAMILY MEMBERS
@@ -486,7 +486,7 @@ export default function Home() {
                 <h4 className="text-[#212c46] font-black text-sm mb-0.5 group-hover:text-[#3f809e] transition-colors">{member.name}</h4>
                 <p className="text-[#3f809e] text-[9px] font-black uppercase tracking-widest mb-1">{member.role}</p>
                 <p className="text-[#7a8b95] text-[10px] font-medium">{member.dept}</p>
-                <div className="w-full flex justify-between items-center mt-4 pt-3 border-t border-[#f3f3f1]">
+                <div className="w-full flex justify-between items-center mt-4 pt-3 border-t-[1.5px] border-[#f3f3f1]">
                   <span className="text-[#7a8b95] text-[9px] font-black uppercase tracking-widest">JOIN</span>
                   <span className="text-[#212c46] text-[10px] font-black uppercase tracking-widest">{member.date}</span>
                 </div>
@@ -496,7 +496,7 @@ export default function Home() {
         </div>
 
         {/* BIRTHDAY WISHES */}
-        <div className="bg-[#edece8] border border-[#dcdad4] rounded-2xl p-4 shadow-sm flex flex-col">
+        <div className="bg-[#edece8] border border-[#dcdad4] rounded-xl p-4 shadow-sm flex flex-col">
           <h3 className="text-[#212c46] text-sm font-black uppercase tracking-widest flex items-center gap-2 mb-4">
              <PartyPopper size={16} className="text-[#c17849]" /> BIRTHDAY WISHES
           </h3>
@@ -522,7 +522,7 @@ export default function Home() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* CORPORATE NEWS BOARD */}
-        <div className="lg:col-span-2 bg-[#edece8] border border-[#dcdad4] rounded-2xl p-4 shadow-sm flex flex-col">
+        <div className="lg:col-span-2 bg-[#edece8] border border-[#dcdad4] rounded-xl p-4 shadow-sm flex flex-col">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-[#212c46] text-sm font-black uppercase tracking-widest flex items-center gap-2">
               <Globe size={16} className="text-[#3f809e]"/> CORPORATE NEWS BOARD
@@ -561,7 +561,7 @@ export default function Home() {
         </div>
 
         {/* CORPORATE ALERT */}
-        <div className="bg-[#edece8] border border-[#dcdad4] rounded-2xl p-4 shadow-sm flex flex-col">
+        <div className="bg-[#edece8] border border-[#dcdad4] rounded-xl p-4 shadow-sm flex flex-col">
           <h3 className="text-[#212c46] text-sm font-black uppercase tracking-widest flex items-center gap-2 mb-4">
              <AlertCircle size={16} className="text-[#a94228]" /> CORPORATE ALERT
           </h3>

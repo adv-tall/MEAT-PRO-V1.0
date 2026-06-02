@@ -1,7 +1,9 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
+import * as Icons from "lucide-react";
 import {
   Calendar as CalendarIcon,
+
   ChevronLeft,
   ChevronRight,
   Plus,
@@ -28,6 +30,7 @@ import {
   Factory,
 } from "lucide-react";
 import KpiCard from "@/src/components/shared/KpiCard";
+import { UserGuidePanel } from "@/src/components/shared/UserGuidePanel";
 import UserGuideButton from "@/src/components/shared/UserGuideButton";
 import { GASService } from "@/src/services/GoogleAppsScriptService";
 import Swal from "sweetalert2";
@@ -64,121 +67,7 @@ const THEME = {
 
 // --- Helper Components ---
 
-function UserGuidePanel({ isOpen, onClose }: any) {
-  if (typeof document === "undefined") return null;
-  return createPortal(
-    <>
-      <div
-        className={`fixed inset-0 z-[190] bg-[#212c46]/60 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-        onClick={onClose}
-      />
-      <div
-        className={`fixed inset-y-0 right-0 z-[200] w-full md:w-[500px] bg-white shadow-2xl transform transition-transform duration-500 ease-in-out flex flex-col border-l-2 border-[#b7a159] ${isOpen ? "translate-x-0" : "translate-x-full"}`}
-      >
-        <div className="flex justify-between items-center p-8 border-b-2 border-[#b7a159] bg-[#212c46] text-white shrink-0">
-          <div>
-            <h3 className="font-black flex items-center gap-3 uppercase tracking-widest text-xl">
-              <BookOpen size={24} className="text-[#b7a159]" /> PRODUCTION
-              CALENDAR GUIDE
-            </h3>
-            <p className="text-[12px] font-bold text-[#eaeaec] uppercase tracking-widest mt-1.5">
-              Operational Schedule Management
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-white/50 hover:text-[#d96245] hover:bg-white/10 rounded-xl transition-colors"
-          >
-            <X size={24} />
-          </button>
-        </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-8 text-[#435665] text-[12px] leading-relaxed">
-          <section className="animate-fadeIn">
-            <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#eaeaec] pb-2 font-mono">
-              <Factory size={18} className="text-[#b7a159]" /> 1. Production &
-              Maintenance Planning
-            </h4>
-            <p className="mb-3">
-              ใช้เพื่อติดตามและนัดหมายกิจกรรมสำคัญในระบบการผลิต (MES) เช่น:
-            </p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>
-                <strong className="text-[#5372ba]">Production:</strong>{" "}
-                กำหนดการวางแผนการผลิตประจำวัน (Production Batch)
-              </li>
-              <li>
-                <strong className="text-[#ce870a]">Maintenance:</strong>{" "}
-                รอบการบำรุงรักษาเครื่องจักร (Preventive Maintenance / PM)
-              </li>
-              <li>
-                <strong className="text-[#596c33]">Audit:</strong>{" "}
-                กำหนดการตรวจสอบมาตรฐานคุณภาพระบบ (Quality Audit / HACCP)
-              </li>
-            </ul>
-          </section>
-
-          <section
-            className="animate-fadeIn"
-            style={{ animationDelay: "0.1s" }}
-          >
-            <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#eaeaec] pb-2 font-mono">
-              <AlertTriangle size={18} className="text-[#d96245]" /> 2. Priority
-              Management
-            </h4>
-            <p className="mb-2">
-              ระบบจะใช้สีเพื่อจำแนกระดับความสำคัญของงาน (Priority Level)
-              เพื่อง่ายต่อการจัดลำดับความเร่งด่วน:
-            </p>
-            <ul className="list-none pl-0 space-y-2 mt-3">
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#d96245] animate-pulse"></div>
-                <strong className="text-[#d96245]">Critical:</strong> งานด่วนมาก
-                / ต้องดำเนินการทันที
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#ce870a]"></div>
-                <strong className="text-[#ce870a]">High:</strong> งานสำคัญ /
-                เตรียมดำเนินการ
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#5372ba]"></div>
-                <strong className="text-[#5372ba]">Normal:</strong>{" "}
-                งานปกติตามรอบระยะเวลา
-              </li>
-            </ul>
-          </section>
-
-          <section
-            className="animate-fadeIn"
-            style={{ animationDelay: "0.2s" }}
-          >
-            <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#eaeaec] pb-2 font-mono">
-              <LayoutGrid size={18} className="text-[#6293b9]" /> 3. Views &
-              Navigation
-            </h4>
-            <p>
-              คุณสามารถสลับมุมมองระหว่าง <b>Calendar View</b>{" "}
-              (แบบปฏิทินรายเดือน) เพื่อดูภาพรวม และ <b>List View</b> (แบบตาราง)
-              เพื่อจัดการข้อมูล ค้นหา
-              หรือแก้ไขรายละเอียดเชิงลึกได้อย่างสะดวกสบาย
-            </p>
-          </section>
-        </div>
-
-        <div className="p-6 bg-[#f8f9fa] border-t border-[#eaeaec] flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-10 py-3 bg-[#212c46] text-[#b7a159] font-black rounded-xl uppercase text-[12px] hover:bg-[#254268] hover:text-white transition-all shadow-md tracking-[0.1em]"
-          >
-            เข้าใจแล้ว (Got it)
-          </button>
-        </div>
-      </div>
-    </>,
-    document.body,
-  );
-}
 
 // --- Main App Component ---
 export default function ProductionCalendar() {
@@ -499,10 +388,78 @@ export default function ProductionCalendar() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-      />
+        title="CALENDAR GUIDE"
+        subtitle="OPERATIONAL SCHEDULE MANAGEMENT"
+      >
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.ShoppingCart size={16} className="text-[#b7a159]" /> 1. SALES PLANNING
+                </h3>
+                <p className="mb-4">ใช้เพื่อติดตามและนัดหมายกิจกรรมสำคัญในระบบจัดซื้อ เช่น :</p>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#3f809e] mt-0.5 shrink-0"></div>
+                        <div>
+                            <span className="font-bold text-[#3f809e]">Audit: </span>
+                            การเข้าตรวจประเมินโรงงานผู้ขาย (Supplier Audit)
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#b58c4f] mt-0.5 shrink-0"></div>
+                        <div>
+                            <span className="font-bold text-[#b58c4f]">Quality: </span>
+                            ติดตามและทบทวนเอกสาร SCAR หรือปัญหาคุณภาพ
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#688a58] mt-0.5 shrink-0"></div>
+                        <div>
+                            <span className="font-bold text-[#688a58]">Contract: </span>
+                            วันครบกำหนดสัญญาจ้าง หรือรอบการต่อสัญญาประจำปี
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.AlertTriangle size={16} className="text-[#d55a6d]" /> 2. PRIORITY MANAGEMENT
+                </h3>
+                <p className="mb-4">ระบบจะใช้สีเพื่อจำแนกระดับความสำคัญของงาน (Priority Level) เพื่อง่ายต่อการจัดลำดับความเร่งด่วน :</p>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#d55a6d] shrink-0"></div>
+                        <div><span className="font-bold text-[#d55a6d]">Critical:</span> งานด่วนมาก / ต้องดำเนินการทันที</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#b58c4f] shrink-0"></div>
+                        <div><span className="font-bold text-[#b58c4f]">High:</span> งานสำคัญ / เตรียมดำเนินการ</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#5372ba] shrink-0"></div>
+                        <div><span className="font-bold text-[#5372ba]">Normal:</span> งานปกติตามรอบระยะเวลา</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.LayoutGrid size={16} className="text-[#3f809e]" /> 3. VIEWS & NAVIGATION
+                </h3>
+                <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl">
+                    คุณสามารถสลับมุมมองระหว่าง <span className="font-bold">Calendar View</span> (แบบปฏิทินรายเดือน) เพื่อดูภาพรวม และ <span className="font-bold">List View</span> (แบบตาราง) เพื่อจัดการข้อมูล ค้นหา หรือแก้ไขรายละเอียดเชิงลึกได้อย่างสะดวกสบาย
+                </div>
+            </div>
+        </div>
+      </UserGuidePanel>
 
       {/* HEADER SECTION */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -547,7 +504,7 @@ export default function ProductionCalendar() {
         </div>
       </div>
 
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="w-full">
           {/* KPI STATS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-5 shrink-0">
@@ -582,7 +539,7 @@ export default function ProductionCalendar() {
           </div>
 
           {/* CONTENT BLOCK - CALENDAR OR LIST */}
-          <div className="bg-white rounded-2xl shadow-sm border border-[#eaeaec]/60 overflow-hidden flex flex-col animate-fadeIn relative">
+          <div className="bg-white rounded-xl shadow-sm border border-[#eaeaec]/60 overflow-hidden flex flex-col animate-fadeIn relative">
             {isLoading && (
               <div className="absolute inset-0 z-50 bg-white/50 backdrop-blur-[2px] flex items-center justify-center">
                 <Loader2 size={32} className="animate-spin text-[#212c46]" />
@@ -744,25 +701,25 @@ export default function ProductionCalendar() {
                   })}
                 </div>
               ) : (
-                <table className="w-full text-left font-sans border-collapse">
-                  <thead className="bg-[#212c46] text-white sticky top-0 z-10 border-b-2 border-[#b58c4f]">
+                <table className="w-full text-left border-collapse table-font">
+                  <thead className="sys-table-header sticky top-0 z-10 [#b58c4f] ">
                     <tr>
-                      <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] whitespace-nowrap">
+                      <th className="font-black uppercase tracking-widest  whitespace-nowrap">
                         ID Code
                       </th>
-                      <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] whitespace-nowrap">
+                      <th className="font-black uppercase tracking-widest  whitespace-nowrap">
                         Schedule Info
                       </th>
-                      <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] whitespace-nowrap">
+                      <th className="font-black uppercase tracking-widest  whitespace-nowrap">
                         Activity Description
                       </th>
-                      <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] text-center">
+                      <th className="font-black uppercase tracking-widest  text-center">
                         Category
                       </th>
-                      <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] text-center">
+                      <th className="font-black uppercase tracking-widest  text-center">
                         Priority
                       </th>
-                      <th className="py-4 px-6 font-black uppercase tracking-widest text-[12px] text-center">
+                      <th className="font-black uppercase tracking-widest  text-center">
                         Actions
                       </th>
                     </tr>
@@ -774,10 +731,10 @@ export default function ProductionCalendar() {
                           key={ev.id}
                           className="hover:bg-[#f8f9fa] transition-colors group"
                         >
-                          <td className="py-3 px-6 font-mono font-black text-[#7691ad] uppercase text-[12px]">
+                          <td className="px-4 font-mono font-black text-[#7691ad] uppercase text-[12px] py-2.5">
                             {ev.id}
                           </td>
-                          <td className="py-3 px-6 text-[12px]">
+                          <td className="px-4 text-[12px] py-2.5">
                             <div className="flex flex-col">
                               <span className="font-black text-[#212c46]">
                                 {new Date(ev.date).toLocaleDateString("en-GB", {
@@ -786,24 +743,24 @@ export default function ProductionCalendar() {
                                   year: "numeric",
                                 })}
                               </span>
-                              <span className="text-[11px] text-[#ce870a] font-black flex items-center gap-1.5 uppercase tracking-tight mt-0.5">
+                              <span className="text-[11px] text-[#ce870a] font-black flex items-center gap-[1px] uppercase tracking-tight mt-0.5">
                                 <Clock size={12} /> {ev.time} HRS
                               </span>
                             </div>
                           </td>
-                          <td className="py-3 px-6 font-black text-[#212c46] uppercase tracking-tight text-[12px]">
+                          <td className="px-4 font-black text-[#212c46] uppercase tracking-tight text-[12px] py-2.5">
                             {ev.title}
                           </td>
-                          <td className="py-3 px-6 text-center text-[12px]">
+                          <td className="px-4 text-center text-[12px] py-2.5">
                             <span
                               className={`px-4 py-1 rounded-md text-[11px] font-black border uppercase tracking-widest ${ev.color}`}
                             >
                               {ev.type}
                             </span>
                           </td>
-                          <td className="py-3 px-6 text-center text-[12px]">
+                          <td className="px-4 text-center text-[12px] py-2.5">
                             <div
-                              className={`inline-flex items-center justify-center gap-2 px-3 py-1 rounded-full text-[11px] font-black uppercase border tracking-widest ${ev.priority === "Critical" ? "bg-[#d96245]/10 text-[#d96245] border-[#d96245]/30" : ev.priority === "High" ? "bg-[#ce870a]/10 text-[#ce870a] border-[#ce870a]/30" : "bg-[#5372ba]/10 text-[#5372ba] border-[#5372ba]/30"}`}
+                              className={`inline-flex items-center justify-center gap-[1px] px-3 py-1 rounded-full text-[11px] font-black uppercase border tracking-widest ${ev.priority === "Critical" ? "bg-[#d96245]/10 text-[#d96245] border-[#d96245]/30" : ev.priority === "High" ? "bg-[#ce870a]/10 text-[#ce870a] border-[#ce870a]/30" : "bg-[#5372ba]/10 text-[#5372ba] border-[#5372ba]/30"}`}
                             >
                               <div
                                 className={`w-1.5 h-1.5 rounded-full ${ev.priority === "Critical" ? "bg-[#d96245] animate-pulse" : "bg-current"}`}
@@ -811,7 +768,7 @@ export default function ProductionCalendar() {
                               {ev.priority}
                             </div>
                           </td>
-                          <td className="py-3 px-6 text-center text-[12px]">
+                          <td className="px-4 text-center text-[12px] py-2.5">
                             <div className="flex justify-center items-center gap-[1px]">
                               <button
                                 onClick={() => handleOpenModal("view", ev)}
@@ -846,9 +803,7 @@ export default function ProductionCalendar() {
                       ))
                     ) : (
                       <tr>
-                        <td
-                          colSpan={6}
-                          className="py-20 text-center text-[#7691ad] font-black uppercase tracking-widest text-[12px] opacity-60"
+                        <td className="0 text-center text-[#7691ad] font-black uppercase tracking-widest text-[12px] opacity-60 py-2.5 px-4"
                         >
                           No scheduled events found for this criteria
                         </td>
@@ -917,13 +872,13 @@ export default function ProductionCalendar() {
       {isModalOpen &&
         createPortal(
           <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/80 backdrop-blur-md p-4 animate-fadeIn">
-            <div className="bg-[#f8f9fa] rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden relative border border-[#b7a159]">
+            <div className="bg-[#f8f9fa] rounded-xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden relative border border-[#b7a159]">
               <div className="bg-[#212c46] px-8 py-6 flex justify-between items-center shrink-0 border-b-4 border-[#b7a159] relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12 scale-150">
                   <CalendarDays size={120} className="text-white" />
                 </div>
                 <div className="flex items-center gap-5 relative z-10">
-                  <div className="w-14 h-14 rounded-2xl bg-white/10 text-[#b7a159] flex items-center justify-center border border-white/20 shadow-md backdrop-blur-md">
+                  <div className="w-14 h-14 rounded-xl bg-white/10 text-[#b7a159] flex items-center justify-center border border-white/20 shadow-md backdrop-blur-md">
                     <CalendarIcon size={28} />
                   </div>
                   <div>
@@ -952,7 +907,7 @@ export default function ProductionCalendar() {
                 <form
                   id="calendarForm"
                   onSubmit={handleSaveEvent}
-                  className="space-y-6 bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm"
+                  className="space-y-6 bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm"
                 >
                   <div>
                     <label className="text-[11px] font-black text-[#212c46] uppercase tracking-widest block mb-2">
@@ -1082,13 +1037,13 @@ export default function ProductionCalendar() {
       {isHolidayModalOpen &&
         createPortal(
           <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/80 backdrop-blur-md p-4 animate-fadeIn">
-            <div className="bg-[#f8f9fa] rounded-3xl shadow-2xl w-full max-w-lg flex flex-col overflow-hidden relative border border-[#d96245]">
+            <div className="bg-[#f8f9fa] rounded-xl shadow-2xl w-full max-w-lg flex flex-col overflow-hidden relative border border-[#d96245]">
               <div className="bg-[#d96245] px-8 py-6 flex justify-between items-center shrink-0 border-b-4 border-[#ce870a] relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12 scale-150">
                   <Palmtree size={120} className="text-white" />
                 </div>
                 <div className="flex items-center gap-5 relative z-10">
-                  <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center border border-white/20 shadow-md backdrop-blur-md">
+                  <div className="w-14 h-14 rounded-xl bg-white/20 text-white flex items-center justify-center border border-white/20 shadow-md backdrop-blur-md">
                     <Palmtree size={28} />
                   </div>
                   <div>
@@ -1113,7 +1068,7 @@ export default function ProductionCalendar() {
                 <form
                   id="holidayFormProd"
                   onSubmit={handleSaveHoliday}
-                  className="space-y-6 bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm"
+                  className="space-y-6 bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm"
                 >
                   <div>
                     <label className="text-[11px] font-black text-[#212c46] uppercase tracking-widest block mb-2">

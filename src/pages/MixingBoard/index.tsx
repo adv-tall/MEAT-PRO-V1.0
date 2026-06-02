@@ -272,73 +272,48 @@ const LucideIcon = ({ name, size = 16, className = "", color, style }: any) => {
 };
 
 const GuideContent = () => (
-  <>
-    <section className="animate-fadeIn">
-      <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#d7d7d7] pb-2 font-mono">
-        <Icons.Activity size={18} className="text-[#4d87a8]" /> 1. Overview
-        Board
-      </h4>
-      <p className="text-[12px] mb-3 text-[#606a5f]">
-        บอร์ดนี้ใช้สำหรับติดตามสถานะการผสมแบบ Real-time
-        ข้อมูลจะซิงค์กับแผนการผลิตประจำวัน โดยสามารถตรวจสอบได้จากแท็บข้างบน:
-      </p>
-      <ul className="list-none pl-0 space-y-3">
-        <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec] shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-[#4d87a8] mt-1 shrink-0"></span>
-          <div>
-            <strong className="text-[#4d87a8] font-mono">BATTER → SFG:</strong>{" "}
-            <span className="text-[#7a8b95] text-[12px]">
-              หน้ากระดานแสดงกระบวนการผลิตพร้อมเวลาถอยหลังแต่ละ Batch
-            </span>
+  <div className="space-y-8">
+      <div>
+          <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+              <Icons.Activity size={16} className="text-[#3f809e]" /> 1. OVERVIEW BOARD
+          </h3>
+          <p className="mb-4 text-[#414757]">
+              บอร์ดนี้ใช้สำหรับติดตามสถานะการผสมแบบ Real-time ข้อมูลจะซิงค์กับแผนการผลิตประจำวัน โดยสามารถตรวจสอบได้จากแท็บข้างบน:
+          </p>
+          <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#3f809e] mt-1.5 shrink-0"></div>
+                  <div className="text-[#414757]"><span className="font-bold text-[#212c46]">BATTER &rarr; SFG:</span> หน้ากระดานแสดงกระบวนการผลิตพร้อมเวลาถอยหลังแต่ละ Batch</div>
+              </div>
+              <div className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#d55a6d] mt-1.5 shrink-0"></div>
+                  <div className="text-[#414757]"><span className="font-bold text-[#212c46]">SFG WAITING:</span> แสดงข้อมูล SFG ที่กำลังรอเข้าสเต็ป Packing พร้อมข้อมูล Delay time</div>
+              </div>
+              <div className="flex items-start gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#b58c4f] mt-1.5 shrink-0"></div>
+                  <div className="text-[#414757]"><span className="font-bold text-[#212c46]">OVERVIEW:</span> สถานะภาพรวมของแผนการผลิต SFG ในแต่วัน การเทียบเป้าหมายและ WIP</div>
+              </div>
           </div>
-        </li>
-        <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec] shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-[#a94228] mt-1 shrink-0"></span>
-          <div>
-            <strong className="text-[#a94228] font-mono">SFG WAITING:</strong>{" "}
-            <span className="text-[#7a8b95] text-[12px]">
-              แสดงข้อมูล SFG ที่กำลังรอเข้าสเต็ป Packing พร้อมข้อมูล Delay time
-            </span>
+      </div>
+
+      <div className="h-px bg-[#eaeaec] w-full" />
+
+      <div>
+          <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+              <Icons.Settings size={16} className="text-[#b58c4f]" /> 2. PLANNER (การสร้างแผนผสม)
+          </h3>
+          <p className="mb-4 text-[#414757]">
+              คุณสามารถเพิ่ม Batch งานใหม่ผ่านปุ่ม <span className="font-bold text-[#212c46]">NEW MIXING</span> ในหน้า Execution Board โดยระบบจะ:
+          </p>
+          <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl text-[#414757]">
+              <ul className="list-disc pl-5 space-y-2">
+                  <li>เชื่อมโยงข้อมูล Batter ที่ต้องเตรียมจากข้อมูล <span className="font-bold">Production Planning</span> ทันที</li>
+                  <li>คำนวณจำนวน Batches ที่เหลืออยู่ (Left) เพื่อป้องกันการผลิตเกินเป้าหมาย</li>
+                  <li>รองรับการสั่งงานแบบเป็นชุด (Order Sets) โดย 1 Set จะเท่ากับ 6 Batches เสมอ</li>
+              </ul>
           </div>
-        </li>
-        <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec] shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-[#b58c4f] mt-1 shrink-0"></span>
-          <div>
-            <strong className="text-[#b58c4f] font-mono">OVERVIEW:</strong>{" "}
-            <span className="text-[#7a8b95] text-[12px]">
-              สถานะภาพรวมของแผนการผลิต SFG ในแต่วัน การเทียบเป้าหมายและ WIP
-            </span>
-          </div>
-        </li>
-      </ul>
-    </section>
-    <section className="animate-fadeIn mt-6">
-      <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#d7d7d7] pb-2 font-mono">
-        <Icons.Settings size={18} className="text-[#4d87a8]" /> 2.
-        การสร้างแผนผสม (Planner)
-      </h4>
-      <p className="text-[12px] mb-3 text-[#606a5f]">
-        คุณสามารถเพิ่ม Batch งานใหม่ผ่านปุ่ม{" "}
-        <strong>
-          <Icons.Plus size={12} className="inline" /> NEW MIXING
-        </strong>{" "}
-        ในหน้า Execution Board โดยระบบจะ:
-      </p>
-      <ul className="list-disc pl-5 text-[12px] text-[#7a8b95] space-y-2">
-        <li>
-          เชื่อมโยงข้อมูล Batter ที่ต้องเตรียมจากข้อมูล{" "}
-          <strong>Production Planning</strong> ทันที
-        </li>
-        <li>
-          คำนวณจำนวน Batches ที่เหลืออยู่ (Left) เพื่อป้องการผลิตเกินเป้าหมาย
-        </li>
-        <li>
-          รองรับการสั่งงานแบบเป็นชุด (Order Sets) โดย 1 Set จะเท่ากับ 6 Batches
-          เสมอ
-        </li>
-      </ul>
-    </section>
-  </>
+      </div>
+  </div>
 );
 
 function PlannerModal({ isOpen, onClose, onStart }: any) {
@@ -574,7 +549,7 @@ const BatchExecutionView = ({
         return (
           <div
             key={procSet.id}
-            className={`bg-white rounded-2xl shadow-sm border border-[#eaeaec] p-3 relative group flex flex-col h-[180px] ${procSet.status === "Completed" ? "opacity-60 saturate-50 bg-[#f8f9fa]" : ""}`}
+            className={`bg-white rounded-xl shadow-sm border border-[#eaeaec] p-3 relative group flex flex-col h-[180px] ${procSet.status === "Completed" ? "opacity-60 saturate-50 bg-[#f8f9fa]" : ""}`}
           >
             <div className="flex justify-between items-start mb-2 gap-2">
               <div className="flex flex-col flex-1 min-w-0">
@@ -682,7 +657,7 @@ const BatchExecutionView = ({
             onClick={() => setQrData(null)}
           >
             <div
-              className="bg-white rounded-2xl p-8 text-center shadow-2xl relative w-full max-w-sm"
+              className="bg-white rounded-xl p-8 text-center shadow-2xl relative w-full max-w-sm"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -713,7 +688,7 @@ const BatchExecutionView = ({
         )}
 
       {/* Board Sub-Header */}
-      <div className="bg-white rounded-2xl flex-1 flex flex-col shadow-sm mt-0 rounded-t-none border border-t-0 border-[#eaeaec] z-10 relative">
+      <div className="bg-white rounded-xl flex-1 flex flex-col shadow-sm mt-0 rounded-t-none border border-t-0 border-[#eaeaec] z-10 relative">
         <div
           className="px-5 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#eaeaec] shrink-0"
           style={{ backgroundColor: `${config.color}0A` }}
@@ -820,7 +795,7 @@ const BatchExecutionView = ({
 };
 
 const SFGWaitingView = () => (
-  <div className="bg-white rounded-2xl border border-[#eaeaec] shadow-sm animate-fadeIn flex flex-col flex-1 min-h-0 min-w-0">
+  <div className="bg-white rounded-xl border border-[#eaeaec] shadow-sm animate-fadeIn flex flex-col flex-1 min-h-0 min-w-0">
     <div className="p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#eaeaec] shrink-0">
       <h3 className="font-black text-[13px] text-[#212c46] flex items-center gap-2 uppercase tracking-widest">
         <LucideIcon name="package" size={18} className="text-[#a94228]" /> SFG
@@ -832,26 +807,26 @@ const SFGWaitingView = () => (
     </div>
 
     <div className="flex-1 overflow-auto custom-scrollbar bg-[#f8f9fa] shadow-inner rounded-b-2xl">
-      <table className="w-full text-left min-w-[900px] border-collapse bg-white">
-        <thead className="bg-[#f8f9fa] border-b border-[#eaeaec] sticky top-0 z-10 shadow-sm text-[10px] uppercase tracking-widest text-[#7a8b95]">
-          <tr>
-            <th className="py-4 px-6 pl-8 whitespace-nowrap font-black">
+      <table className="w-full text-left min-w-[900px] border-collapse bg-white table-font">
+        <thead className="sys-table-header [#eaeaec] sticky top-0 z-10 shadow-sm uppercase tracking-widest ">
+                    <tr>
+            <th className="pl-8 whitespace-nowrap font-black ">
               SFG Code
             </th>
-            <th className="py-4 px-6 whitespace-nowrap font-black">
+            <th className="whitespace-nowrap font-black ">
               Product Name
             </th>
-            <th className="py-4 px-6 whitespace-nowrap font-black">
+            <th className="whitespace-nowrap font-black ">
               Batch Set
             </th>
-            <th className="py-4 px-6 whitespace-nowrap font-black">Location</th>
-            <th className="py-4 px-6 text-center whitespace-nowrap font-black">
+            <th className="whitespace-nowrap font-black ">Location</th>
+            <th className="text-center whitespace-nowrap font-black ">
               Weight (Kg)
             </th>
-            <th className="py-4 px-6 text-center whitespace-nowrap font-black">
+            <th className="text-center whitespace-nowrap font-black ">
               Delay (Steam)
             </th>
-            <th className="py-4 px-6 pr-8 text-center whitespace-nowrap font-black">
+            <th className="pr-8 text-center whitespace-nowrap font-black ">
               Status
             </th>
           </tr>
@@ -862,23 +837,23 @@ const SFGWaitingView = () => (
               key={item.id}
               className="border-b border-[#eaeaec] hover:bg-[#f8f9fa] transition-colors"
             >
-              <td className="py-3 px-6 pl-8">
+              <td className="px-4 pl-8 py-2.5">
                 <span className="bg-[#a94228]/5 text-[#a94228] px-3 py-1 rounded-md border border-[#a94228]/20 font-mono text-[11px] font-black tracking-tight">
                   {item.code}
                 </span>
               </td>
-              <td className="py-3 px-6 font-bold text-[#212c46]">
+              <td className="px-4 font-bold text-[#212c46] py-2.5">
                 {item.name}
               </td>
-              <td className="py-3 px-6">
+              <td className="px-4 py-2.5">
                 <span className="bg-[#f8f9fa] text-[#7a8b95] px-2.5 py-0.5 rounded border border-[#eaeaec] font-mono text-[11px] font-bold">
                   {item.batchSet}
                 </span>
               </td>
-              <td className="py-3 px-6 font-bold text-[#7a8b95] font-mono">
+              <td className="px-4 font-bold text-[#7a8b95] font-mono py-2.5">
                 {item.location}
               </td>
-              <td className="py-3 px-6 text-center font-black text-[#212c46] font-mono">
+              <td className="px-4 text-center font-black text-[#212c46] font-mono py-2.5">
                 {item.weight}
               </td>
               <td
@@ -886,7 +861,7 @@ const SFGWaitingView = () => (
               >
                 {item.delay}
               </td>
-              <td className="py-3 px-6 pr-8 text-center">
+              <td className="px-4 pr-8 text-center py-2.5">
                 <span className="bg-[#b7a159]/10 text-[#b7a159] border border-[#b7a159]/20 px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest shadow-sm">
                   Waiting
                 </span>
@@ -895,9 +870,7 @@ const SFGWaitingView = () => (
           ))}
           {WAITING_SFG_DATA.length === 0 && (
             <tr>
-              <td
-                colSpan={7}
-                className="py-16 text-center text-[#7a8b95] font-bold uppercase tracking-widest text-[12px] opacity-70"
+              <td className="text-center text-[#7a8b95] font-bold uppercase tracking-widest text-[12px] opacity-70 py-2.5 px-4"
               >
                 No SFG Waiting
               </td>
@@ -911,7 +884,7 @@ const SFGWaitingView = () => (
 
 const OverviewView = () => (
   <div className="animate-fadeIn flex flex-col flex-1 min-h-0 min-w-0">
-    <div className="bg-white rounded-2xl border border-[#eaeaec] shadow-sm flex-1 flex flex-col">
+    <div className="bg-white rounded-xl border border-[#eaeaec] shadow-sm flex-1 flex flex-col">
       <div className="p-5 flex items-center justify-start gap-3 border-b border-[#eaeaec] shrink-0">
         <Icons.Calendar size={18} className="text-[#a94228]" />
         <h3 className="font-black text-[13px] text-[#212c46] uppercase tracking-widest">
@@ -919,29 +892,29 @@ const OverviewView = () => (
         </h3>
       </div>
       <div className="flex-1 overflow-auto custom-scrollbar bg-[#f8f9fa] shadow-inner rounded-b-2xl">
-        <table className="w-full text-left min-w-[900px] border-collapse bg-white">
-          <thead className="bg-[#f8f9fa] border-b border-[#eaeaec] sticky top-0 z-10 shadow-sm text-[10px] uppercase tracking-widest text-[#7a8b95]">
-            <tr>
-              <th className="py-4 px-6 pl-8 whitespace-nowrap font-black">
+        <table className="w-full text-left min-w-[900px] border-collapse bg-white table-font">
+          <thead className="sys-table-header [#eaeaec] sticky top-0 z-10 shadow-sm uppercase tracking-widest ">
+                    <tr>
+              <th className="pl-8 whitespace-nowrap font-black ">
                 Job ID
               </th>
-              <th className="py-4 px-6 whitespace-nowrap font-black">
+              <th className="whitespace-nowrap font-black ">
                 SFG Name
               </th>
-              <th className="py-4 px-6 whitespace-nowrap font-black">Code</th>
-              <th className="py-4 px-6 text-center whitespace-nowrap font-black">
+              <th className="whitespace-nowrap font-black ">Code</th>
+              <th className="text-center whitespace-nowrap font-black ">
                 Target
               </th>
-              <th className="py-4 px-6 text-center whitespace-nowrap font-black">
+              <th className="text-center whitespace-nowrap font-black ">
                 Produced
               </th>
-              <th className="py-4 px-6 text-center whitespace-nowrap font-black">
+              <th className="text-center whitespace-nowrap font-black ">
                 WIP
               </th>
-              <th className="py-4 px-6 text-center w-40 whitespace-nowrap font-black">
+              <th className="text-center w-40 whitespace-nowrap font-black ">
                 Progress
               </th>
-              <th className="py-4 px-6 pr-8 text-center whitespace-nowrap font-black">
+              <th className="pr-8 text-center whitespace-nowrap font-black ">
                 Status
               </th>
             </tr>
@@ -952,27 +925,27 @@ const OverviewView = () => (
                 key={plan.id}
                 className="border-b border-[#eaeaec] hover:bg-[#f8f9fa] transition-colors text-[12px]"
               >
-                <td className="py-3 px-6 pl-8 font-black text-[#a94228] font-mono">
+                <td className="px-4 pl-8 font-black text-[#a94228] font-mono py-2.5">
                   {plan.id}
                 </td>
-                <td className="py-3 px-6 font-bold text-[#212c46]">
+                <td className="px-4 font-bold text-[#212c46] py-2.5">
                   {plan.name}
                 </td>
-                <td className="py-3 px-6">
+                <td className="px-4 py-2.5">
                   <span className="bg-[#f8f9fa] text-[#7a8b95] px-2.5 py-0.5 rounded border border-[#eaeaec] font-mono text-[11px] font-bold">
                     {plan.code}
                   </span>
                 </td>
-                <td className="py-3 px-6 text-center font-black text-[#212c46] font-mono">
+                <td className="px-4 text-center font-black text-[#212c46] font-mono py-2.5">
                   {plan.target}
                 </td>
-                <td className="py-3 px-6 text-center font-black text-[#657f4d] font-mono">
+                <td className="px-4 text-center font-black text-[#657f4d] font-mono py-2.5">
                   {plan.produced}
                 </td>
-                <td className="py-3 px-6 text-center font-black text-[#7a8b95] font-mono">
+                <td className="px-4 text-center font-black text-[#7a8b95] font-mono py-2.5">
                   {plan.wip}
                 </td>
-                <td className="py-3 px-6">
+                <td className="px-4 py-2.5">
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-full bg-[#eaeaec] h-2 rounded-full overflow-hidden border border-[#eaeaec] shadow-inner">
                       <div
@@ -985,7 +958,7 @@ const OverviewView = () => (
                     </span>
                   </div>
                 </td>
-                <td className="py-3 px-6 pr-8 text-center">
+                <td className="px-4 pr-8 text-center py-2.5">
                   <span className="bg-[#f8f9fa] text-[#7a8b95] border border-[#d7d7d7] px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest shadow-sm">
                     {plan.status}
                   </span>
@@ -1055,7 +1028,7 @@ export default function DailyBoard() {
       />
 
       {/* HEADER SECTION */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -1107,7 +1080,7 @@ export default function DailyBoard() {
         </div>
       </div>
 
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-4 flex flex-col">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-4 flex flex-col">
         {/* KPI STATS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
           <KpiCard

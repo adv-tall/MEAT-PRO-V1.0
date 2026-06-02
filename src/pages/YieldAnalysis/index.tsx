@@ -248,72 +248,55 @@ export default function YieldAnalysis() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-        title="YIELD ANALYSIS STANDARD INSTRUCTION"
-        subtitle="ระบบวิเคราะห์ผลสัมฤทธิ์และสัดส่วนน้ำหนักสูญเสียรวม (Yield Evaluation Manual)"
+        title="YIELD ANALYSIS GUIDE"
+        subtitle="PRODUCTION YIELD & LOSS MANUAL"
       >
-        <div className="space-y-6">
-          
-          {/* Section 1 */}
-          <section className="bg-[#a94228]/5 p-4 rounded-xl border border-[#a94228]/20">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2 uppercase flex items-center gap-2 border-b border-[#a94228]/20 pb-2 font-mono">
-              <Icons.Info size={16} className="text-[#a94228]" />
-              1. สรุปความเข้าใจเกณฑ์ Yield การถนอมอาหารแปรรูป
-            </h4>
-            <div className="leading-relaxed text-[11px] text-[#414757] font-semibold space-y-1.5">
-              <p>ในสากลอุตสาหกรรมอาหารแช่แข็งแปรรูป (Sausage, Meatball, Bologna, Ham) ค่า Yield เปรียบเสมือนดัชนีตรวจวัดต้นทุนดิบในการแปรสภาพ ซึ่งแบ่งออกเป็น 2 กระบวนการหลัก:</p>
-              <ul className="list-disc pl-5 space-y-1 text-slate-500 font-bold">
-                <li><strong className="text-secondary font-mono">Cooking Yield (อัตราคืนรูปหลังต้ม/รมควัน):</strong> วัดปริมาณน้ำหนักหลังผ่านความชื้นหน้าเตาอบรมควัน (Cooked weight / Raw material inputs) ดัชนีนี้จะตอบโจทย์คุณภาพการอุ้มน้ำของคอลลาเจนเนื้อสัตว์และเศษแป้ง</li>
-                <li><strong className="text-secondary font-mono">Packaging Yield (อัตราการบรรจุเสร็จ):</strong> คำนวณปริมาณงานชิ้นแพ็คสุดท้ายไม่นับรวมส่วนตัดหัวท้าย ส่วนแตก ปลายไส้กรอกที่คัดกรองทิ้ง (Packed weight / Cooked weight)</li>
-              </ul>
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Scale size={16} className="text-[#3f809e]" /> 1. ภาพรวมการวิเคราะห์ค่า Yield (OVERVIEW)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    โมดูลนี้ใช้เพื่อตรวจวัดและรายงาน <strong>Yield (เปอร์เซ็นต์ผลผลิตดี)</strong> ซึ่งเป็นตัวชี้วัดสำคัญที่สุดในการบอกถึง "ความคุ้มค่าและความสูญเสีย" ของเนื้อวัตถุดิบตั้งแต่กระบวนการผสมจนถึงการแพ็ค โดยแบ่งออกเป็น 2 ช่วงหลักคือ:
+                </p>
+                <div className="space-y-3">
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                        <div className="bg-[#b58c4f] text-white p-2 rounded-lg shrink-0"><Icons.Thermometer size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">Cooking Yield (หลังต้ม/อบ/รมควัน)</strong>
+                            <p className="text-[#7a8b95]">น้ำหนักที่ได้หลังต้มเสร็จ เทียบกับ น้ำหนักของเหลวตอนผสม (บอกถึงประสิทธิภาพสูตรและคอลลาเจน)</p>
+                        </div>
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                        <div className="bg-[#a94228] text-white p-2 rounded-lg shrink-0"><Icons.Package size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">Packaging Yield (การแพ็คบรรจุ)</strong>
+                            <p className="text-[#7a8b95]">น้ำหนักที่บรรจุถุงรอขาย เทียบกับ น้ำหนักตอนเนื้อแช่เย็น (วัดการหั่นตัดเศษหัวท้าย)</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </section>
 
-          {/* Section 2 */}
-          <section className="space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-              <Icons.Award size={16} className="text-[#b7a159]" />
-              2. เกณฑ์ตรวจสอบและการเตือนระดับอันตราย (Yield Alert Limit Rules)
-            </h4>
-            <div className="space-y-2">
-              <div className="p-3 bg-[#657f4d]/5 border border-[#657f4d]/20 rounded-xl text-[11px]">
-                <strong className="text-[#657f4d] block font-mono">OPTIMAL STATUS (ปกติสีเขียว): Avg Yield ≥ Specified target</strong>
-                <p className="text-slate-500 mt-1">ออเดอร์เดินได้อย่างแม่นยำตามเกณฑ์มาตรฐาน ยินยอมปล่อยผ่านระบบควบคุม</p>
-              </div>
-              <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl text-[11px]">
-                <strong className="text-amber-600 block font-mono">WARNING LIMIT (เตือนไฟเหลือง): Yield &lt; target but ≥ warning</strong>
-                <p className="text-slate-500 mt-1">แจ้งเตือนสายวิเคราะห์ว่าระดับ Yield เริ่มเบี่ยงเบนจากมาตรฐานสูตรมาตรฐาน (Meat Formula Standard Yield) มีปัญหาน้ำสูญหายหรือการตัดเศษผิดพลาด</p>
-              </div>
-              <div className="p-3 bg-[#932c2e]/5 border border-[#932c2e]/20 rounded-xl text-[11px]">
-                <strong className="text-[#932c2e] block font-mono">CRITICAL ESCALATION (วิกฤตความจุสีแดง): Yield &lt; Escalation limit</strong>
-                <p className="text-slate-500 mt-1">ระบบจะประเมินเป็นระดับความเสียหายร้ายแรง ต้องอาศัยการเซ็นรับรับรองโดยผู้ดูแลระดับกึ่งบริหาร (Supervisor Overrides Required)</p>
-              </div>
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.AlertTriangle size={16} className="text-[#b58c4f]" /> 2. การแจ้งเตือนและระเบียบเกณฑ์ Yield (ALERT LOGIC)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    เพื่อให้มาตรฐานเป็นไปตามที่แต่ละประเภทสินค้าตั้งไว้ จะมีการแบ่งเงื่อนไขสีต่างๆ ดังนี้:
+                </p>
+                <ul className="list-decimal pl-5 space-y-2 text-[#414757] text-[12px]">
+                    <li><strong className="text-[#688a58]">Optimal (สีเขียว):</strong> Yield ≥ Target (ได้สัดส่วนตรงตามเป้าหมายของบริษัท) ปล่อยผ่านได้ทันที</li>
+                    <li><strong className="text-[#b58c4f]">Warning (สีเหลือง):</strong> Yield ตกจากเป้าหมายเล็กน้อย ระบบจะแจ้งให้ทีมวิเคราะห์ค้นหาสาเหตุของการคลาดเคลื่อนไปจากสูตร</li>
+                    <li><strong className="text-[#a94228]">Critical (สีแดง):</strong> เกิดของเสียผิดปกติและ Yield ร่วงเกินเส้นวิกฤติ ระบบจะห้ามผ่าน และต้องเรียก Supervisor มาอนุมัติเป็นกรณีพิเศษ</li>
+                </ul>
             </div>
-          </section>
-
-          {/* Section 3 */}
-          <section className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-1 uppercase flex items-center gap-2 border-b border-[#212c46]/20 pb-1.5 font-mono">
-              <Icons.Sliders size={16} className="text-primary" />
-              3. โครงสร้างการอัพเกรดตั้งค่าระบบ (Standard Wizard Layout Rules)
-            </h4>
-            <p className="text-[11px] text-[#414757] font-bold">
-              แท็บการตั้งค่าระบบ ยึดโครงสร้างตัวช่วยสร้างแบบ Multi-Step อนุมัติสิทธิที่ประกอบด้วย:
-            </p>
-            <ul className="list-disc pl-5 space-y-1.5 text-[10.5px] text-[#414757]">
-              <li><strong className="text-primary font-mono">STEP 1: Targets Matrix</strong> - ตั้งเกณฑ์สัดส่วน Yield เฉลี่ยรายหมวดอาหารจำเพาะ (ไส้กรอก ลูกชิ้น แฮม โบโลน่า)</li>
-              <li><strong className="text-primary font-mono">STEP 2: Safety Standard Control</strong> - เปิดระบบ Auto Flag ข้อมูลผิดพารามิเตอร์แปลกแปลก และขีดเกณฑ์ล็อก Escalation</li>
-              <li><strong className="text-primary font-mono">STEP 3: Models &amp; Alarm Trigger</strong> - เลือกระบบการคำนวณสูตรน้ำหนักคงรูป (Mass Balance / Hydration Index Adjusted)</li>
-            </ul>
-          </section>
-
-          <footer className="pt-4 border-t border-slate-200 text-center text-[10px] text-slate-400 font-black uppercase tracking-wider">
-            MES SYSTEM YIELD CALIBRATION MANUAL • v2.0
-          </footer>
         </div>
       </UserGuidePanel>
 
       {/* DISTINCT UNIFIED HEADER */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#212c46] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -348,7 +331,7 @@ export default function YieldAnalysis() {
       </div>
 
       {/* KPI GRID */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-2">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <KpiCard 
             label="Plant Average Yield" 
@@ -388,7 +371,7 @@ export default function YieldAnalysis() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
           
           {/* Left Column Yield Trend over 7 days */}
-          <div className="lg:col-span-8 bg-white rounded-3xl border border-[#eaeaec] p-6 shadow-lg flex flex-col min-h-[400px]">
+          <div className="lg:col-span-8 bg-white rounded-xl border border-[#eaeaec] p-6 shadow-lg flex flex-col min-h-[400px]">
             <h3 className="font-black text-[#212c46] flex items-center gap-2 uppercase tracking-widest text-xs mb-6 pb-3 border-b border-slate-100">
               <Icons.TrendingUp size={16} className="text-[#a94228]" /> Standard Multi-stage Product Group Yield Trends (7 Days)
             </h3>
@@ -410,7 +393,7 @@ export default function YieldAnalysis() {
           </div>
 
           {/* Right Column Target Comparison per batch */}
-          <div className="lg:col-span-4 bg-white rounded-3xl border border-[#eaeaec] p-6 shadow-lg flex flex-col min-h-[400px]">
+          <div className="lg:col-span-4 bg-white rounded-xl border border-[#eaeaec] p-6 shadow-lg flex flex-col min-h-[400px]">
             <h3 className="font-black text-[#212c46] flex items-center gap-2 uppercase tracking-widest text-xs mb-6 pb-3 border-b border-slate-100">
               <Icons.BarChart3 size={16} className="text-[#a94228]" /> Yield Performance Matrix
             </h3>
@@ -430,7 +413,7 @@ export default function YieldAnalysis() {
         </div>
 
         {/* DETAILS TABLE CARD */}
-        <div className="bg-white rounded-3xl border border-[#eaeaec] shadow-lg overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl border border-[#eaeaec] shadow-lg overflow-hidden flex flex-col">
           
           <div className="p-6 border-b border-[#eaeaec] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white">
             <div className="relative w-full sm:w-96">
@@ -450,18 +433,18 @@ export default function YieldAnalysis() {
           </div>
 
           <div className="overflow-x-auto custom-scrollbar bg-slate-50">
-            <table className="w-full text-left min-w-[1100px] border-collapse bg-white">
-              <thead>
-                <tr className="bg-[#212c46] text-[#d7d7d7] border-b-2 border-[#b7a159]">
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Batch ID</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Product Description</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-center">Batch Line</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-right">Raw Input weight</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-right">Cooking Yield %</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-right">Packaging Yield %</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-center">Gross Material yield</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-center">Status</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-center">Calibrate Raw</th>
+            <table className="w-full text-left min-w-[1100px] border-collapse bg-white table-font">
+              <thead className="sys-table-header">
+                <tr className="bg-[#212c46] text-[#d7d7d7]  [#b7a159]">
+                  <th className="font-black uppercase tracking-widest ">Batch ID</th>
+                  <th className="font-black uppercase tracking-widest ">Product Description</th>
+                  <th className="font-black uppercase tracking-widest  text-center">Batch Line</th>
+                  <th className="font-black uppercase tracking-widest  text-right">Raw Input weight</th>
+                  <th className="font-black uppercase tracking-widest  text-right">Cooking Yield %</th>
+                  <th className="font-black uppercase tracking-widest  text-right">Packaging Yield %</th>
+                  <th className="font-black uppercase tracking-widest  text-center">Gross Material yield</th>
+                  <th className="font-black uppercase tracking-widest  text-center">Status</th>
+                  <th className="font-black uppercase tracking-widest text-center">Calibrate Raw</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#eaeaec]">
@@ -472,24 +455,24 @@ export default function YieldAnalysis() {
                     
                     return (
                       <tr key={b.batchId} className="hover:bg-slate-50/80 transition-colors group">
-                        <td className="py-4 px-6 font-mono font-black text-[#a94228] text-xs">{b.batchId}</td>
-                        <td className="py-4 px-6 text-xs text-[#212c46]">
+                        <td className="px-4 font-mono font-black text-[#a94228] text-xs py-2.5">{b.batchId}</td>
+                        <td className="px-4 text-xs text-[#212c46] py-2.5">
                           <p className="font-black uppercase">{b.product}</p>
                           <p className="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5">{b.category} Matrix Standard</p>
                         </td>
-                        <td className="py-4 px-6 text-center text-xs font-black text-slate-600 uppercase tracking-tight">{b.line}</td>
-                        <td className="py-4 px-6 text-right font-mono text-xs font-black text-[#212c46]">
+                        <td className="px-4 text-center text-xs font-black text-slate-600 uppercase tracking-tight py-2.5">{b.line}</td>
+                        <td className="px-4 text-right font-mono text-xs font-black text-[#212c46] py-2.5">
                           {b.rawInputKg.toLocaleString()} <span className="text-[9px] text-slate-400">Kg</span>
                         </td>
-                        <td className="py-4 px-6 text-right font-mono text-xs font-black text-[#212c46]">
+                        <td className="px-4 text-right font-mono text-xs font-black text-[#212c46] py-2.5">
                           <span className="font-bold text-slate-500 mr-2">({b.cookedOutputKg} Kg)</span>
                           {b.cookingYield.toFixed(1)} %
                         </td>
-                        <td className="py-4 px-6 text-right font-mono text-xs font-black text-[#212c46]">
+                        <td className="px-4 text-right font-mono text-xs font-black text-[#212c46] py-2.5">
                           <span className="font-bold text-slate-500 mr-2">({b.finalPackedKg} Kg)</span>
                           {b.packagingYield.toFixed(1)} %
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <div className="flex flex-col items-center justify-center">
                             <span className={`px-3 py-1 rounded-full text-xs font-black font-mono border ${
                               isOptimal 
@@ -503,7 +486,7 @@ export default function YieldAnalysis() {
                             <span className="text-[9px] text-slate-400 font-bold mt-1">Loss: -{b.totalLossKg} Kg</span>
                           </div>
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <span className={`px-2.5 py-1 rounded text-[9.5px] font-black uppercase tracking-wider border ${
                             isOptimal 
                               ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
@@ -514,7 +497,7 @@ export default function YieldAnalysis() {
                             {b.status}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <button 
                             onClick={() => {
                               setSelectedBatch({ ...b });
@@ -531,7 +514,7 @@ export default function YieldAnalysis() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={9} className="py-12 text-center text-xs font-black text-slate-400 uppercase tracking-widest">
+                    <td className="text-center text-xs font-black text-slate-400 uppercase tracking-widest py-2.5 px-4">
                       <Icons.Database className="mx-auto text-slate-300 mb-2" size={32} />
                       No registered batch records found matching search
                     </td>

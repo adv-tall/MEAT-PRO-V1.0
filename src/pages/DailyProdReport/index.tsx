@@ -416,50 +416,56 @@ export default function DailyProdReport() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-        title="DAILY PRODUCTION REPORT NODE MANUAL"
-        subtitle="ระบบบริหารและออดิตผลลัพธ์ประสิทธิภาพกำลังผลิตรายวัน"
+        title="DAILY PRODUCTION REPORT GUIDE"
+        subtitle="PRODUCTION & OEE MONITORING MANUAL"
       >
-        <div className="space-y-6">
-          <div className="border-l-4 border-[#b7a159] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 1: Standard Compliance & OEE Baselines</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">มาตรฐานการควบคุมระบบผลิตและการวัดสมรรถนะเครื่องจักร</p>
-          </div>
-          <p className="leading-relaxed text-[#414757]">
-            การออดิตรายงานความสอดคล้องทางผลผลิตรายกะ (Daily Production Consistency) ยึดเกณฑ์การบริหารจัดการอุตสาหกรรมสากล 
-            และอิงตามระบบบริหารคุณภาพ <strong>ISO 9001:2015 Clause 8.5.1</strong> รวมทั้งมาตรการอาหารปลอดภัย GMP:
-          </p>
-          <ul className="list-inside list-disc space-y-2 pl-1 font-bold text-[#4d5a44]">
-            <li><strong>Minimum Acceptable Yield (ดัชนีผลผลิตยอมรับได้ต่ำสุด): {settings.minAcceptableYield}%</strong> หากสัดส่วนวัตถุดิบเสียหาย (Defects) มีค่าเกินขีดจำกัดสะสม รายงานจะถูกระบบสั่งตรึง "Flagged" เป็นสถานะเฝ้าระวังความเสี่ยงขั้นสูงโดยอัตโนมัติ</li>
-            <li><strong>Overall Equipment Effectiveness (OEE Baseline): {settings.targetOeeLevel}%</strong> คำนวณร่วมกันระหว่่าง ความพร้อมใช้งาน (Availability Run), สมรรถนะประสิทธิภาพ (Performance Rate) และ อัตราคุณภาพ (Quality Yield)</li>
-            <li><strong>Downtime Containment Guard (ข้อจำกัดการหยุดทำงาน): ไม่เกิน {settings.maxDowntimeMin} นาที / กะ</strong> หากนานกว่านี้นายช่างและหัวหน้าหน่วยต้องทรานสคริปรายงานด่วน</li>
-          </ul>
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.FileBarChart size={16} className="text-[#3f809e]" /> 1. ภาพรวมการรายงานผลผลิต (OVERVIEW)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    โมดูลรายงานการผลิตรายวัน ใช้สำหรับรวบรวมยอดผลิตเสร็จสมบูรณ์ต่อกะเทียบกับเป้าหมายที่ตั้งไว้ (Target vs Actual) รวมไปถึงการประเมิน <strong>OEE (Overall Equipment Effectiveness)</strong> เพื่อให้รู้ว่าวันนี้เราสูญเสียเวลาไปกับ Downtime หรือของเสียไปเท่าไร
+                </p>
+                <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                    <div className="bg-[#a94228] text-white p-2 rounded-lg shrink-0"><Icons.ShieldAlert size={16} /></div>
+                    <div>
+                        <strong className="text-[#212c46]">System Safety Logic</strong>
+                        <p className="text-[#7a8b95]">ถ้า Yield (เปอร์เซ็นต์ผลผลิตดี) ออกมาต่ำกว่า {settings.minAcceptableYield}% ระบบจะทำการขึ้นประทับตรา <strong>FLAGGED</strong> (เฝ้าระวังสีแดง) ในรายงานตัวท็อปทันที เพื่อแจ้งเตือนผู้อำนวยการโรงงาน</p>
+                    </div>
+                </div>
+            </div>
 
-          <div className="p-4 bg-[#a94228]/10 border border-[#a94228]/35 rounded-2xl space-y-2">
-            <h5 className="font-black text-[#a94228] uppercase text-[11px] tracking-wider flex items-center gap-1.5">
-              <Icons.ShieldAlert size={14} /> แผนเผชิญเหตุความบกพร่อง (Active PDCA Actions)
-            </h5>
-            <ol className="text-[#212c46] leading-relaxed text-[11px] list-decimal pl-4 space-y-1">
-              <li>กรณีเกิดความเหลื่อมล้ำผลผลิตต่ำกว่าเป้าหมาย (Flagged Status) จะกระตุ้นส่งระบบคู่ขนาน <strong>Double Review Supervisor Verification Route</strong></li>
-              <li>ผู้กำกับหน้าร้านจะต้องเข้ากักกันตรวจสอบ (Quarantine Area Inspection) และดำเนินการ Re-test อนุมัติรอยซีลและโครงสร้างสินค้า</li>
-              <li>พารามิเตอร์ผิดสัดส่วนต้องบันทึกสาเหตุขัดข้องพร้อมมาตรการลดผลกระทบลงในช่อง Remarks เสมอ</li>
-            </ol>
-          </div>
+            <div className="h-px bg-[#eaeaec] w-full" />
 
-          <div className="border-l-4 border-[#3f809e] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 2: Interactive Entry Instructions</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">กฎระเบียบปฏิบัติสำหรับพนักงานบันทึกข้อมูลหน้าร้าน</p>
-          </div>
-          <p className="leading-relaxed">
-            ผู้ควบคุมแถวการแปรรูป (Inspectors/Supervisors) ต้องลงบันทึกเวลาการปิดรอบแบทช์อย่างชัดเจน โดย:
-            <br />1. บันทึกปริมาณเป้าหมายตามกำหนดการ Planner (Target Qty) และปริมาณที่บรรลุจริง (Actual Qty)
-            <br />2. บันทึก downtime เป็นเลเวลนาที พร้อมจัดกลุ่มเครื่องมือที่ส่งสัญญานขัดข้อง
-            <br />3. จัดทำสารสำรวจและแนบลายเซ็นเพื่อแสดงความรับผิดชอบเชิงนิติกรรมและคุณภาพอาหาร
-          </p>
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.TrendingUp size={16} className="text-[#b58c4f]" /> 2. การวัดผล OEE (OEE BASELINES)
+                </h3>
+                <ul className="list-decimal pl-5 space-y-2 text-[#414757] text-[12px]">
+                    <li><strong>เป้าหมายหลัก:</strong> แผนกผลิตจะต้องรักษาระดับผลลัพธ์ OEE ให้อยู่เหนือ {settings.targetOeeLevel}% เป็นเกณฑ์ขั้นต่ำตามนโยบายบริษัท</li>
+                    <li><strong>Downtime Containment Guard:</strong> ใน 1 กะอนุญาตให้มีการหยุดเครื่องแบบพึ่งระวังไม่เกิน {settings.maxDowntimeMin} นาที หากเกินขีดจำกัด ผู้ควบคุมไลน์ (Supervisor) จำเป็นต้องระบุหมายเหตุ/สาเหตุลงช่อง Remarks เสมอ</li>
+                </ul>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.CheckCircle size={16} className="text-[#688a58]" /> 3. ขั้นตอนการลงรายงานสำหรับเจ้าหน้าที่ (OPERATORS)
+                </h3>
+                <div className="space-y-2 text-[#414757] text-[12px]">
+                    <p>1. กดปุ่ม <strong className="text-[#212c46]">+ NEW REPORT ENTRY</strong> เพื่อเปิดแผ่นบันทึกสำหรับกะนั้นๆ</p>
+                    <p>2. กรอกตัวเลขเป้าหมาย <strong>(Target)</strong> เทียบกับ ตัวเลขที่แพ็คเสร็จนับเข้าคลังจริง <strong>(Actual)</strong> ของสินค้านั้น</p>
+                    <p>3. หากเกิดเครื่องจักรขัดข้อง ให้ระบุเวลา <strong>Downtime (Min)</strong> อย่างซื่อตรง เพื่อให้ระบบแม่นยำ</p>
+                    <p>4. เมื่อเซฟแล้วหากยังไม่สมบูรณ์ข้อมูลจะถูกตั้งเป็น ดราฟท์ ไว้ก่อน และสามารถกด Approve เพื่อยืนยันเข้าที่ประชุมลีดเดอร์ได้</p>
+                </div>
+            </div>
         </div>
       </UserGuidePanel>
 
       {/* HEADER NODE CONTAINER */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-25 rounded-full group-hover:opacity-70 transition-all duration-700"></div>
@@ -505,7 +511,7 @@ export default function DailyProdReport() {
       </div>
 
       {/* SYSTEM KPI MODULES GRID */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
           <KpiCard
             label="Actual Yield Rate"
@@ -543,7 +549,7 @@ export default function DailyProdReport() {
 
         {/* SCREEN VIEWS */}
         {activeTab === 'list_mode' ? (
-          <div className="bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
             
             {/* SUB-HEADER FILTERS & ACTIONS */}
             <div className="px-8 py-4 border-b border-[#eaeaec] bg-[#f8f9fa] flex flex-col lg:flex-row justify-between items-center gap-4 shrink-0">
@@ -582,25 +588,25 @@ export default function DailyProdReport() {
 
             {/* LEDGER GRID TABLE */}
             <div className="overflow-auto custom-scrollbar">
-              <table className="w-full text-left font-sans border-collapse">
-                <thead className="bg-[#212c46] text-white border-b-2 border-[#b58c4f]">
-                  <tr>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Report ID / Date</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Shift Node / Line</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest whitespace-nowrap w-[150px] max-w-[150px]">Target Product Name</th>
-                    <th className="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap w-[130px]">Output</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Yield Rate</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">OEE Efficiency</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Downtime</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Auditor Remarks</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Compliance</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Action</th>
+              <table className="w-full text-left border-collapse table-font">
+                <thead className="sys-table-header [#b58c4f] ">
+                    <tr>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Report ID / Date</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Shift Node / Line</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap w-[150px] max-w-[150px]">Target Product Name</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap w-[130px]">Output</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Yield Rate</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">OEE Efficiency</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Downtime</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Auditor Remarks</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Compliance</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Action</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-[#eaeaec]">
                   {currentData.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="text-center py-12 text-[#7a8b95] uppercase font-black tracking-widest text-[12px]">
+                      <td className="text-center text-[#7a8b95] uppercase font-black tracking-widest text-[12px] py-2.5 px-4">
                         No recorded production shift logs found in the archives.
                       </td>
                     </tr>
@@ -611,22 +617,22 @@ export default function DailyProdReport() {
                       
                       return (
                         <tr key={rep.id} className="hover:bg-[#f8f9fa] transition-colors group">
-                          <td className="px-6 py-4 whitespace-nowrap font-mono font-black text-[#212c46]">
+                          <td className="px-4 whitespace-nowrap font-mono font-black text-[#212c46] py-2.5">
                             <div className="flex flex-col">
                               <span className="text-[12px]">{rep.id}</span>
                               <span className="text-[9px] text-[#7a8b95] font-bold mt-0.5">{rep.date}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-4 whitespace-nowrap py-2.5">
                             <div className="flex flex-col">
                               <span className="font-extrabold uppercase text-[#212c46] text-[11px]">{rep.shift}</span>
                               <span className="text-[10px] text-[#3f809e] font-bold uppercase mt-0.5">{rep.lineId}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap w-[150px] max-w-[150px]" title={rep.productName}>
+                          <td className="px-4 whitespace-nowrap w-[150px] max-w-[150px] py-2.5" title={rep.productName}>
                             <span className="font-black text-[#212c46] uppercase text-[12px] tracking-tight block truncate">{rep.productName}</span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-center w-[130px]">
+                          <td className="px-4 whitespace-nowrap text-center w-[130px] py-2.5">
                             <div className="flex flex-col items-center">
                               <span className="text-[12px] font-black text-[#212c46]">
                                 {rep.actualQty.toLocaleString()} / <span className="text-[#7a8b95] font-semibold">{rep.targetQty.toLocaleString()}</span> Packs
@@ -639,37 +645,37 @@ export default function DailyProdReport() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <span className={`text-[12px] font-black inline-flex items-center gap-1 ${isLowYield ? 'text-[#932c2e]' : 'text-[#657f4d]'}`}>
                               <span className={`w-1.5 h-1.5 rounded-full ${isLowYield ? 'bg-[#932c2e]' : 'bg-[#657f4d]'}`} />
                               {rep.yieldRate}%
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <div className="inline-flex flex-col items-center">
                               <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-black border text-center ${isLowOee ? 'bg-[#b58c4f]/10 text-[#b58c4f] border-[#b58c4f]/20' : 'bg-[#657f4d]/10 text-[#657f4d] border-[#657f4d]/20'}`}>
                                 {rep.oee}%
                               </span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <span className={`text-[11px] font-bold ${rep.downtimeMin > settings.maxDowntimeMin ? 'text-[#932c2e] font-black' : 'text-[#414757]'}`}>
                               {rep.downtimeMin} Mins
                             </span>
                           </td>
-                          <td className="px-6 py-4 w-[350px] max-w-[350px]">
+                          <td className="px-4 w-[350px] max-w-[350px] py-2.5">
                             <div className="w-full relative group" title={rep.remarks || '-'}>
                               <p className="text-[11px] font-bold text-[#414757] leading-tight truncate">{rep.remarks || '-'}</p>
                               <span className="text-[9px] uppercase font-bold text-[#7a8b95] mt-0.5 block truncate">Supervisor: {rep.supervisor}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase border tracking-wider shadow-sm ${rep.status === 'Approved' ? 'bg-[#657f4d]/15 text-[#657f4d] border-[#657f4d]/30' : 'bg-[#932c2e]/10 text-[#a94228] border-[#a94228]/35 animate-pulse'}`}>
                               {rep.status === 'Approved' ? <Icons.CheckSquare size={10}/> : <Icons.AlertTriangle size={10}/>}
                               {rep.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <button
                               onClick={() => handleOpenEdit(rep)}
                               className="p-2 text-[#4d87a8] hover:bg-[#4d87a8]/10 rounded-xl border border-transparent hover:border-[#4d87a8]/30 transition-all cursor-pointer"
@@ -725,7 +731,7 @@ export default function DailyProdReport() {
           /* CHARTS MODE VIEW */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
             {/* GRAPH ONE: Target Volume compare */}
-            <div className="lg:col-span-8 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
+            <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
               <div className="border-b-2 border-[#b58c4f] pb-4 mb-4">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.TrendingUp size={20} className="text-[#3f809e]" /> Daily Output Integrity Profile
@@ -748,7 +754,7 @@ export default function DailyProdReport() {
             </div>
 
             {/* GRAPH TWO: Loss Distribution Share */}
-            <div className="lg:col-span-4 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
+            <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
               <div className="border-b-2 border-[#b58c4f] pb-4 mb-4">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.PieChart size={20} className="text-[#a94228]" /> Defect Share Analysis
@@ -795,7 +801,7 @@ export default function DailyProdReport() {
             </div>
 
             {/* GRAPH THREE: Correlation Trends */}
-            <div className="lg:col-span-12 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec]">
+            <div className="lg:col-span-12 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
               <div className="border-b-2 border-[#b58c4f] pb-4 mb-4">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.Activity size={20} className="text-[#657f4d]" /> OEE % & Yield % Correlation Matrix
@@ -924,7 +930,7 @@ export default function DailyProdReport() {
                   </select>
                 </div>
                 
-                <div className="p-4 bg-[#657f4d]/5 border border-[#657f4d]/30 rounded-2xl">
+                <div className="p-4 bg-[#657f4d]/5 border border-[#657f4d]/30 rounded-xl">
                   <h4 className="font-extrabold uppercase text-[10px] text-[#657f4d] flex items-center gap-1">
                     <Icons.ShieldCheck size={14} /> Verification Protocol Signature Hook
                   </h4>
@@ -1072,7 +1078,7 @@ export default function DailyProdReport() {
                   <p className="text-[10px] text-[#7a8b95] uppercase font-bold mt-0.5">การทวนสอบขั้นที่สองและการระบุสถานภาพผิดปกติโดยอัตราส่วนออโตเมติก</p>
                 </div>
                 <div className="space-y-3">
-                  <label className="flex items-center gap-3.5 p-3.5 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#3f809e] transition-colors">
+                  <label className="flex items-center gap-3.5 p-3.5 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#3f809e] transition-colors">
                     <input
                       type="checkbox"
                       checked={settings.requireDoubleReview}
@@ -1084,7 +1090,7 @@ export default function DailyProdReport() {
                       <span className="block text-[9px] text-[#7a8b95] font-bold mt-0.5">กระตุ้นกระบวนการประเมินร่วมหากสัดส่วนที่บันทึกแปรเป็น Flagged</span>
                     </div>
                   </label>
-                  <label className="flex items-center gap-3.5 p-3.5 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#3f809e] transition-colors">
+                  <label className="flex items-center gap-3.5 p-3.5 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#3f809e] transition-colors">
                     <input
                       type="checkbox"
                       checked={settings.autoFlagAlert}

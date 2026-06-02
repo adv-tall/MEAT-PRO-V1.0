@@ -250,10 +250,74 @@ export default function SystemConfig() {
           <span className="font-black tracking-[0.3em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap uppercase text-[11px]">USER GUIDE</span>
       </button>
 
-      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="CONFIG GUIDE" subtitle="SYSTEM MASTER DATA CONFIGURATION">
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Database size={16} className="text-[#b7a159]" /> 1. MASTER DATA MANAGEMENT
+                </h3>
+                <p className="mb-4">หน้านี้คือศูนย์กลางการควบคุมข้อมูลพื้นฐานของระบบ (Global Master Data Node) สำหรับใช้งานร่วมกันทุกโมดูล</p>
+                <div className="space-y-3">
+                    <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#3f809e] mt-2 shrink-0"></div>
+                        <div>
+                            <span className="font-bold text-[#3f809e]">Departments: </span>
+                            กำหนดรหัสแผนกเพื่อใช้จัดหมวดหมู่พนักงาน การอนุมัติ และสิทธิ์การเข้าถึง
+                        </div>
+                    </div>
+                    <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#d55a6d] mt-2 shrink-0"></div>
+                        <div className="text-[#414757]">
+                            <span className="font-bold text-[#d55a6d]">Categories & Brands: </span>
+                            จัดกลุ่มสินค้าหลักและจัดการแบรนด์สินค้า (ทั้งแบรนด์ภายในและ OEM) เพื่อความแม่นยำในการทำรายงาน Inventory และ Sales
+                        </div>
+                    </div>
+                    <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#688a58] mt-2 shrink-0"></div>
+                        <div>
+                            <span className="font-bold text-[#688a58]">Customers: </span>
+                            ฐานข้อมูลคู่ค้าหลักสำหรับการอ้างอิงใบสั่งซื้อและระบบการจัดส่ง
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.AlignVerticalJustifyCenter size={16} className="text-[#3f809e]" /> 2. ID GENERATION RULES
+                </h3>
+                <p className="mb-4">กำหนดรูปแบบรหัสเอกสารอัตโนมัติ (Document Auto-Numbering) ในระบบ คุณสามารถตั้งค่าตัวแปรดังนี้ :</p>
+                <ul className="space-y-3 list-disc pl-5">
+                    <li><span className="font-bold">Prefix:</span> ตัวอักษรคำนำหน้าเอกสาร เช่น PO, PR, INV</li>
+                    <li><span className="font-bold">Date Format:</span> รูปแบบวันที่ที่ต้องการแทรก (เช่น YYMMDD, YYYYMM)</li>
+                    <li><span className="font-bold">Sequence Digits:</span> จำนวนหลักของตัวเลขรันนิ่งลำดับ เช่น 3 หลัก คือ 001</li>
+                    <li><span className="font-bold">Reset Cycle:</span> รอบในการเริ่มนับ 1 ใหม่ (เช่น รีเซ็ตรายวัน, รายเดือน)</li>
+                </ul>
+            </div>
+            
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Printer size={16} className="text-[#d55a6d]" /> 3. PDF COMPLIANCE HEADER
+                </h3>
+                <p className="mb-4">จัดการ Header ข้อมูลในฟอร์ม PDF มาตรฐาน ISO/GMP โดยคุณสามารถกำหนดเลขที่ฟอร์ม (Form Code) และครั้งที่แก้ไข (Revision) เพื่อให้เอกสารที่ถูก Print ออกจากระบบมีความถูกต้องตามมาตรฐานการควบคุมเอกสารขององค์กร</p>
+                
+                <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl flex items-start gap-3 mt-4">
+                    <Icons.AlertTriangle size={16} className="text-[#932c2e] mt-0.5 shrink-0" />
+                    <div className="text-[#932c2e]">
+                        <span className="font-bold">ข้อควรระวัง: </span>
+                        การลบข้อมูล Master Data ที่มีการผูกกับข้อมูล Transaction ไปแล้ว (เช่น ลบแผนกที่มีพนักงานอยู่) อาจส่งผลให้รายงานและข้อมูลย้อนหลังแสดงผลผิดพลาด โปรดตรวจสอบให้แน่ใจก่อนทำการลบ
+                    </div>
+                </div>
+            </div>
+        </div>
+      </UserGuidePanel>
 
       {/* HEADER SECTION */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
           <div className="flex items-center gap-5">
               <div className="relative flex items-center justify-center group cursor-default shrink-0">
                   <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -282,7 +346,7 @@ export default function SystemConfig() {
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="w-full">
             
             {/* KPI STATS */}
@@ -295,13 +359,13 @@ export default function SystemConfig() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 {/* SIDEBAR TABS */}
-                <div className="lg:col-span-3 space-y-2 bg-white/90 p-6 rounded-3xl border border-[#eaeaec] shadow-lg h-fit">
+                <div className="lg:col-span-3 space-y-2 bg-white/90 p-6 rounded-xl border border-[#eaeaec] shadow-lg h-fit">
                     <p className="text-[12px] font-black text-[#212c46] uppercase tracking-widest mb-4 border-b-2 border-[#b7a159] pb-2">Control Nodes</p>
                     {TABS.map(tab => (
                         <button 
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all relative group ${activeTab === tab.id ? 'bg-[#212c46] text-white shadow-md' : 'bg-white text-[#7a8b95] hover:bg-[#f8f9fa] hover:text-[#a94228] border border-[#eaeaec]'}`}
+                            className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all relative group ${activeTab === tab.id ? 'bg-[#212c46] text-white shadow-md' : 'bg-white text-[#7a8b95] hover:bg-[#f8f9fa] hover:text-[#a94228] border border-[#eaeaec]'}`}
                         >
                             <div className={`p-2 rounded-xl shrink-0 ${activeTab === tab.id ? 'bg-[#b7a159]/20 text-[#b7a159]' : 'bg-[#f8f9fa] text-[#4d87a8] border border-[#eaeaec]'}`}>
                                 <LucideIcon name={tab.icon} size={18} />
@@ -316,8 +380,8 @@ export default function SystemConfig() {
                 </div>
 
                 {/* CONTENT LIST */}
-                <div className="lg:col-span-9 bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
-                    <div className="px-8 py-5 border-b border-[#eaeaec] bg-[#f8f9fa] flex flex-col md:flex-row justify-between items-center gap-4">
+                <div className="lg:col-span-9 bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+                    <div className="px-4 py-4 border-b border-[#eaeaec] bg-white flex flex-col md:flex-row justify-between items-center gap-4">
                         <div>
                             <h4 className="text-[18px] font-black uppercase text-[#212c46] tracking-tight flex items-center gap-3">
                                 <LucideIcon name={activeTabData.icon} size={22} className="text-[#b7a159]"/> {activeTabData.title}
@@ -336,31 +400,31 @@ export default function SystemConfig() {
                     </div>
 
                     <div className="overflow-x-auto custom-scrollbar">
-                        <table className="w-full text-left font-sans border-collapse">
-                            <thead className="bg-[#212c46] border-b-2 border-[#b7a159] text-white uppercase tracking-widest text-[12px] font-black sticky top-0 z-10">
-                                <tr>
+                        <table className="w-full text-left border-collapse table-font">
+                            <thead className="sys-table-header [#b7a159] uppercase tracking-widest font-black sticky top-0 z-10 ">
+                    <tr>
                                     {activeTab === 'idFormats' ? (
                                         <>
-                                            <th className="py-4 px-6 whitespace-nowrap text-[12px]">Pages</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Prefix</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Format</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Rule</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Actions</th>
+                                            <th className="whitespace-nowrap ">Pages</th>
+                                            <th className="text-center whitespace-nowrap ">Prefix</th>
+                                            <th className="text-center whitespace-nowrap ">Format</th>
+                                            <th className="text-center whitespace-nowrap ">Rule</th>
+                                            <th className="text-center whitespace-nowrap ">Actions</th>
                                         </>
                                     ) : activeTab === 'pdfTemplates' ? (
                                         <>
-                                            <th className="py-4 px-6 whitespace-nowrap text-[12px]">Template</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Department</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Code</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Revision</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Actions</th>
+                                            <th className="whitespace-nowrap ">Template</th>
+                                            <th className="text-center whitespace-nowrap ">Department</th>
+                                            <th className="text-center whitespace-nowrap ">Code</th>
+                                            <th className="text-center whitespace-nowrap ">Revision</th>
+                                            <th className="text-center whitespace-nowrap ">Actions</th>
                                         </>
                                     ) : (
                                         <>
-                                            <th className="py-4 px-6 whitespace-nowrap text-[12px]">Identification</th>
-                                            {activeTab === 'departments' && <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Sys Code</th>}
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Status</th>
-                                            <th className="py-4 px-6 text-center whitespace-nowrap text-[12px]">Actions</th>
+                                            <th className="whitespace-nowrap ">Identification</th>
+                                            {activeTab === 'departments' && <th className="text-center whitespace-nowrap ">Sys Code</th>}
+                                            <th className="text-center whitespace-nowrap ">Status</th>
+                                            <th className="text-center whitespace-nowrap ">Actions</th>
                                         </>
                                     )}
                                 </tr>
@@ -370,45 +434,45 @@ export default function SystemConfig() {
                                     <tr key={item.id} className="hover:bg-[#f8f9fa] transition-colors group">
                                         {activeTab === 'idFormats' ? (
                                             <>
-                                                <td className="py-3 px-6 text-[12px]">
+                                                <td className="px-4 text-[12px] py-2.5">
                                                     <div className="flex flex-wrap gap-1.5">
                                                         {item.pages?.map((p: any, i: any) => (
                                                             <span key={i} className="px-2.5 py-1 bg-[#212c46]/5 text-[#212c46] rounded-lg text-[11px] font-black border border-[#eaeaec] uppercase">{p}</span>
                                                         ))}
                                                     </div>
                                                 </td>
-                                                <td className="py-3 px-6 text-center font-black text-[#4d87a8] text-[12px] font-mono">{item.prefix}</td>
-                                                <td className="py-3 px-6 text-center text-[12px]">
+                                                <td className="px-4 text-center font-black text-[#4d87a8] text-[12px] font-mono py-2.5">{item.prefix}</td>
+                                                <td className="px-4 text-center text-[12px] py-2.5">
                                                     <span className="bg-[#f8f9fa] text-[#212c46] px-3 py-1.5 rounded-lg font-mono font-black text-[12px] border border-[#eaeaec]">{item.format}</span>
                                                 </td>
-                                                <td className="py-3 px-6 text-center text-[12px]">
+                                                <td className="px-4 text-center text-[12px] py-2.5">
                                                     <p className="text-[12px] font-black text-[#212c46]">{item.sequenceDigit} Digits</p>
                                                     <p className="text-[11px] font-bold text-[#7a8b95] uppercase mt-0.5">{item.reset} Reset</p>
                                                 </td>
                                             </>
                                         ) : activeTab === 'pdfTemplates' ? (
                                             <>
-                                                <td className="py-3 px-6 font-black text-[#212c46] text-[12px] uppercase tracking-tight">{item.name}</td>
-                                                <td className="py-3 px-6 text-center font-bold text-[#7a8b95] text-[11px] uppercase tracking-widest">{item.dept}</td>
-                                                <td className="py-3 px-6 text-center font-mono font-black text-[#212c46] text-[12px]">{item.code}</td>
-                                                <td className="py-3 px-6 text-center font-black text-[#d96245] text-[12px]">{item.revision}</td>
+                                                <td className="px-4 font-black text-[#212c46] text-[12px] uppercase tracking-tight py-2.5">{item.name}</td>
+                                                <td className="px-4 text-center font-bold text-[#7a8b95] text-[12px] uppercase tracking-widest py-2.5">{item.dept}</td>
+                                                <td className="px-4 text-center font-mono font-black text-[#212c46] text-[12px] py-2.5">{item.code}</td>
+                                                <td className="px-4 text-center font-black text-[#d96245] text-[12px] py-2.5">{item.revision}</td>
                                             </>
                                         ) : (
                                             <>
-                                                <td className="py-3 px-6 text-[12px]">
+                                                <td className="px-4 text-[12px] py-2.5">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-2 h-2 rounded-full bg-[#b7a159] shrink-0"></div>
                                                         <span className="font-black text-[#212c46] text-[12px] uppercase tracking-tight">{item.name}</span>
                                                     </div>
                                                 </td>
-                                                {activeTab === 'departments' && <td className="py-3 px-6 text-center font-mono font-black text-[#4d87a8] text-[12px]">{item.code}</td>}
-                                                <td className="py-3 px-6 text-center text-[12px]">
+                                                {activeTab === 'departments' && <td className="px-4 text-center font-mono font-black text-[#4d87a8] text-[12px] py-2.5">{item.code}</td>}
+                                                <td className="px-4 text-center text-[12px] py-2.5">
                                                    <span className="px-3 py-1 bg-[#657f4d]/10 text-[#657f4d] border border-[#657f4d]/20 rounded-full text-[11px] font-black uppercase tracking-widest">Active</span>
                                                 </td>
                                             </>
                                         )}
-                                        <td className="py-3 px-6 text-center text-[12px]">
-                                            <div className="flex justify-center items-center gap-[0.5px]">
+                                        <td className="px-4 text-center text-[12px] py-2.5">
+                                            <div className="flex justify-center items-center gap-[1px]">
                                                 <button onClick={() => handleOpenModal(item)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90" title="Edit">
                                                     <Pencil size={16} />
                                                 </button>
@@ -475,7 +539,7 @@ export default function SystemConfig() {
         }
       >
              <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-[#f8f9fa]">
-                <form id="configForm" onSubmit={handleSave} className="bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm space-y-6">
+                <form id="configForm" onSubmit={handleSave} className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm space-y-6">
                     {activeTab === 'idFormats' ? (
                       <div className="space-y-6">
                         <div>

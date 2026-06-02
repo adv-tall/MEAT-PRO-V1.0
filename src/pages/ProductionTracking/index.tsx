@@ -365,92 +365,7 @@ const LucideIcon = ({
   );
 };
 
-const GuideContent = () => (
-  <>
-    <section className="animate-fadeIn">
-      <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#d7d7d7] pb-2 font-mono">
-        <Icons.Activity size={18} className="text-[#4d87a8]" /> 1. Real-time
-        Floor Monitoring
-      </h4>
-      <p className="text-[12px] mb-3">
-        บอร์ดนี้ใช้สำหรับติดตามความคืบหน้าของออเดอร์ในสายการผลิต
-        ข้อมูลจะถูกซิงค์มาจาก <strong>Production Planning</strong> แบบ Real-time
-        ประกอบด้วยมุมมองต่างๆ:
-      </p>
-      <ul className="list-none pl-0 space-y-3">
-        <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec]">
-          <span className="w-2 h-2 rounded-full bg-[#4d87a8] mt-1 shrink-0"></span>
-          <div>
-            <strong className="text-[#4d87a8] font-mono">DAILY MONITOR:</strong>{" "}
-            ภาพรวมออเดอร์ Active Orders แยกตามสถานะทุกขั้นตอนการผลิต (Mixing,
-            Forming, Cooking...) พร้อมแถบความคืบหน้าวงกลม
-          </div>
-        </li>
-        <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec]">
-          <span className="w-2 h-2 rounded-full bg-[#d96245] mt-1 shrink-0"></span>
-          <div>
-            <strong className="text-[#d96245] font-mono">PACKING QUEUE:</strong>{" "}
-            คิวบรรจุภัณฑ์สำหรับสินค้าที่พิมพ์และผ่านกระบวนการทำความเย็นมาแล้ว
-            รอคิวบรรจุเข้าซอง/กล่อง
-          </div>
-        </li>
-        <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec]">
-          <span className="w-2 h-2 rounded-full bg-[#f59e0b] mt-1 shrink-0"></span>
-          <div>
-            <strong className="text-[#f59e0b] font-mono">NOT STARTED:</strong>{" "}
-            ออเดอร์ที่ได้รับการวางแผนแล้ว
-            แต่รอพนักงานเบิกจ่ายวัตถุดิบและเริ่มการผลิต
-          </div>
-        </li>
-        <li className="flex items-start gap-2 bg-[#f8f9fa] p-3 rounded-xl border border-[#eaeaec]">
-          <span className="w-2 h-2 rounded-full bg-[#2e7d32] mt-1 shrink-0"></span>
-          <div>
-            <strong className="text-[#2e7d32] font-mono">COMPLETED:</strong>{" "}
-            ออเดอร์ที่ผลิตสำเร็จ ส่งเข้าตรวจรับ (FG Transfer)
-            พร้อมสำหรับการจัดส่ง
-          </div>
-        </li>
-      </ul>
-    </section>
 
-    <section className="animate-fadeIn" style={{ animationDelay: "0.1s" }}>
-      <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#d7d7d7] pb-2 font-mono">
-        <Icons.ShieldAlert size={18} className="text-[#d96245]" /> 2. Read-Only
-        System
-      </h4>
-      <p className="text-[12px] mb-3">
-        ระบบนี้ถูกออกแบบให้ทำงานร่วมกับข้อมูลเซ็นเซอร์บนเครื่องจักร (IoT)
-        และระบบจัดการคำสั่งผลิต (MES) ทำให้ออเดอร์อัปเดตแบบอัตโนมัติ:
-      </p>
-      <ul className="list-disc pl-5 mt-2 space-y-2 text-[12px]">
-        <li>
-          <strong className="text-[#d96245]">No Action Buttons:</strong>{" "}
-          ผู้ใช้งานจะไม่สามารถแก้ไขหรือลบคำสั่งผลิตใดๆ จากหน้านี้ได้โดยตรง
-          หากพบข้อผิดพลาดจะต้องไปร้องขอการแก้ไขข้อผิดพลาดที่โมดูลอื่น (เช่น AI
-          Planner Assistant)
-        </li>
-        <li>
-          <strong className="text-[#212c46]">WIP Tracing:</strong>{" "}
-          เมื่อการผลิตเข้าสู่กระบวนการ (WIP) ข้อมูลจะบันทึก Log ลงฐานข้อมูล
-          ทำให้ไม่สามารถแก้ไขข้อมูลย้อนหลังได้ เพื่อการควบคุมคุณภาพของ Food
-          Safety
-        </li>
-      </ul>
-    </section>
-
-    <section className="animate-fadeIn" style={{ animationDelay: "0.2s" }}>
-      <h4 className="text-[14px] font-black text-[#212c46] mb-3 uppercase flex items-center gap-2 border-b-2 border-[#d7d7d7] pb-2 font-mono">
-        <Icons.RefreshCw size={18} className="text-[#3f809e]" /> 3. IA Generator
-        Alert
-      </h4>
-      <p className="text-[12px]">
-        ระบบอัจฉริยะ (IA) จะมีการตรวจจับแผนการผลิตที่ล่าช้ากว่ากำหนด (Delay)
-        หรือตรวจพบความผิดปกติในขั้นตอนสูญเสียวัตถุดิบ (Loss) หากมีปัญหา IA
-        Generator จะแจ้งเตือนที่ด้านบนสุดของหน้าต่างแบบ Real-time ทันที
-      </p>
-    </section>
-  </>
-);
 
 // --- MAIN APPLICATION ---
 export default function ProductionTracking() {
@@ -515,15 +430,42 @@ export default function ProductionTracking() {
         <UserGuidePanel
           isOpen={showGuide}
           onClose={() => setShowGuide(false)}
-          title="USER GUIDE"
-          subtitle="Real-time Floor Monitoring"
+          title="TRACKING GUIDE"
+          subtitle="REAL-TIME MONITORING"
         >
-          <GuideContent />
+          <div className="space-y-8">
+              <div>
+                  <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                      <Icons.Database size={16} className="text-[#3f809e]" /> 1. การเชื่อมโยงข้อมูล (DATA SYNC)
+                  </h3>
+                  <p className="mb-4 text-[#414757]">
+                      รายการสินค้าที่ต้องผลิตทั้งหมดในบอร์ดนี้ จะถูกซิงค์ (Sync) มาจากหน้า <span className="font-bold text-[#d55a6d]">Production Planning</span> แบบอัตโนมัติ เพื่อให้ฝ่ายผลิตและฝ่ายวางแผนเห็นเป้าหมายที่ตรงกัน
+                  </p>
+                  <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#3f809e] mt-1.5 shrink-0"></div>
+                          <div className="text-[#414757]"><span className="font-bold text-[#212c46]">DAILY MONITOR:</span> แสดงภาพรวมของออเดอร์ที่กำลังดำเนินการ (Active Orders) แยกตามสถานะในแต่ละ Stage พร้อมตารางสรุป Progress รูปแบบ Real-Time (สามารถใช้ตัวกรอง Status Filter เพื่อดูเฉพาะงานที่เสร็จแล้ว หรือล่าช้าได้)</div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#b58c4f] mt-1.5 shrink-0"></div>
+                          <div className="text-[#414757]"><span className="font-bold text-[#212c46]">PACKING QUEUE:</span> คิวงานคอขวดสำหรับแผนกบรรจุ โดยแสดงจำนวนสินค้าที่ผ่านขั้นตอน Cutting/Peeling มาแล้ว และ <span className="font-bold text-[#b58c4f]">Ready to Pack</span> รอดำเนินการแพ็คลงซอง</div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#7a8b95] mt-1.5 shrink-0"></div>
+                          <div className="text-[#414757]"><span className="font-bold text-[#212c46]">NOT STARTED:</span> ออเดอร์ที่ได้รับแผนมาแล้ว แต่ยังไม่ได้เริ่มลงมือผลิตในขั้นตอนแรก (คิวงานที่รอเข้า Mixing)</div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[#688a58] mt-1.5 shrink-0"></div>
+                          <div className="text-[#414757]"><span className="font-bold text-[#212c46]">COMPLETED:</span> ตารางสรุปออเดอร์ที่ผลิตเสร็จสิ้น <span className="text-[#688a58] font-bold">100%</span> และถูกโอนย้ายเข้าคลังสินค้า (FG Transfer) เรียบร้อยแล้ว</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
         </UserGuidePanel>
         <UserGuideButton onClick={() => setShowGuide(true)} />
 
         {/* HEADER SECTION */}
-        <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+        <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
           <div className="flex items-center gap-5">
             <div className="relative flex items-center justify-center group cursor-default shrink-0">
               <div className="absolute inset-0 bg-[#b7a159] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -586,7 +528,7 @@ export default function ProductionTracking() {
           </div>
         </div>
 
-        <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+        <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
           <main className="w-full flex flex-col animate-fadeIn min-h-0">
             {pendingIAReplans.length > 0 && (
               <div className="bg-[#a94228]/5 border border-[#a94228]/20 p-4 rounded-xl shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm animate-fadeIn mb-3">
@@ -651,7 +593,7 @@ export default function ProductionTracking() {
             <div className="flex flex-col flex-1 min-h-0 bg-transparent">
               {/* 1. DAILY MONITOR VIEW */}
               {activeTab === "daily" && (
-                <div className="bg-white rounded-2xl shadow-sm border border-[#eaeaec] overflow-hidden flex flex-col flex-1 min-h-0 animate-fadeIn relative">
+                <div className="bg-white rounded-xl shadow-sm border border-[#eaeaec] overflow-hidden flex flex-col flex-1 min-h-0 animate-fadeIn relative">
                   {/* Toolbar */}
                   <div className="px-6 py-4 border-b border-[#eaeaec] flex justify-between items-center bg-[#f8f9fa] shrink-0">
                     <div className="flex items-center gap-3 relative">
@@ -724,62 +666,62 @@ export default function ProductionTracking() {
 
                   {/* Main Table */}
                   <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
-                    <table className="w-full text-left border-collapse min-w-[1100px]">
-                      <thead className="sticky top-0 z-20">
-                        <tr className="bg-[#212c46] text-white">
-                          <th className="py-3 px-6 pl-8 text-[11px] font-black uppercase tracking-widest w-[25%] min-w-[280px]">
+                    <table className="w-full text-left border-collapse min-w-[1100px] table-font">
+                      <thead className="sys-table-header sticky top-0 z-20 ">
+                    <tr className="bg-[#212c46] text-white">
+                          <th className="pl-8  font-black uppercase tracking-widest w-[25%] min-w-[280px]">
                             ORDER / PRODUCT INFO
                           </th>
-                          <th className="py-3 px-2 text-center w-[9.7%]">
+                          <th className="text-center w-[9.7%]  ">
                             <Icons.ChefHat
                               size={16}
                               className="mx-auto opacity-70"
                               title="Mixing"
                             />
                           </th>
-                          <th className="py-3 px-2 text-center w-[9.7%]">
+                          <th className="text-center w-[9.7%]  ">
                             <Icons.Disc
                               size={16}
                               className="mx-auto opacity-70"
                               title="Forming"
                             />
                           </th>
-                          <th className="py-3 px-2 text-center w-[9.7%]">
+                          <th className="text-center w-[9.7%]  ">
                             <Icons.Flame
                               size={16}
                               className="mx-auto opacity-70"
                               title="Cooking"
                             />
                           </th>
-                          <th className="py-3 px-2 text-center w-[9.7%]">
+                          <th className="text-center w-[9.7%]  ">
                             <Icons.Snowflake
                               size={16}
                               className="mx-auto opacity-70"
                               title="Cooling"
                             />
                           </th>
-                          <th className="py-3 px-2 text-center w-[9.7%]">
+                          <th className="text-center w-[9.7%]  ">
                             <Icons.Scissors
                               size={16}
                               className="mx-auto opacity-70"
                               title="Cutting"
                             />
                           </th>
-                          <th className="py-3 px-2 text-center w-[9.7%]">
+                          <th className="text-center w-[9.7%]  ">
                             <Icons.Package
                               size={16}
                               className="mx-auto opacity-70"
                               title="Packing"
                             />
                           </th>
-                          <th className="py-3 px-2 text-center w-[9.7%]">
+                          <th className="text-center w-[9.7%]  ">
                             <Icons.Truck
                               size={16}
                               className="mx-auto opacity-70"
                               title="Warehouse"
                             />
                           </th>
-                          <th className="py-3 px-6 pr-8 text-right w-[10%] text-[11px] font-black uppercase tracking-widest">
+                          <th className="pr-8 text-right w-[10%]  font-black uppercase tracking-widest">
                             PROGRESS
                           </th>
                         </tr>
@@ -791,12 +733,12 @@ export default function ProductionTracking() {
                             className="border-b border-[#eaeaec] hover:bg-[#f8f9fa] transition-colors"
                           >
                             {/* Order Info */}
-                            <td className="py-3 px-6 pl-8 border-r border-[#eaeaec]/40 h-[70px]">
+                            <td className="px-4 pl-8 border-r border-[#eaeaec]/40 h-[70px] py-2.5">
                               <div className="flex justify-between items-start mb-1.5">
                                 <span className="bg-white border border-[#eaeaec] text-[#4d87a8] font-mono font-black text-[10px] px-2 py-0.5 rounded-md shadow-sm leading-none">
                                   {item.id}
                                 </span>
-                                <span className="text-[#a94228] bg-[#a94228]/5 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest flex items-center gap-1 border border-[#a94228]/10">
+                                <span className="text-[#a94228] bg-[#a94228]/5 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest flex items-center gap-[1px] border border-[#a94228]/10">
                                   <Icons.User size={10} /> {item.customer}
                                 </span>
                               </div>
@@ -804,14 +746,14 @@ export default function ProductionTracking() {
                                 {item.name}
                               </h4>
                               <div className="flex justify-between items-center text-[10px]">
-                                <span className="font-mono font-black text-[#7a8b95] flex items-center gap-1.5 leading-none">
+                                <span className="font-mono font-black text-[#7a8b95] flex items-center gap-[1px] leading-none">
                                   <Icons.Target
                                     size={12}
                                     className="text-[#b7a159]"
                                   />{" "}
                                   {item.target} Batches
                                 </span>
-                                <span className="bg-[#f8f9fa] border border-[#eaeaec] text-[#7a8b95] font-mono font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1.5 leading-none">
+                                <span className="bg-[#f8f9fa] border border-[#eaeaec] text-[#7a8b95] font-mono font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-[1px] leading-none">
                                   <Icons.Clock size={10} /> {item.time}
                                 </span>
                               </div>
@@ -819,11 +761,9 @@ export default function ProductionTracking() {
 
                             {/* Stages */}
                             {item.stages.map((stage, sIdx) => (
-                              <td
-                                key={sIdx}
-                                className="py-3 px-3 align-middle border-r border-[#eaeaec]/40"
+                              <td className="px-3 align-middle border-r border-[#eaeaec]/40 py-2.5 px-4"
                               >
-                                <div className="flex flex-col items-center justify-center gap-1.5 w-full mx-auto">
+                                <div className="flex flex-col items-center justify-center gap-[1px] w-full mx-auto">
                                   <span
                                     className={`font-mono font-black text-[12px] leading-none ${stage.count > 0 ? "text-[#212c46]" : "text-[#7a8b95]/50"}`}
                                   >
@@ -858,7 +798,7 @@ export default function ProductionTracking() {
                             ))}
 
                             {/* Progress Circular */}
-                            <td className="py-3 px-6 pr-8 align-middle text-right relative z-0">
+                            <td className="px-4 pr-8 align-middle text-right relative z-0 py-2.5">
                               <div className="relative w-10 h-10 ml-auto flex items-center justify-center bg-white rounded-full shadow-sm border border-[#eaeaec]">
                                 <svg
                                   className="w-full h-full transform -rotate-90 drop-shadow-sm p-0.5"
@@ -902,9 +842,7 @@ export default function ProductionTracking() {
                         ))}
                         {filteredDailyMonitor.length === 0 && (
                           <tr>
-                            <td
-                              colSpan={9}
-                              className="py-16 text-center text-[#7a8b95] font-black uppercase tracking-widest text-[12px] opacity-50"
+                            <td className="text-center text-[#7a8b95] font-black uppercase tracking-widest text-[12px] opacity-50 py-2.5 px-4"
                             >
                               No active orders match the criteria
                             </td>
@@ -952,7 +890,7 @@ export default function ProductionTracking() {
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center text-[8px] font-bold text-[#7a8b95] uppercase tracking-widest px-1 border-t border-dashed border-[#eaeaec] pt-1">
+                        <div className="flex justify-between items-center text-[8px] font-bold text-[#7a8b95] uppercase tracking-widest px-1 border-t-[1.5px] border-dashed border-[#eaeaec] pt-1">
                           <span>
                             Target: <span className="font-mono text-[#212c46]">{item.totalBatches}</span>
                           </span>

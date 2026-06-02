@@ -1,10 +1,10 @@
 /**
- * SMART-HR / SMART LAW API (Google Apps Script Backend)
+ * MEAT PRO API (Google Apps Script Backend)
  * 
  * 🏛 Architecture:
- * 1. Frontend: React + TailwindCSS (Hosted on Cloudflare/Vercel)
+ * 1. Frontend: React + TailwindCSS (Hosted on Cloudflare Pages)
  * 2. Backend: Google Apps Script (This file)
- * 3. Database: Google Sheets
+ * 3. Database: Google Sheets (or syncs with Firebase)
  * 
  * 🚀 How to deploy:
  * 1. Go to "Deploy" -> "New deployment"
@@ -22,22 +22,20 @@ const GLOBAL_SHEETS_CONFIG = {
     // ผู้ใช้งานระบบ (ADMINISTRATION)
     'Users': ['id', 'employeeId', 'name', 'role', 'permissions', 'email', 'avatar', 'isDev', 'status', 'createdAt', 'updatedAt'],
     
-    // LEGAL COLLECTIONS
-    'Laws_Labor': ['id', 'title', 'documentNo', 'issueDate', 'effectiveDate', 'status', 'summary', 'fileUrl', 'tags', 'addedBy', 'createdAt', 'updatedAt'],
-    'Laws_Safety': ['id', 'title', 'documentNo', 'issueDate', 'effectiveDate', 'status', 'summary', 'fileUrl', 'tags', 'addedBy', 'createdAt', 'updatedAt'],
-    'Laws_Environment': ['id', 'title', 'documentNo', 'issueDate', 'effectiveDate', 'status', 'summary', 'fileUrl', 'tags', 'addedBy', 'createdAt', 'updatedAt'],
-    'Laws_Food': ['id', 'title', 'documentNo', 'issueDate', 'effectiveDate', 'status', 'summary', 'fileUrl', 'tags', 'addedBy', 'createdAt', 'updatedAt'],
-    'Laws_Energy': ['id', 'title', 'documentNo', 'issueDate', 'effectiveDate', 'status', 'summary', 'fileUrl', 'tags', 'addedBy', 'createdAt', 'updatedAt'],
-    'Laws_Tax': ['id', 'title', 'documentNo', 'issueDate', 'effectiveDate', 'status', 'summary', 'fileUrl', 'tags', 'addedBy', 'createdAt', 'updatedAt'],
-    'Laws_ImportExport': ['id', 'title', 'documentNo', 'issueDate', 'effectiveDate', 'status', 'summary', 'fileUrl', 'tags', 'addedBy', 'createdAt', 'updatedAt'],
-    'Laws_Other': ['id', 'title', 'documentNo', 'issueDate', 'effectiveDate', 'status', 'summary', 'fileUrl', 'tags', 'addedBy', 'createdAt', 'updatedAt'],
+    // PRODUCTION CONFIG
+    'Production_Batches': ['id', 'batchNo', 'productCode', 'productName', 'quantity', 'unit', 'status', 'startDate', 'endDate', 'supervisor', 'createdAt', 'updatedAt'],
+    'Production_Yield': ['id', 'batchNo', 'inputWeight', 'outputWeight', 'yieldPercent', 'wasteWeight', 'recordedBy', 'createdAt', 'updatedAt'],
     
-    // COMPLIANCE & ACTIONS
-    'Compliance_ISO14001': ['id', 'clause', 'requirement', 'status', 'evidence', 'auditor', 'auditDate', 'dueDate', 'createdAt', 'updatedAt'],
-    'Compliance_ISO45001': ['id', 'clause', 'requirement', 'status', 'evidence', 'auditor', 'auditDate', 'dueDate', 'createdAt', 'updatedAt'],
-    'Compliance_Other': ['id', 'regulation', 'requirement', 'status', 'evidence', 'assessor', 'dueDate', 'createdAt', 'updatedAt'],
-    'Evidence_Log': ['id', 'title', 'description', 'relatedLaw', 'fileUrl', 'submittedBy', 'status', 'createdAt', 'updatedAt'],
-    'Task_ActionPlans': ['id', 'taskName', 'description', 'assignedTo', 'priority', 'status', 'dueDate', 'relatedLaw', 'progress', 'createdAt', 'updatedAt'],
+    // QUALITY CONTROL
+    'QC_Inspections': ['id', 'batchNo', 'inspectionType', 'result', 'defects', 'inspector', 'inspectionDate', 'notes', 'createdAt', 'updatedAt'],
+    'QC_Documents': ['id', 'documentNo', 'title', 'type', 'status', 'fileUrl', 'addedBy', 'createdAt', 'updatedAt'],
+    
+    // INVENTORY & WAREHOUSE
+    'Inventory_RawMaterials': ['id', 'itemCode', 'itemName', 'category', 'stockLevel', 'unit', 'minStock', 'location', 'lastRestock', 'createdAt', 'updatedAt'],
+    'Inventory_FinishedGoods': ['id', 'productCode', 'productName', 'stockLevel', 'unit', 'location', 'prodDate', 'expDate', 'createdAt', 'updatedAt'],
+    
+    // MAINTENANCE
+    'Maintenance_Logs': ['id', 'machineId', 'machineName', 'issue', 'status', 'maintenanceType', 'technician', 'reportedDate', 'resolvedDate', 'createdAt', 'updatedAt'],
 
     // DISPUTES & COMPLAINTS
     'Complaints': ['id', 'caseNo', 'title', 'type', 'description', 'status', 'reporter', 'assignedTo', 'resolution', 'createdAt', 'updatedAt'],

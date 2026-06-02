@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from "react-router-dom";
 import * as Icons from 'lucide-react';
 import { UserGuidePanel } from '@/src/components/shared/UserGuidePanel';
+import UserGuideButton from '@/src/components/shared/UserGuideButton';
 import KpiCard from '@/src/components/shared/KpiCard';
 import { createPortal } from 'react-dom';
 import { CsvUpload } from '@/src/components/shared/CsvUpload';
@@ -270,14 +271,60 @@ export default function ProductionPlanning() {
         <div className="flex flex-1 w-full flex-col animate-fadeIn bg-transparent space-y-4">
             <style>{globalStyles}</style>
 
-            <button onClick={() => setIsGuideOpen(true)} className="fixed right-0 top-[80px] bg-[#f8f9fa] border border-[#eaeaec] border-r-0 text-[#212c46] py-8 px-1.5 rounded-l-xl shadow-md hover:bg-[#932c2e] hover:text-white hover:border-[#932c2e] transition-all duration-500 z-[100] flex flex-col items-center gap-4 group">
-                <Icons.HelpCircle size={18} className="shrink-0 group-hover:rotate-12 transition-transform text-[#7a8b95] group-hover:text-white" />
-                <span className="font-black tracking-[0.3em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap uppercase text-[11px]">USER GUIDE</span>
-            </button>
-            <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+            <UserGuideButton onClick={() => setIsGuideOpen(true)} />
+            <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="PRODUCTION GUIDE">
+                <div className="space-y-8">
+                    <div>
+                        <p className="mb-4">
+                            <span className="font-bold text-[#212c46]">หน้าที่หลัก: </span> 
+                            ใช้สำหรับบริหารจัดการและจัดคิวการผลิตในฝั่งฝ่ายผลิต (Plan By Production) โดยรับข้อมูลออเดอร์มาจากฝ่ายวางแผน (Planning) เพื่อนำมาจัดสรรลงกระบวนการและแผนกต่างๆ อย่างละเอียด
+                        </p>
+                        <ul className="space-y-3 list-disc pl-5 text-[#414757]">
+                            <li><span className="font-bold text-[#212c46]">ENTRY:</span> ออเดอร์ที่เพิ่งรับเข้ามาใหม่ รอการประเมินและจัดคิวลงสายการผลิต</li>
+                            <li><span className="font-bold text-[#212c46]">QUEUE:</span> ออเดอร์ที่ถูกจัดเรียงลำดับการผลิตเรียบร้อยแล้ว รอดำเนินการเข้าเครื่องจักร</li>
+                            <li><span className="font-bold text-[#212c46]">MIXING / PACKING:</span> แท็บเฉพาะสำหรับติดตามสถานะออเดอร์ที่กำลังอยู่ในขั้นตอนการผลิตจริงในแต่ละแผนก</li>
+                        </ul>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.HeartPulse size={16} className="text-[#d55a6d] mt-0.5 shrink-0" /> PLAN HEALTH
+                        </h3>
+                        <p className="mb-4 text-[#414757]">ระบบแจ้งเตือนสถานะความเสี่ยงของออเดอร์ คำนวณแบบ Real-time โดยเทียบเวลาปัจจุบันกับกำหนดส่งมอบ (Deadline):</p>
+                        <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                                <div className="bg-[#f0f2f5] text-[#212c46] font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded w-[80px] text-center mt-1 shrink-0">ON PLAN</div>
+                                <div className="text-[#414757]">อยู่ในแผนงานปกติ มีเวลาดำเนินการเพียงพอ (มากกว่า 2 ชั่วโมงก่อนกำหนด)</div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="bg-[#fff9e6] border border-[#ffdb7d] text-[#ce870a] font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded w-[80px] text-center mt-1 shrink-0">URGENT</div>
+                                <div className="text-[#414757]">ออเดอร์เร่งด่วน ใกล้ถึงกำหนดส่งมอบ (เหลือเวลา &le; 2 ชั่วโมง)</div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <div className="bg-[#fdf2f2] border border-[#f5c6cb] text-[#d55a6d] font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded w-[80px] text-center mt-1 shrink-0">DELAYED</div>
+                                <div className="text-[#414757]">ออเดอร์ล่าช้าเกินกำหนดส่งมอบ ต้องเร่งติดตามและจัดการทันที หรือเป็นออเดอร์ฉุกเฉิน (Replacement)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.AlertTriangle size={16} className="text-[#d55a6d] mt-0.5 shrink-0" /> REPLACEMENT ORDERS
+                        </h3>
+                        <p className="font-bold text-[#212c46] mb-2">การจัดการออเดอร์ทดแทน (Replacement):</p>
+                        <p className="text-[#414757]">
+                            เมื่อเกิดความสูญเสีย (Loss/Waste) ระหว่างกระบวนการผลิต ฝ่ายผลิตสามารถสร้าง "ออเดอร์ทดแทน" ผ่านปุ่ม Add New Order โดยระบุ Job Type เป็น "Replacement" ระบบจะไฮไลท์และแจ้งเตือนในสถานะ DELAYED สีแดงทันที เพื่อให้ความสำคัญระดับสูงสุดและผลิตทันกำหนดเวลา
+                        </p>
+                    </div>
+                </div>
+            </UserGuidePanel>
             
             {/* Header Area synced with other modules */}
-            <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
                     <div className="relative flex items-center justify-center group cursor-default shrink-0">
                         <div className="absolute inset-0 bg-[#212c46] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -322,9 +369,9 @@ export default function ProductionPlanning() {
                 </div>
             </div>
 
-            <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
                 {pendingIAReplans.length > 0 && (
-                    <div className="bg-rose-50 border border-rose-200 p-4 rounded-2xl shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 shadow-sm animate-fadeIn">
+                    <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 shadow-sm animate-fadeIn">
                         <div className="flex items-start gap-4">
                             <div className="w-10 h-10 rounded-full bg-[#932c2e]/10 flex items-center justify-center text-[#932c2e] shrink-0">
                                 <Icons.Bot size={20} />
@@ -365,7 +412,7 @@ export default function ProductionPlanning() {
                     <KpiCard title="Daily Batter" val={(Math.ceil(totalSummary.batter)).toLocaleString()} unit="Kg" color={THEME.success} icon="chef-hat" desc="Mixing" />
                 </div>
 
-                <div className="bg-white border-[#eaeaec] flex flex-col flex-1 shadow-lg rounded-3xl border mb-4 p-5 shrink-0">
+                <div className="bg-white border-[#eaeaec] flex flex-col flex-1 shadow-lg rounded-xl border mb-4 p-5 shrink-0">
                      <div className="flex items-center justify-between mb-4">
                          <h3 className="text-sm font-black text-[#212c46] uppercase tracking-widest flex items-center gap-2">
                               <Icons.Activity size={16} className="text-[#4d87a8]" /> Machine Load Allocation
@@ -379,7 +426,7 @@ export default function ProductionPlanning() {
                 </div>
 
                          {/* TOOLBAR */}
-                        <div className="px-5 py-4 border-b border-[#eaeaec] flex flex-col md:flex-row justify-between items-center bg-white shrink-0 gap-4">
+                        <div className="px-4 py-4 border-b border-[#eaeaec] flex flex-col md:flex-row justify-between items-center bg-white shrink-0 gap-4">
                              <div className="flex items-center gap-4 w-full md:w-auto">
                                 <div className="relative group min-w-[200px]">
                                     <div 
@@ -400,7 +447,7 @@ export default function ProductionPlanning() {
                                                         onClick={() => { setActiveMainTab(tab); setIsTabDropdownOpen(false); }}
                                                     >
                                                         <span>{tab}</span>
-                                                        <span className="bg-[#eaeaec] text-[#7a8b95] px-2 py-0.5 rounded-full text-[10px]">{count}</span>
+                                                        <span className="bg-[#eaeaec] text-[#7a8b95] px-2 py-0.5 rounded-full text-[11px]">{count}</span>
                                                     </div>
                                                 );
                                             })}
@@ -448,18 +495,18 @@ export default function ProductionPlanning() {
 
                         {/* TABLE */}
                         <div className="flex-1 overflow-auto custom-scrollbar bg-slate-50/50">
-                            <table className="w-full text-left min-w-[1100px] border-collapse bg-white">
-                                <thead className={`sticky top-0 z-10 font-bold uppercase tracking-widest text-[10px] ${activeShift !== 'All Day' ? (SHIFTS.find(s => s.id === activeShift)?.activeColor.split(' ')[0] + ' text-white') : 'bg-[#f8f9fa] text-[#7a8b95]'} border-b border-[#eaeaec]`}>
+                            <table className="w-full text-left min-w-[1100px] border-collapse bg-white table-font">
+                                <thead className="sys-table-header" className={`sticky top-0 z-10 font-bold uppercase tracking-widest ${activeShift !== 'All Day' ? (SHIFTS.find(s => s.id === activeShift)?.activeColor.split(' ')[0] + ' text-white') : 'bg-[#f8f9fa] text-[#7a8b95]'} border-b border-[#eaeaec]`}>
                                     <tr>
-                                        <th className="py-4 px-6 pl-8 w-[12%] align-middle font-black shadow-sm whitespace-nowrap">Plan ID / Ref PL</th>
-                                        <th className="py-4 px-6 text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap">Shift</th>
-                                        <th className="py-4 px-6 text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap">Plan Health</th>
-                                        <th className="py-4 px-6 w-auto align-middle font-black shadow-sm whitespace-nowrap">Product</th>
-                                        <th className="py-4 px-6 text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap">Order Qty</th>
-                                        <th className="py-4 px-6 text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap">Weight (Kg)</th>
-                                        <th className="py-4 px-6 text-center w-[10%] align-middle font-black shadow-sm whitespace-nowrap">Deadline</th>
-                                        <th className="py-4 px-6 text-center w-[10%] align-middle font-black shadow-sm whitespace-nowrap">Status</th>
-                                        <th className="py-4 px-6 text-right w-32 align-middle font-black shadow-sm pr-8 whitespace-nowrap">Actions</th>
+                                        <th className="pl-8 w-[12%] align-middle font-black shadow-sm whitespace-nowrap ">Plan ID / Ref PL</th>
+                                        <th className="text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap ">Shift</th>
+                                        <th className="text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap ">Plan Health</th>
+                                        <th className="w-auto align-middle font-black shadow-sm whitespace-nowrap ">Product</th>
+                                        <th className="text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap ">Order Qty</th>
+                                        <th className="text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap ">Weight (Kg)</th>
+                                        <th className="text-center w-[10%] align-middle font-black shadow-sm whitespace-nowrap ">Deadline</th>
+                                        <th className="text-center w-[10%] align-middle font-black shadow-sm whitespace-nowrap ">Status</th>
+                                        <th className="text-right w-32 align-middle font-black shadow-sm pr-8 whitespace-nowrap ">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -467,36 +514,36 @@ export default function ProductionPlanning() {
                                         const alarm = getAlarmStatus(o.deadline, o.status);
                                         return (
                                             <tr key={o.id} className="hover:bg-slate-50 transition-colors group border-b border-[#eaeaec]">
-                                                <td className="py-3 px-6 pl-8 align-middle">
+                                                <td className="px-4 pl-8 align-middle py-2.5">
                                                     <div className="flex flex-col items-start gap-1 mt-0.5">
                                                         <span className="font-black text-[#212c46] text-[12px] font-mono tracking-tight leading-none">{o.id}</span>
                                                         <span className="text-[9px] text-[#7a8b95] font-black uppercase tracking-widest leading-none">{(o as any).refPL || `PL-2605-${String(Math.floor(Math.random()*1000)).padStart(4, '0')}`}</span>
                                                         {o.isReplacement && <span className="text-[9px] bg-rose-50 text-[#932c2e] px-1.5 py-0.5 rounded-md uppercase font-black tracking-widest border border-rose-200 leading-none">Replacement</span>}
                                                     </div>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-center">
+                                                <td className="px-4 align-middle text-center py-2.5">
                                                     <span className={`px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded-md border text-white ${SHIFTS.find(s => s.id === o.shift)?.activeColor.split(' ')[0] || 'bg-gray-400'} shadow-sm`}>{o.shift}</span>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-center">
+                                                <td className="px-4 align-middle text-center py-2.5">
                                                     <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest border shadow-sm transition-all ${alarm.color} ${alarm.blink ? 'opacity-80' : ''}`}>{alarm.label}</span>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle">
+                                                <td className="px-4 align-middle py-2.5">
                                                     <div className="font-black text-[#414757] text-[12px] leading-tight max-w-[200px] truncate" title={o.name}>{o.name}</div>
                                                     <div className="text-[10px] text-[#4d87a8] font-mono font-bold mt-1 uppercase tracking-widest">{o.sku}</div>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-center font-mono font-black text-[#212c46] text-[12px]">
+                                                <td className="px-4 align-middle text-center font-mono font-black text-[#212c46] text-[12px] py-2.5">
                                                     {o.qty.toLocaleString()} <span className="text-[9px] font-normal text-[#7a8b95] ml-0.5">Pks</span>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-center font-mono text-[#414757] font-black text-[12px]">
+                                                <td className="px-4 align-middle text-center font-mono text-[#414757] font-black text-[12px] py-2.5">
                                                     {o.fgKg.toLocaleString()} <span className="text-[9px] font-normal text-[#7a8b95] ml-0.5">Kg</span>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-center font-mono font-black text-[#932c2e] text-[12px]">
+                                                <td className="px-4 align-middle text-center font-mono font-black text-[#932c2e] text-[12px] py-2.5">
                                                     {o.deadline}
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-center">
+                                                <td className="px-4 align-middle text-center py-2.5">
                                                     <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest border shadow-sm ${o.status === 'PLANNED' || o.status === 'IN PROGRESS' ? 'bg-[#2e7d32]/10 text-[#2e7d32] border-[#2e7d32]/20' : 'bg-[#f8f9fa] text-[#7a8b95] border-[#eaeaec]'}`}>{o.status}</span>
                                                 </td>
-                                                <td className="py-3 px-6 text-right pr-8 align-middle">
+                                                <td className="px-4 text-right pr-8 align-middle py-2.5">
                                                     <div className="flex items-center justify-end gap-[1px] transition-opacity">
                                                         <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90" title="Edit"><Icons.Pencil size={16} /></button>
                                                         <button onClick={() => handleDelete(o.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#932c2e] hover:border-[#932c2e] hover:bg-[#932c2e]/10 transition-all shadow-sm bg-white active:scale-90" title="Delete"><Icons.Trash2 size={16} /></button>
@@ -507,8 +554,8 @@ export default function ProductionPlanning() {
                                     })}
                                     {currentItems.length === 0 && (
                                         <tr>
-                                            <td colSpan={8} className="py-16 text-center">
-                                                <div className="flex flex-col items-center justify-center gap-3">
+                                            <td className="text-center py-2.5 px-4">
+                                                <div className="flex flex-col items-center justify-center gap-[1px]">
                                                     <div className="w-12 h-12 bg-[#f8f9fa] border border-[#eaeaec] rounded-full flex items-center justify-center text-[#7a8b95] mb-2">
                                                         <Icons.SearchX size={24} />
                                                     </div>
@@ -566,7 +613,7 @@ export default function ProductionPlanning() {
 
             {isAddModalOpen && (
                 <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/60 backdrop-blur-sm p-4 animate-fadeIn font-sans">
-                    <StandardModalWrapper className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden relative border border-white/40 max-h-[90vh]">
+                    <StandardModalWrapper className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden relative border border-white/40 max-h-[90vh]">
                         <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#212c46] border-b-2 border-[#b7a159]">
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20"><Icons.Plus size={20} className="text-[#b7a159]" /></div>
@@ -592,14 +639,14 @@ export default function ProductionPlanning() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm">
+                            <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
                                 <label className="text-[11px] font-black text-[#212c46] uppercase mb-4 block tracking-widest">3. Finished Goods (FG) <span className="text-[#932c2e]">*</span></label>
                                 <select value={newItem.sku} onChange={e => setNewItem({...newItem, sku: e.target.value})} className="w-full px-4 py-3 border border-[#eaeaec] rounded-xl text-[12px] font-bold focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#212c46] cursor-pointer">
                                     <option value="" disabled>-- SELECT PRODUCT --</option>
                                     {FG_DATABASE.map(f => <option key={f.sku} value={f.sku}>{f.sku} : {f.name}</option>)}
                                 </select>
                             </div>
-                            <div className="bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm">
+                            <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
                                 <label className="text-[11px] font-black text-[#212c46] uppercase mb-4 block tracking-widest">4. Quantity (Packs) <span className="text-[#932c2e]">*</span></label>
                                 <div className="relative">
                                     <input type="number" value={newItem.quantity} onChange={e => setNewItem({...newItem, quantity: e.target.value})} className="w-full px-4 py-3 border border-[#eaeaec] rounded-xl text-[24px] font-mono font-black focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#4d87a8] pr-16" placeholder="0" />
@@ -617,7 +664,7 @@ export default function ProductionPlanning() {
             
             {isUploadModalOpen && (
                 <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/60 backdrop-blur-sm p-4 animate-fadeIn font-sans">
-                    <StandardModalWrapper className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl flex flex-col overflow-hidden relative border border-white/40 max-h-[90vh]">
+                    <StandardModalWrapper className="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col overflow-hidden relative border border-white/40 max-h-[90vh]">
                         <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b-2 border-[#4d87a8]">
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20"><Icons.Upload size={20} className="text-[#4d87a8]" /></div>
@@ -626,7 +673,7 @@ export default function ProductionPlanning() {
                             <button onClick={() => setIsUploadModalOpen(false)} className="text-white/50 hover:text-[#932c2e] transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-full"><Icons.X size={20} /></button>
                         </div>
                         <div className="p-8 flex-1 overflow-y-auto custom-scrollbar bg-[#f8f9fa]">
-                            <div className="bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm">
+                            <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
                                 <CsvUpload 
                                     requiredHeaders={['sku', 'name', 'qty', 'deadline', 'shift']}
                                     onUpload={(data) => {

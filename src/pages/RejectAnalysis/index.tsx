@@ -242,46 +242,71 @@ export default function RejectAnalysis() {
       {/* USER GUIDE FLOATING SYSTEM PANEL */}
       <UserGuideButton onClick={() => setIsGuideOpen(true)} />
 
-      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="REJECT ANALYSIS MANUAL" subtitle="คู่มือวิเคราะห์และบริหารจัดการสิ่งสูญเสียในกระบวนการแปรรูป">
-        <div className="space-y-6">
-          <div className="border-l-4 border-[#b7a159] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 1: Security Regulations & Control</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">มาตรการรักษาความปลอดภัยและกฎเหล็กการรายงาน</p>
-          </div>
-          <p className="leading-relaxed">
-            ระบบจัดทำรายงานสิ่งสูญเสีย (Reject Report) ยึดมั่นแนวทางมาตรฐานความปลอดภัยระดับ ISO 9001, HACCP และข้อพึงระวังด้านสุขศาสตร์อาหารขั้นสูงสุด:
-          </p>
-          <ul className="list-inside list-disc space-y-2 pl-1">
-            <li><strong>สถานะความรุนแรงวิกฤติ (Critical Severity):</strong> เมื่อบันทึกระดับ Critical เช่น การตรวจพบเศษเหล็ก/โลหะ (MET) หรือเคมีตกค้าง (CON) ระบบจะสั่งกักกันคลังสินค้าแบบอัจฉริยะ (Quarantine Area) อัตโนมัติ</li>
-            <li><strong>การอนุมัติแบบ Dual Signature:</strong> ผลกระทบที่มีของเสียปริมาณเกินมาตรฐานที่ระบุไว้ใน Policy Settings หรือระดับวิกฤติ จำเป็นต้องมีลายเซ็นวิศวกรควบคุม QA Supervisor กำกับอนุมัติเสมอ</li>
-            <li><strong>เป้าหมายจำกัดปริมาณสูญเสีย (Maximum Loss Threshold):</strong> หลีกเลี่ยงเหตุการณ์สูญเสียระดับกระชากเฉลี่ยโดยมีขีดจำกัดสะสมรายวันพึงเฝ้าระวังไม่เกิน {settings.maxRejectQtyLimit} แพ็ค / แบทช์</li>
-          </ul>
+      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="REJECT GUIDE" subtitle="REJECT ANALYSIS MANUAL">
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.ShieldAlert size={16} className="text-[#a94228]" /> 1. กฎและมาตรการความปลอดภัย (SAFETY RULES)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    ระบบนี้ยึดแนวทางมาตรฐาน ISO 9001, HACCP และ Food Safety อย่างเคร่งครัด:
+                </p>
+                <div className="space-y-3">
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                        <div className="bg-[#a94228] text-white p-2 rounded-lg shrink-0"><Icons.AlertTriangle size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">สถานะวิกฤติ (Critical Severity)</strong>
+                            <p className="text-[#7a8b95]">เมื่อบันทึกระดับ Critical เช่น พบเศษเหล็ก/โลหะ คลังสินค้าจะถูกล็อค ห้ามส่งออก และกักกัน (Quarantine) ทันที</p>
+                        </div>
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                        <div className="bg-[#b58c4f] text-white p-2 rounded-lg shrink-0"><Icons.PenTool size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">การอนุมัติแบบคู่ (Dual Signature)</strong>
+                            <p className="text-[#7a8b95]">หากของเสียสูงเกินเกณฑ์เปอร์เซ็นต์ที่ยอมรับ จะต้องมีลายเซ็นวิศวกรควบคุมอนุมัติเสมอเพื่อทำลายทิ้ง</p>
+                        </div>
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                        <div className="bg-[#3f809e] text-white p-2 rounded-lg shrink-0"><Icons.Trash2 size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">หลีกเลี่ยงเหตุการณ์สูญเสียยอดสะสมสูงกว่ากำหนด</strong>
+                            <p className="text-[#7a8b95]">เป้าหมายจำกัดปริมาณสูญเสียถูกตั้งไว้ที่ {settings.maxRejectQtyLimit} ชิ้น / แบทช์</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-          <div className="p-4 bg-[#932c2e]/10 border border-[#932c2e]/30 rounded-2xl space-y-2">
-            <h5 className="font-black text-[#932c2e] uppercase text-[11px] tracking-wider flex items-center gap-1.5">
-              <Icons.ShieldAlert size={14} /> โครงสร้างแนวคิดจัดการเชิงรุก (Action Plan Strategy)
-            </h5>
-            <p className="text-[#212c46] leading-relaxed text-[11px]">
-              - ผลทดสอบที่ระบุเป็น <strong>Re-work</strong> ต้องถูกส่งตัวซ้ำเข้าตรวจยืนยันคัดคลาดและกำจัดสิ่งแปลกปลอมอีกครั้งภายใน 1,800 วินาที
-              <br />- ผลตรวจประเภท <strong>Scrapped / Disposed</strong> จะถือเป็นขยะอุตสาหกรรม ต้องได้รับการทำลายและห้ามส่งคืนสายการผลิตเพื่อความปลอดภัยสาธารณะ
-            </p>
-          </div>
+            <div className="h-px bg-[#eaeaec] w-full" />
 
-          <div className="border-l-4 border-[#4d87a8] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 2: Operator Guidance</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">คู่มือใช้งานและขั้นตอนสืบข้อมูลสำหรับคนงาน</p>
-          </div>
-          <p className="leading-relaxed">
-            ระเบียบปฏิบัติสำหรับพนักงานควบคุมแผงระบบสุ่มทดสอบ (QC Inspectors) และพนักงานคลังสินค้า:
-            <br />1. ค้นหารหัสสินค้าและข้อมูลแบบคลาดเคลี่อนจากเครื่องป้อนข้อมูลความถี่รายแบทช์
-            <br />2. บันทึกวันและแบทช์เป้าหมาย หากไม่แน่ใจสถานะ ให้ส่งเรื่องเป็น "Presumptive Pending" เพื่อให้วิศวกรร่วมประเมินทันที
-            <br />3. หมั่นตรวจสอบกราฟวิเคราะห์พารามิเตอร์พาเรโต (Pareto Reject Analysis) เพื่อรับการประมวลเหตุการณ์ซ้ำซ้อน
-          </p>
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Recycle size={16} className="text-[#688a58]" /> 2. โครงสร้างการจัดการและสถานะของการคัดทิ้ง (REJECT STATES)
+                </h3>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#b58c4f]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Re-work (ซ่อมแซมได้)</strong> - สินค้าต้องถูกส่งไปตรวจชั่ง/แพ็ค/ล้าง ใหม่ภายใน 1,800 วินาที เพื่อนำกลับมาผลิตต่อ</span></div>
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#a94228]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Scrapped (ทำลายทิ้ง)</strong> - ขยะอุตสาหกรรม ต้องลงระบบเพื่อทำลาย ห้ามกลับเข้าไลน์เด็ดขาด</span></div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.FileText size={16} className="text-[#3f809e]" /> 3. ขั้นตอนสืบข้อมูลเบื้องต้นสำหรับ QC
+                </h3>
+                <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757]">
+                    <ul className="list-decimal pl-5 space-y-2 text-[12px]">
+                        <li>กด NEW REPORT เพื่อสร้างรายงาน แจ้งรหัสสินค้าและสาเหตุ</li>
+                        <li>หากเป็นปัญหาใหญ่ที่หาสาเหตุไม่ได้ แจ้งสถานะความรุนแรงระดับ Critical</li>
+                        <li>ดูกราฟ Pareto Chart ด้านบนเพื่อวิเคราะห์ว่าสาเหตุใดเกิดบ่อยที่สุดและควรแก้ไขด่วน</li>
+                    </ul>
+                </div>
+            </div>
         </div>
       </UserGuidePanel>
 
       {/* HEADER SECTION */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#932c2e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -315,7 +340,7 @@ export default function RejectAnalysis() {
       </div>
 
       {/* KPI METRICS BLOCK */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
           <KpiCard label="Total Rejected Qty" value={`${totalRejectCount} Pcs`} icon="trending-down" colorAccent={THEME.danger} colorValue={THEME.primary} desc="Loss accumulation of food material" />
           <KpiCard label="Rework Efficiency" value={`${reworkRate}%`} icon="percent" colorAccent={THEME.success} colorValue={THEME.primary} desc={`${reworkCount} rework batches back to line`} />
@@ -325,9 +350,9 @@ export default function RejectAnalysis() {
 
         {/* LIST MODE VIEW */}
         {activeTab === 'list_mode' ? (
-          <div className="bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
             {/* ACTION & SECTIONS HEADER */}
-            <div className="px-8 py-4 border-b border-[#eaeaec] bg-[#f8f9fa] flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+            <div className="px-4 py-4 border-b border-[#eaeaec] bg-white flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-black text-[#7a8b95] uppercase tracking-widest bg-white border border-[#eaeaec] px-4 py-2 rounded-xl shadow-sm">
                   PROCESS LOSS SECURITY COMPLIANCE
@@ -346,23 +371,23 @@ export default function RejectAnalysis() {
 
             {/* TABLE GRID */}
             <div className="overflow-auto custom-scrollbar">
-              <table className="w-full text-left font-sans border-collapse">
-                <thead className="sys-table-header bg-[#212c46] text-white border-[#b7a159]">
-                  <tr>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Incident ID / Date</th>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Batch / Product Name</th>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Reject Category</th>
-                    <th className="font-black uppercase tracking-widest text-center">Loss Quantity</th>
-                    <th className="font-black uppercase tracking-widest">Root Cause Summary</th>
-                    <th className="font-black uppercase tracking-widest text-center">Severity</th>
-                    <th className="font-black uppercase tracking-widest text-center">Disposition Status</th>
-                    <th className="font-black uppercase tracking-widest text-center">Action</th>
+              <table className="w-full text-left border-collapse table-font">
+                <thead className="sys-table-header [#b7a159] ">
+                    <tr>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Incident ID / Date</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Batch / Product Name</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Reject Category</th>
+                    <th className="font-black uppercase tracking-widest text-center   ">Loss Quantity</th>
+                    <th className="font-black uppercase tracking-widest   ">Root Cause Summary</th>
+                    <th className="font-black uppercase tracking-widest text-center   ">Severity</th>
+                    <th className="font-black uppercase tracking-widest text-center   ">Disposition Status</th>
+                    <th className="font-black uppercase tracking-widest text-center   ">Action</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-[#eaeaec]">
                   {currentData.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-12 text-[#7a8b95] uppercase font-black tracking-widest text-[12px]">No tracked reject logs available in database</td>
+                      <td className="text-center text-[#7a8b95] uppercase font-black tracking-widest text-[12px] py-2.5 px-4">No tracked reject logs available in database</td>
                     </tr>
                   ) : (
                     currentData.map(log => {
@@ -372,25 +397,25 @@ export default function RejectAnalysis() {
                       
                       return (
                         <tr key={log.id} className="hover:bg-[#f8f9fa] transition-colors group">
-                          <td className="sys-table-td font-mono font-black text-[#212c46]">
+                          <td className="sys-table-td font-mono font-black text-[#212c46] py-2.5 px-4">
                             <div className="flex flex-col">
                               <span>{log.id}</span>
                               <span className="text-[10px] text-[#7a8b95] font-bold">{log.date}</span>
                             </div>
                           </td>
-                          <td className="sys-table-td">
+                          <td className="sys-table-td py-2.5 px-4">
                             <div className="flex flex-col">
                               <span className="font-black uppercase text-[#212c46] text-[12px]">{log.productName}</span>
                               <span className="text-[10px] text-[#4d87a8] font-bold tracking-wider uppercase">{log.batchId}</span>
                             </div>
                           </td>
-                          <td className="sys-table-td">
+                          <td className="sys-table-td py-2.5 px-4">
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-sm" style={{ backgroundColor: rType.color }}>
                               <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                               {rType.name}
                             </span>
                           </td>
-                          <td className="sys-table-td text-center">
+                          <td className="sys-table-td text-center py-2.5 px-4">
                             <div className="flex flex-col items-center">
                               <span className={`text-[12px] font-black ${isExceeding ? 'text-[#932c2e] font-black' : 'text-[#212c46]'}`}>{log.quantity} pcs</span>
                               {isExceeding && (
@@ -398,7 +423,7 @@ export default function RejectAnalysis() {
                               )}
                             </div>
                           </td>
-                          <td className="sys-table-td">
+                          <td className="sys-table-td py-2.5 px-4">
                             <div className="flex flex-col max-w-[325px]">
                               <p className="text-[11px] font-bold text-[#414757] leading-tight truncate-2-lines">{log.cause || 'No cause specified'}</p>
                               <div className="flex items-center gap-2 mt-1">
@@ -409,19 +434,19 @@ export default function RejectAnalysis() {
                               </div>
                             </div>
                           </td>
-                          <td className="sys-table-td text-center">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase border tracking-widest ${isCritical ? 'bg-[#932c2e]/10 text-[#d96245] border-[#932c2e]/25 animate-pulse' : log.severity === 'Medium' ? 'bg-[#b58c4f]/10 text-[#b58c4f] border-[#b58c4f]/25' : 'bg-[#657f4d]/10 text-[#657f4d] border-[#657f4d]/25'}`}>
+                          <td className="sys-table-td text-center py-2.5 px-4">
+                            <span className={`inline-flex items-center gap-[1px] px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase border tracking-widest ${isCritical ? 'bg-[#932c2e]/10 text-[#d96245] border-[#932c2e]/25 animate-pulse' : log.severity === 'Medium' ? 'bg-[#b58c4f]/10 text-[#b58c4f] border-[#b58c4f]/25' : 'bg-[#657f4d]/10 text-[#657f4d] border-[#657f4d]/25'}`}>
                               {log.severity}
                             </span>
                           </td>
-                          <td className="sys-table-td text-center">
+                          <td className="sys-table-td text-center py-2.5 px-4">
                             <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${log.status === 'Re-work' ? 'bg-[#b58c4f]/20 text-[#b58c4f] border border-[#b58c4f]/30' : log.status === 'Scrapped' ? 'bg-[#932c2e]/10 text-[#d96245] border border-[#932c2e]/20' : 'bg-[#eaeaec] text-[#414757] border border-[#d7d7d7]'}`}>
                               {log.status}
                             </span>
                           </td>
-                          <td className="sys-table-td text-center">
+                          <td className="sys-table-td text-center py-2.5 px-4">
                             <div className="flex justify-center items-center gap-[1px]">
-                              <button onClick={() => openEditModal(log)} className="sys-table-action-btn text-[#4d87a8] hover:bg-[#4d87a8]/10 border-transparent transition-all">
+                              <button onClick={() => openEditModal(log)} className="sys-table-action-btn w-8 h-8 text-[#4d87a8] hover:bg-[#4d87a8]/10 border-transparent transition-all">
                                 <Icons.Edit3 size={15} />
                               </button>
                             </div>
@@ -462,7 +487,7 @@ export default function RejectAnalysis() {
           /* ANALYTICS CHARTS PARETO */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
             {/* PARETO PROCESS FAILURES DISTRIBUTION (PIE + BARS) */}
-            <div className="lg:col-span-4 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
+            <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
               <div className="border-b-2 border-[#b7a159] pb-4 mb-2">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.PieChart size={20} className="text-[#a94228]" /> Loss Ratio Distribution
@@ -495,7 +520,7 @@ export default function RejectAnalysis() {
             </div>
 
             {/* BAR CHART PARETO DETAILS */}
-            <div className="lg:col-span-5 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec]">
+            <div className="lg:col-span-5 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
               <div className="border-b-2 border-[#b7a159] pb-4 mb-6">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.BarChart3 size={20} className="text-[#657f4d]" /> Reject Quantity Pareto Analysis
@@ -520,7 +545,7 @@ export default function RejectAnalysis() {
             </div>
 
             {/* DAILY VOLUME TRENDS */}
-            <div className="lg:col-span-3 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec]">
+            <div className="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
               <div className="border-b-2 border-[#b7a159] pb-4 mb-6">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.LineChart size={20} className="text-[#b58c4f]" /> Waste Trends
@@ -611,21 +636,21 @@ export default function RejectAnalysis() {
                   <p className="text-[10px] text-[#7a8b95] uppercase font-bold mt-0.5">กติกากักคลังสินค้าควบคุมความมั่งคั่งและรักษามาตรฐานความปลอดภัยปนเปื้อน</p>
                 </div>
                 <div className="space-y-3">
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#932c2e] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#932c2e] transition-colors">
                     <input type="checkbox" checked={settings.enableAutoEmailAlert} onChange={e => setSettings({ ...settings, enableAutoEmailAlert: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Email automatic notify to Board Directors</span>
                       <span className="block text-[9px] text-[#7a8b95] font-bold mt-0.5">ระบบจะส่งสัญญานเตือนภัยเข้ากล่องจดหมายผู้บริหารหน้างานทันที</span>
                     </div>
                   </label>
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#932c2e] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#932c2e] transition-colors">
                     <input type="checkbox" checked={settings.requireDoubleSignature} onChange={e => setSettings({ ...settings, requireDoubleSignature: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Require Double Signature for Critical Severity</span>
                       <span className="block text-[9px] text-[#7a8b95] font-bold mt-0.5">ต้องได้รับการตรวจลายเซ็นคู่ขนานทั้งผู้ตรวจคัดประเมินและวิศวกรผู้ควบคุม</span>
                     </div>
                   </label>
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#932c2e] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#932c2e] transition-colors">
                     <input type="checkbox" checked={settings.autoIsolateBatchOnCritical} onChange={e => setSettings({ ...settings, autoIsolateBatchOnCritical: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Automated physical isolation order in Warehouse ERP</span>
@@ -781,7 +806,7 @@ export default function RejectAnalysis() {
           )}
 
           {/* Modal Footer Controls */}
-          <div className="flex justify-between items-center pt-4 border-t border-[#eaeaec] shrink-0 mt-4">
+          <div className="flex justify-between items-center pt-4 border-t-[1.5px] border-[#eaeaec] shrink-0 mt-4">
             <div>
               {entryStep > 0 ? (
                 <button onClick={() => setEntryStep(prev => prev - 1)} className="px-5 py-2.5 bg-[#f8f9fa] hover:bg-[#d7d7d7]/30 border border-[#eaeaec] text-[#414757] rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all">Previous Step</button>

@@ -53,7 +53,7 @@ function SaveConfirmModal({ isOpen, onClose, onConfirm }: any) {
     if (!isOpen) return null;
     return createPortal(
         <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/80 backdrop-blur-md p-4 animate-fadeIn">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden relative border border-[#b7a159]">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden relative border border-[#b7a159]">
                 <div className="p-8 text-center">
                     <div className="w-20 h-20 bg-[#b7a159]/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-[#b7a159]/40">
                         <Save size={32} className="text-[#b7a159]" />
@@ -151,10 +151,54 @@ export default function DevPermit() {
           <span className="font-black tracking-[0.3em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap uppercase text-[11px]">USER GUIDE</span>
       </button>
 
-      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="DEV GUIDE" subtitle="SYSTEM VISIBILITY CONTROL">
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.LayoutGrid size={16} className="text-[#b7a159]" /> 1. GLOBAL MENU SYNC
+                </h3>
+                <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl">
+                    <p className="mb-4">ระบบ Dev Permit (BETA) ออกแบบมาเพื่อให้นักพัฒนา (Developer) หรือ Super Admin สามารถควบคุม <span className="font-bold">การมองเห็น (Visibility)</span> ของเมนูทั้งหมดในระบบส่วนกลาง</p>
+                    <div className="p-4 bg-[#e8eff4] rounded-lg text-[#3f809e]">
+                        การเปิด/ปิดเมนูในหน้านี้ จะส่งผลกระทบโดยตรงต่อ <span className="font-bold">Sidebar Menu หลัก</span> และ <span className="font-bold">User Permission Module</span> ของพนักงานทุกคนแบบ Real-time (Auto Sync) ทันทีที่บันทึก
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Lock size={16} className="text-[#932c2e]" /> 2. MAIN VS SUB-MODULES
+                </h3>
+                <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl space-y-4">
+                    <div className="flex gap-3">
+                        <Icons.CheckCircle2 size={16} className="text-[#688a58] mt-0.5 shrink-0" />
+                        <div>หากทำการ <span className="font-bold">ปิด</span> เมนูหลัก (Main Module) เมนูย่อยทั้งหมดภายใต้เมนูนั้นจะถูกซ่อนจาก Sidebar โดยอัตโนมัติ ไม่ว่าสิทธิ์รายบุคคลจะเป็นอย่างไรก็ตาม</div>
+                    </div>
+                    <div className="flex gap-3">
+                        <Icons.CheckCircle2 size={16} className="text-[#688a58] mt-0.5 shrink-0" />
+                        <div>คุณสามารถเลือกปิดเฉพาะ <span className="font-bold">เมนูย่อย (Sub-Modules)</span> บางฟังก์ชันที่ไม่เปิดใช้งานได้ โดยคลิกที่ลูกศร Dropdown ท้ายชื่อเมนูหลักเพื่อกางเมนูย่อยออกมา</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.AlertTriangle size={16} className="text-[#d55a6d]" /> 3. SYSTEM WARNING
+                </h3>
+                
+                <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#932c2e]">
+                    อย่าลืมกดปุ่ม <span className="font-bold">SAVE CONFIGURATION</span> ที่มุมขวาบนหน้าจอทุกครั้งหลังจากปรับเปลี่ยนค่า Toggle เพื่อให้ระบบอัปเดตสถานะและเขียนทับลงใน Master Database
+                </div>
+            </div>
+        </div>
+      </UserGuidePanel>
       <SaveConfirmModal isOpen={isSaveModalOpen} onClose={() => setIsSaveModalOpen(false)} onConfirm={handleSaveConfig} />
 
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
           <div className="flex items-center gap-5">
               <div className="relative flex items-center justify-center group cursor-default shrink-0">
                   <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -175,7 +219,7 @@ export default function DevPermit() {
           </button>
       </div>
 
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="w-full">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-5 shrink-0 z-20">
               <KpiCard label="ACTIVE MODULES" value={<>{activeComponents} <span className="text-[20px] text-[#7a8b95]">/ {totalComponents}</span></>} icon={LayoutGrid} colorAccent={THEME.primaryLight} colorValue={THEME.primary} desc="Currently Visible Components" />
@@ -184,16 +228,16 @@ export default function DevPermit() {
               <KpiCard label="SUB MODULES" value={totalComponents - SYSTEM_MODULES.length} icon={LayoutGrid} colorAccent={THEME.skyBlue} colorValue={THEME.skyBlue} desc="Nested System Components" />
           </div>
 
-          <div className="bg-white rounded-3xl shadow-sm border border-[#eaeaec]/60 overflow-hidden flex flex-col animate-fadeIn">
-            <div className="px-8 py-4 border-b-2 border-[#b7a159] bg-[#212c46] flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+          <div className="bg-white rounded-xl shadow-sm border border-[#eaeaec]/60 overflow-hidden flex flex-col animate-fadeIn">
+            <div className="px-4 py-4 border-b-2 border-[#b7a159] bg-white flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
                 <h4 className="text-[14px] font-black uppercase text-white tracking-widest flex items-center gap-3"><Database size={18} className="text-[#b7a159]"/> MODULE TOGGLE LIST</h4>
-                <div className="relative w-full md:w-80">
+                <div className="relative w-full md:w-80 font-sans">
                     <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
                     <input type="text" value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Search modules..." className="w-full pl-12 pr-4 py-2 text-[12px] border border-transparent rounded-xl font-bold outline-none focus:border-[#b7a159] bg-white/10 text-white placeholder:text-white/50 focus:bg-white focus:text-[#212c46] shadow-sm transition-all" />
                 </div>
             </div>
 
-            <div className="p-5 space-y-3 bg-[#f8f9fa]">
+            <div className="p-5 space-y-3 bg-[#f8f9fa] table-font">
                 {filteredModules.length === 0 ? (
                     <div className="text-center py-20 text-[#7a8b95] font-bold text-[12px]">No modules found matching "{search}"</div>
                 ) : (
@@ -207,7 +251,7 @@ export default function DevPermit() {
                         }
                         return (
                         <div key={module.id} className="space-y-1.5 animate-fadeIn">
-                            <div className={`flex items-center justify-between px-5 py-3 rounded-2xl border transition-all duration-300 ${visibility[module.id] ? 'bg-white border-[#eaeaec] shadow-sm hover:border-[#4d87a8]/40' : 'bg-[#d7d7d7] border-[#eaeaec]/50 opacity-75'}`}>
+                            <div className={`flex items-center justify-between px-5 py-3 rounded-xl border transition-all duration-300 ${visibility[module.id] ? 'bg-white border-[#eaeaec] shadow-sm hover:border-[#4d87a8]/40' : 'bg-[#d7d7d7] border-[#eaeaec]/50 opacity-75'}`}>
                                 <div className="flex items-center gap-4">
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-colors ${visibility[module.id] ? 'bg-[#4d87a8]/10 text-[#4d87a8] border-[#4d87a8]/20' : 'bg-white text-[#7a8b95] border-[#eaeaec]'}`}>{module.icon && <module.icon size={18} />}</div>
                                     <div className="flex flex-col gap-0.5">

@@ -219,76 +219,68 @@ export default function MachineBreakdown() {
             <UserGuideButton onClick={() => setShowGuide(true)} />
             
             {/* RICH USER GUIDE PANEL (UserPermissions Detailed Style) */}
-            <UserGuidePanel isOpen={showGuide} onClose={() => setShowGuide(false)} title="MAINTENANCE MANUAL" subtitle="คู่มือควบคุมระบบซ่อมบำรุงและเครื่องจักรขัดข้อง (Machine Breakdown Control Log)">
-                <div className="space-y-6">
-                  
-                  {/* Section 1: Objective */}
-                  <section className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                    <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-                      <Icons.Info size={16} className="text-[#a94228]"/>
-                      1. บทนำและวัตถุประสงค์ (Hub Overview)
-                    </h4>
-                    <p className="leading-relaxed text-[11.5px] text-[#414757] font-bold">
-                      เมนู **Machine Breakdown** ทำหน้าที่เป็นศูนย์บันทึก ติดตามสถานะอาการเสียของเซ็นเซอร์และปั๊มสูญญากาศ เพื่อป้อนสถิติตรงให้แก่แผนกซ่อมบำรุงเชิงป้องกัน (Preventive Maintenance) รักษาวิสัยทัศน์ OEE (Overall Equipment Effectiveness) ให้อยู่ในกรอบมาตรฐานระดับสากล ไม่ต่ำกว่า 85%
-                    </p>
-                  </section>
-
-                  {/* Section 2: Metrics */}
-                  <section className="space-y-2">
-                    <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-                      <Icons.Activity size={16} className="text-[#a94228]"/>
-                      2. การคำนวณและประเมินค่า OEE
-                    </h4>
-                    <p className="text-[11px] text-slate-500 font-bold">
-                      ประสิทธิภาพรวมเครื่องจักรคำนวณผ่าน 3 ตัวบวกร่วม:
-                    </p>
-                    <div className="space-y-2">
-                      <div className="p-3 bg-white border border-[#eaeaec] rounded-xl text-[11px]">
-                        <strong className="text-primary block font-mono">AVAILABILITY (อัตราความพร้อมใช้งาน)</strong>
-                        <p className="text-slate-500 mt-1">สัดส่วนเวลาเดินเครื่องจริงเทียบกับชั่วโมงเปิดสายผลิต โดยหักลบเวลาหยุดเครื่องจากเหตุ Breakdown ค้างกระดาน</p>
-                      </div>
-                      <div className="p-3 bg-white border border-[#eaeaec] rounded-xl text-[11px]">
-                        <strong className="text-emerald-700 block font-mono">QUALITY VALUE (อัตราของดี)</strong>
-                        <p className="text-slate-500 mt-1">ประเมินชิ้นงานสมบูรณ์แบบไม่เสื่อมสภาพจากการขึ้นรูป ถือคุณภาพมาตรฐานโรงงานเฉลี่ยไว้ที่ 98.5%</p>
-                      </div>
+            <UserGuidePanel
+                isOpen={showGuide}
+                onClose={() => setShowGuide(false)}
+                title="MACHINE BREAKDOWN GUIDE"
+                subtitle="MAINTENANCE & DOWNTIME MANUAL"
+            >
+                <div className="space-y-8 font-sans">
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Wrench size={16} className="text-[#3f809e]" /> 1. ภาพรวมระบบแจ้งซ่อมเครื่องจักร
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            ระบบนี้ใช้สำหรับบันทึกประวัติการเสียและติดตามสถานะการซ่อมของเครื่องจักร (Breakdown Logs) เพื่อนำข้อมูลเวลา <strong>Downtime</strong> ไปเชื่อมโยงกับระบบคำนวณ OEE อัตโนมัติ:
+                        </p>
+                        <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757] text-[12px]">
+                            <strong>สำคัญ:</strong> การปล่อยให้สถานะค้างอยู่ที่ Pending นานเกินไปโดยไม่เข้าตรวจสอบ จะทำให้เวลา Downtime ในระบบบานปลาย และดึงค่าประสิทธิภาพ (OEE) ของกะนั้นลงอย่างหนัก
+                        </div>
                     </div>
-                  </section>
 
-                  {/* Section 3: Wizard Guide */}
-                  <section className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-                    <h4 className="text-[13px] font-black text-[#212c46] mb-1.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-1.5 font-mono">
-                      <Icons.Layers size={16} className="text-[#a94228]"/>
-                      3. ข้อมูลคำสั่งในระบบ Wizard Configurator
-                    </h4>
-                    <p className="text-[11.5px] text-[#414757] font-bold">
-                      เมื่อเข้าสู่เมนูกล่องโต้ตอบการแจ้งซ่อมของพนักงาน ระบบจะแบ่งออกเป็น 3 ขั้นตอน (Configuration Nodes) ตามรูปแบบมาตรฐานสูงสุด:
-                    </p>
-                    <ul className="list-disc pl-5 space-y-1.5 text-[11px] text-[#414757]">
-                      <li><strong className="text-primary font-mono">Step 1: Machine & Reporter Profile</strong> - ระบุประเภทเครื่องจักรที่เสีย ระบุวันที่ และสายงานผู้ควบคุมที่เปิดจ๊อบงาน</li>
-                      <li><strong className="text-primary font-mono">Step 2: Error & Issue Logs</strong> - บันทึกอาการเชิงช่างและปัญหาหลักที่พบล่าสุด</li>
-                      <li><strong className="text-primary font-mono">Step 3: Maintenance State & Downtime</strong> - ประเมินเวลาหยุดเครื่องจักร (เป็นนาที) พร้อมประเมินสถานะเพื่อพิจารณาตัดเข้าคิวแจ้งซ่อมถัดไป</li>
-                    </ul>
-                  </section>
+                    <div className="h-px bg-[#eaeaec] w-full" />
 
-                  {/* Section 4: PM Guides */}
-                  <section className="space-y-2">
-                    <h4 className="text-[13px] font-black text-[#212c46] mb-2.5 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-                      <Icons.Settings size={16} className="text-[#a94228]"/>
-                      4. คำแนะนำการระบุอาการแจ้งซ่อมที่ถูกต้อง
-                    </h4>
-                    <p className="text-[11.5px] text-[#414757] leading-relaxed">
-                      ในการออกตั๋วแจ้งซ่อมทุกครั้ง การกรอกช่อง **Problem** พนักงานจำเป็นต้องวงเล็บตัวย่อของสปริงหรือเซ็นเซอร์หากทราบตัวประกอบ เพื่อช่วยให้หัวหน้าช่างและทีมจัดเตรียมอะไหล่ได้ถูกต้อง รวดเร็ว ตลอดกระบวนการ
-                    </p>
-                  </section>
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Activity size={16} className="text-[#b58c4f]" /> 2. การระบุสถานะงานซ่อม (MAINTENANCE STATUS)
+                        </h3>
+                        <div className="space-y-3 relative pb-2 border-l-2 border-[#eaeaec] ml-2 pl-4">
+                            <div className="relative">
+                                <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#a94228] border-2 border-white"></div>
+                                <strong className="text-[#a94228] block text-[12px]">PENDING (รอดำเนินการ):</strong>
+                                <p className="text-[#7a8b95] text-[11px] mt-0.5">เปิดแจ้งซ่อมแล้ว แต่ช่างยังไม่เข้าหน้างาน เครื่องจักรยังถือว่าสูญเสียเวลาเดินเครื่อง</p>
+                            </div>
+                            <div className="relative mt-4">
+                                <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#b58c4f] border-2 border-white"></div>
+                                <strong className="text-[#b58c4f] block text-[12px]">IN PROGRESS (กำลังซ่อม):</strong>
+                                <p className="text-[#7a8b95] text-[11px] mt-0.5">ช่างกำลังปฏิบัติงานซ่อม เปลี่ยนอะไหล่ หรือตั้งค่าระบบใหม่</p>
+                            </div>
+                            <div className="relative mt-4">
+                                <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#688a58] border-2 border-white"></div>
+                                <strong className="text-[#688a58] block text-[12px]">RESOLVED (แก้ไขเสร็จสิ้น):</strong>
+                                <p className="text-[#7a8b95] text-[11px] mt-0.5">ส่งมอบเครื่องคืนฝ่ายผลิต ระบบนับเวลา Downtime สิ้นสุดทันที</p>
+                            </div>
+                        </div>
+                    </div>
 
-                  <div className="pt-4 border-t border-slate-200 text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                    MES บอร์ดรายงานเครื่องจักรขัดข้องและการเชื่อมโยงข้อมูล • VER 3.5.0
-                  </div>
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.PlusCircle size={16} className="text-[#688a58]" /> 3. ขั้นตอนการเปิดตั๋วแจ้งซ่อม (HOW TO LOG)
+                        </h3>
+                        <ul className="list-decimal pl-5 space-y-2 text-[#414757] text-[12px]">
+                            <li>กดปุ่ม <strong>[ + NEW BREAKDOWN REPORT ]</strong> ที่มุมขวาบน</li>
+                            <li><strong>STEP 1:</strong> เลือกเครื่องจักรที่เกิดปัญหา พร้อมระบุผู้พบเห็นหรือหัวหน้ากะ</li>
+                            <li><strong>STEP 2:</strong> อธิบายอาการเสียให้ชัดเจน (เช่น มอเตอร์ไหม้, สายพานขาด, เซ็นเซอร์ไม่ทำงาน)</li>
+                            <li><strong>STEP 3:</strong> เลือกระดับความรุนแรงและป้อนนาทีที่สูญเสียไป (หากทราบ) จากนั้นกดบันทึก</li>
+                        </ul>
+                    </div>
                 </div>
             </UserGuidePanel>
 
             {/* UNIFIED MES COHERENT HEADER */}
-            <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
                     <div className="relative flex items-center justify-center group cursor-default shrink-0">
                         <div className="absolute inset-0 bg-[#3f809e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -322,7 +314,7 @@ export default function MachineBreakdown() {
             </div>
 
             {/* MAIN CONTENT AREA - Standardized like UserPermissions */}
-            <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px] transition-all">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px] transition-all">
                 
                 {/* SYSTEM STATS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 shrink-0">
@@ -333,7 +325,7 @@ export default function MachineBreakdown() {
                 </div>
 
                 {activeTab === 'breakdown_list' && (
-                    <div className="bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+                    <div className="bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
                         
                         {/* TOOLBAR */}
                         <div className="p-6 flex flex-row justify-between items-center bg-[#f8f9fa] border-b border-[#eaeaec] shrink-0 gap-4">
@@ -354,49 +346,49 @@ export default function MachineBreakdown() {
 
                         {/* DATA GRID */}
                         <div className="overflow-auto custom-scrollbar">
-                            <table className="w-full text-left font-sans border-collapse">
-                                <thead className="sys-table-header bg-[#212c46] text-white border-[#b7a159]">
-                                    <tr>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest whitespace-nowrap pl-8 text-[11px] w-[14%]">Report Info</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest whitespace-nowrap text-[11px] w-[22%]">Machine Name</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest whitespace-nowrap text-[11px] w-[26%]">Problem details</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest whitespace-nowrap text-[11px] w-[20%]">Solutions log</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-center whitespace-nowrap text-[11px] w-[10%]">Downtime</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-center whitespace-nowrap text-[11px] w-[10%]">State</th>
-                                        <th className="py-4 px-6 font-black uppercase tracking-widest text-center whitespace-nowrap pr-8 text-[11px] w-[8%]">Actions</th>
+                            <table className="w-full text-left border-collapse table-font">
+                                <thead className="sys-table-header [#b7a159] ">
+                    <tr>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap pl-8  w-[14%]">Report Info</th>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap  w-[22%]">Machine Name</th>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap  w-[26%]">Problem details</th>
+                                        <th className="font-black uppercase tracking-widest whitespace-nowrap  w-[20%]">Solutions log</th>
+                                        <th className="font-black uppercase tracking-widest text-center whitespace-nowrap  w-[10%]">Downtime</th>
+                                        <th className="font-black uppercase tracking-widest text-center whitespace-nowrap  w-[10%]">State</th>
+                                        <th className="font-black uppercase tracking-widest text-center whitespace-nowrap pr-8  w-[8%]">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-[#eaeaec]">
                                     {paginatedData.map(item => (
                                         <tr key={item.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 font-sans">
-                                            <td className="py-4 px-6 pl-8">
+                                            <td className="px-4 pl-8 py-2.5">
                                                 <div className="flex flex-col">
                                                     <span className="font-mono font-black text-[#a94228] text-[12.5px] leading-none">{item.id}</span>
                                                     <span className="text-[10px] text-slate-400 font-mono font-bold mt-1.5">{item.date}</span>
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="px-4 py-2.5">
                                                 <div className="font-extrabold text-[#212c46] text-[12.5px] uppercase tracking-tight">{item.machineName}</div>
                                                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest block mt-0.5">Machine Node ID: {item.machineId}</span>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="px-4 py-2.5">
                                                 <p className="font-semibold text-slate-700 text-[12px] leading-relaxed break-words max-w-[280px]" title={item.problem}>{item.problem}</p>
                                                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1 block">Reported By: {item.reportedBy}</span>
                                             </td>
-                                            <td className="py-4 px-6">
+                                            <td className="px-4 py-2.5">
                                                 {item.actionTaken ? (
                                                     <p className="font-medium text-slate-500 text-[11.5px] leading-relaxed break-words max-w-[220px]" title={item.actionTaken}>{item.actionTaken}</p>
                                                 ) : (
                                                     <span className="text-slate-300 italic font-mono text-[11px]">Pending maintenance work...</span>
                                                 )}
                                             </td>
-                                            <td className="py-4 px-6 text-center">
-                                                <div className="flex items-baseline justify-center gap-1">
+                                            <td className="px-4 text-center py-2.5">
+                                                <div className="flex items-baseline justify-center gap-[1px]">
                                                     <span className="font-mono font-black text-[#a94228] text-[13px]">{item.downtimeMinutes}</span>
                                                     <span className="text-[9.5px] text-slate-400 font-black uppercase">Min</span>
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-6 text-center">
+                                            <td className="px-4 text-center py-2.5">
                                                 <span className={`px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-widest border shadow-inner ${
                                                     item.status === 'Resolved' ? 'bg-[#657f4d]/10 text-[#657f4d] border-[#657f4d]/30' :
                                                     'bg-[#E3624A]/10 text-[#E3624A] border-[#E3624A]/30 animate-pulse'
@@ -404,8 +396,8 @@ export default function MachineBreakdown() {
                                                     {item.status}
                                                 </span>
                                             </td>
-                                            <td className="py-4 px-6 pr-8 text-center">
-                                                <div className="flex items-center justify-center gap-1">
+                                            <td className="px-4 pr-8 text-center py-2.5">
+                                                <div className="flex items-center justify-center gap-[1px]">
                                                     <button onClick={() => handleOpenModal(item)} className="p-1.5 hover:bg-slate-50 border border-transparent hover:border-[#eaeaec] rounded-lg transition-all text-[#212c46]" title="แก้ไขข้อมูล">
                                                         <Icons.Pencil size={15} />
                                                     </button>
@@ -418,7 +410,7 @@ export default function MachineBreakdown() {
                                     ))}
                                     {paginatedData.length === 0 && (
                                         <tr>
-                                            <td colSpan={7} className="py-16 text-center text-slate-400 font-black uppercase tracking-widest text-xs opacity-70">
+                                            <td className="text-center text-slate-400 font-black uppercase tracking-widest text-xs opacity-70 py-2.5 px-4">
                                                 No breakdown records found matches filtering
                                             </td>
                                         </tr>
@@ -454,7 +446,7 @@ export default function MachineBreakdown() {
                     <div className="flex flex-col gap-6 animate-fadeIn">
                         
                         {/* Overall Equipment Effectiveness Dashboard */}
-                        <div className="bg-white rounded-3xl p-8 border border-[#eaeaec] shadow-lg shrink-0">
+                        <div className="bg-white rounded-xl p-8 border border-[#eaeaec] shadow-lg shrink-0">
                             <h3 className="font-black text-[#212c46] flex items-center gap-2.5 uppercase tracking-widest mb-8 text-sm border-b-2 border-[#b7a159]/20 pb-4">
                                 <Icons.Activity size={20} className="text-[#a94228]" /> Overall Equipment Effectiveness (OEE) KPI Analysis
                             </h3>
@@ -462,7 +454,7 @@ export default function MachineBreakdown() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                 
                                 {/* Overall OEE */}
-                                <div className="flex flex-col items-center justify-center p-8 bg-[#212c46]/5 rounded-2xl border border-[#212c46]/10 shadow-inner">
+                                <div className="flex flex-col items-center justify-center p-8 bg-[#212c46]/5 rounded-xl border border-[#212c46]/10 shadow-inner">
                                     <h4 className="text-[11px] font-black text-[#212c46] uppercase tracking-widest mb-6">Overall OEE Rate</h4>
                                     <div className="relative w-44 h-44 flex items-center justify-center">
                                         <svg className="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 100 100">
@@ -477,7 +469,7 @@ export default function MachineBreakdown() {
                                 </div>
 
                                 {/* Availability */}
-                                <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-[#eaeaec] shadow-sm">
+                                <div className="flex flex-col items-center justify-center p-8 bg-white rounded-xl border border-[#eaeaec] shadow-sm">
                                     <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-6">Line Availability</h4>
                                     <div className="relative w-44 h-44 flex items-center justify-center">
                                         <svg className="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 100 100">
@@ -492,7 +484,7 @@ export default function MachineBreakdown() {
                                 </div>
 
                                 {/* Quality */}
-                                <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-[#eaeaec] shadow-sm">
+                                <div className="flex flex-col items-center justify-center p-8 bg-white rounded-xl border border-[#eaeaec] shadow-sm">
                                     <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-6">Quality standard</h4>
                                     <div className="relative w-44 h-44 flex items-center justify-center">
                                         <svg className="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 100 100">
@@ -510,7 +502,7 @@ export default function MachineBreakdown() {
                         </div>
 
                         {/* TREND ANALYSIS CHART */}
-                        <div className="bg-white rounded-3xl p-8 border border-[#eaeaec] shadow-lg flex-1">
+                        <div className="bg-white rounded-xl p-8 border border-[#eaeaec] shadow-lg flex-1">
                             <h3 className="font-black text-[#212c46] flex items-center gap-2.5 uppercase tracking-widest mb-6 text-sm border-b-2 border-[#b7a159]/20 pb-4">
                                 <Icons.TrendingUp size={20} className="text-[#a94228]" /> Combined Production OEE Trend (Last 7 Days)
                             </h3>
@@ -542,7 +534,7 @@ export default function MachineBreakdown() {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             
                             {/* Downtime by Machine */}
-                            <div className="bg-white rounded-3xl p-8 border border-[#eaeaec] shadow-lg">
+                            <div className="bg-white rounded-xl p-8 border border-[#eaeaec] shadow-lg">
                                 <h3 className="font-black text-[#212c46] flex items-center gap-2.5 uppercase tracking-widest mb-6 text-sm border-b-2 border-[#b7a159]/20 pb-4">
                                     <Icons.BarChart2 size={20} className="text-[#a94228]" /> Total Accumulated Downtime by Machine
                                 </h3>
@@ -566,7 +558,7 @@ export default function MachineBreakdown() {
                             </div>
 
                             {/* Top Problem Distributions */}
-                            <div className="bg-white rounded-3xl p-8 border border-[#eaeaec] shadow-lg">
+                            <div className="bg-white rounded-xl p-8 border border-[#eaeaec] shadow-lg">
                                 <h3 className="font-black text-[#212c46] flex items-center gap-2.5 uppercase tracking-widest mb-6 text-sm border-b-2 border-[#b7a159]/20 pb-4">
                                     <Icons.PieChart size={20} className="text-[#a94228]" /> Critical Problem Occurrences Distribution
                                 </h3>

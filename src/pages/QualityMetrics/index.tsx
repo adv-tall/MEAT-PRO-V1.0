@@ -244,52 +244,54 @@ export default function QualityMetrics() {
       {/* USER GUIDE FLOATING BUTTON & PANEL */}
       <UserGuideButton onClick={() => setIsGuideOpen(true)} />
 
-      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="QUALITY METRICS HUB MANUAL" subtitle="คู่มือติดตามควบคุมดัชนีคุณภาพและมาตรฐานกระบวนการ">
-        <div className="space-y-6">
-          <div className="border-l-4 border-[#b7a159] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 1: Quality Indices & Standards (HACCP)</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">เกณฑ์การวัดดัชนีคุณภาพและการสุ่มตรวจ</p>
-          </div>
-          <p className="leading-relaxed">
-            ระบบตรวจสอบค่าคุณภาพหลักแบ่งเกณฑ์วิเคราะห์ออกเป็น 5 ตัวแปรทางกายภาพและเคมี มุ่งเน้นการปฏิบัติตามมาตรฐานสากล (HACCP และ ISO 22000):
-          </p>
-          <ul className="list-disc list-inside space-y-2 mt-1 pl-1">
-            <li><strong>FTQ (First-Time-Quality):</strong> สัดส่วนผลิตภัณฑ์ที่ผ่านเกณฑ์คุณภาพสมบูรณ์ในการตรวจสอบแรกเฉลี่ยโดยตั้งเป้าหมายไว้สูงกว่า {settings.minFtqTargetLimit}%</li>
-            <li><strong>Defect Rate Limit:</strong> อัตราผลิตภัณฑ์ของเสีย/มีข้อบกพร่อง ห้ามสะสมเกินขีดควบคุมสูงสุดพึ่งระวังที่ {settings.maxDefectRateLimit}%</li>
-            <li><strong>Critical Control Points (CCP):</strong> โดยเฉพาะอุณหภูมิสุกใจกลางของเนื้อสัตว์ (TEM) ต้องตรวจยืนยันว่าเกินเกณฑ์ขั้นต่ำความปลอดภัย {settings.criticalTempCCP}°C เสมอ</li>
-          </ul>
+      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="QUALITY METRICS GUIDE" subtitle="QUALITY CONTROL & STANDARDS MANUAL">
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.FileCheck size={16} className="text-[#3f809e]" /> 1. ภาพรวมการควบคุมคุณภาพ (QUALITY OVERVIEW)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    โมดูลนี้ใช้เพื่อบันทึกและประเมินคุณภาพของกระบวนการผลิต (Quality Audit) ข้อมูลที่ป้อนเข้ามาจะถูกนำไปใช้วิเคราะห์คุณภาพสินค้าโดยรวม และเชื่อมโยงกับการแจ้งเตือนหากค่าทะลุเกณฑ์ (Limit Alert)
+                </p>
+                <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl text-[#414757] text-[12px]">
+                    <strong>Note:</strong> เป้าหมายหลักของโรงงานคือ <strong>FTQ (First Time Quality)</strong> ต้อง {'>'}= {settings.minFtqTargetLimit}% และ <strong>Defect Rate</strong> ต้อง {'<'}= {settings.maxDefectRateLimit}% ตามมาตรฐาน ISO 22000
+                </div>
+            </div>
 
-          <div className="p-4 bg-[#f3f3f1] rounded-2xl border border-[#eaeaec] space-y-2">
-            <p className="font-bold flex items-center gap-2 text-[#932c2e]"><Icons.ShieldAlert size={14} /> กติกาด้านความปลอดภัยขั้นระบบงาน:</p>
-            <ul className="list-disc list-inside space-y-1 text-[#414757]">
-              <li>กรณีตรวจพบสถานะสูญเสียเด่นชัด (Scrapped หรือ Re-work) ผู้รายงานต้องเขียนคำอธิบายรายละเอียดผลทดสอบอย่างจำเพาะเจาะจง</li>
-              <li>การบันทึกระดับการสูญเสียจำพวก Scrap และ Re-work ทุกรายการ ต้องแนบลายมือชื่อวิศวกรผู้ควบคุม (Supervisor Signature) เท่านั้นจึงเสร็จสมบูรณ์</li>
-            </ul>
-          </div>
+            <div className="h-px bg-[#eaeaec] w-full" />
 
-          <div className="border-l-4 border-[#3f809e] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 2: Testing Procedures</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">ระเบียบปฏิบัติและขั้นตอนกรอกข้อมูลคุณภาพภาพรวม</p>
-          </div>
-          <p className="leading-relaxed">
-            ผู้จัดการฝ่ายควบคุมคุณภาพ (QA Engineer) หรือเจ้าหน้าที่ตรวจประเมินคุณภาพ (QC) ต้องตรวจสอบแบทช์การผลิตตามลำดับความถี่ที่กำหนด:
-            <br />1. กรอกรหัสหมายเลขแรทช์ (Batch ID) และระบุชื่อสินค้าประเภทอาหารแปรรูปให้ถูกต้องแม่นยำ
-            <br />2. เลือกหมวดหลักในการตรวจสอบ และระบุผลการตรวจสอบที่กระทำจริง
-            <br />3. บันทึกคำอธิบายเชิงกลยุธศาสตร์ หากค่าเบี่ยงเบนไม่อยู่ในช่วงกฎความคลาดเคลื่อนที่กำหนด
-          </p>
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.ShieldAlert size={16} className="text-[#b58c4f]" /> 2. หมวดหมู่การสุ่มตรวจ (TESTING CATEGORIES)
+                </h3>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3"><div className="p-1 border border-[#eaeaec] rounded bg-[#f8f9fa] text-[10px] font-bold text-[#b58c4f]">Microbio</div><span className="text-[#414757] text-[12px]">การตรวจเชื้อจุลินทรีย์ และ Food Safety (ผล Lab)</span></div>
+                    <div className="flex items-center gap-3"><div className="p-1 border border-[#eaeaec] rounded bg-[#f8f9fa] text-[10px] font-bold text-[#3f809e]">Physical</div><span className="text-[#414757] text-[12px]">รอยแตก, สี, กลิ่น, รูปร่างภายนอก</span></div>
+                    <div className="flex items-center gap-3"><div className="p-1 border border-[#eaeaec] rounded bg-[#f8f9fa] text-[10px] font-bold text-[#a94228]">Chemical</div><span className="text-[#414757] text-[12px]">ค่า pH, ความชื้น, ปริมาณเกลือ/โซเดียม</span></div>
+                    <div className="flex items-center gap-3"><div className="p-1 border border-[#eaeaec] rounded bg-[#f8f9fa] text-[10px] font-bold text-[#688a58]">Temp (CCP)</div><span className="text-[#414757] text-[12px]">อุณหภูมิสุกจุดกึ่งกลาง (Core Temp.) ขั้นต่ำต้องได้ {settings.criticalTempCCP}°C</span></div>
+                </div>
+            </div>
 
-          <div className="border-l-4 border-[#657f4d] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 3: CAPA Strategy & Escalation</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">มาตรการแก้ไขและปรับปรุงเชิงรุก</p>
-          </div>
-          <p className="leading-relaxed">
-            แผนผังมาตรการปฏิบัติตามมาตรฐานวงจร PDCA เมื่อพบอัตราความล้มเหลวตกประเมิน (Re-work และ Scrapped) เจ้าหน้าที่จะยื่นคำขอตรวจสอบคัดแยก จัดตั้งทีมกักลอยสินค้า และวิเคราะห์หาสาเหตุหลัก (Root Cause Analysis - RCA) ทันทีเพื่อป้องกันปัญหาการปนเปื้อนหลุดรอดสู่มือคู่ค้ารายสำคัญ
-          </p>
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.AlertTriangle size={16} className="text-[#a94228]" /> 3. สถานะของผลิตภัณฑ์ที่ตรวจสอบ (STATUS LOGS)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    เวลาบันทึกรายการ Audit ผู้ตรวจต้องระบุสถานะปลายทางไว้ 3 แบบ:
+                </p>
+                <ul className="list-decimal pl-5 space-y-2 text-[#414757] text-[12px]">
+                    <li><strong className="text-[#688a58]">Passed:</strong> ผ่านเกณฑ์คุณภาพทั้งหมด ปล่อยผ่านไปขั้นตอนถัดไปได้ทันที</li>
+                    <li><strong className="text-[#b58c4f]">Rework:</strong> ไม่ผ่านเกณฑ์มาตรฐาน แต่ยังสามารถนำกลับไปทำการแก้ไขใหม่ได้ (เช่น ปรุงรสเพิ่ม หรือซีลถุงใหม่)</li>
+                    <li><strong className="text-[#a94228]">Scrapped:</strong> สินค้ามีปัญหาปนเปื้อน หรือวิกฤตความปลอดภัย ต้องทิ้งหรือทำลายสถานเดียว (ห้ามกลับมาใช้ใหม่)</li>
+                </ul>
+            </div>
         </div>
       </UserGuidePanel>
 
       {/* HEADER SECTION */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#657f4d] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -323,7 +325,7 @@ export default function QualityMetrics() {
       </div>
 
       {/* KPI METRIC CARDS */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
           <KpiCard label="Defect Rate (%)" value={`${defectRate}%`} icon="percent" colorAccent={defectRate > settings.maxDefectRateLimit ? THEME.danger : THEME.success} colorValue={THEME.primary} desc={`Target max: < ${settings.maxDefectRateLimit}%`} />
           <KpiCard label="FTQ Quality Index" value={`${ftqPercentage}%`} icon="award" colorAccent={ftqPercentage >= settings.minFtqTargetLimit ? THEME.success : THEME.gold} colorValue={THEME.primary} desc={`Target pass: > ${settings.minFtqTargetLimit}%`} />
@@ -333,9 +335,9 @@ export default function QualityMetrics() {
 
         {/* LIST VIEW TAB */}
         {activeTab === 'list_mode' ? (
-          <div className="bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
             {/* SEARCH AND CONTROLS HEADER */}
-            <div className="px-8 py-4 border-b border-[#eaeaec] bg-[#f8f9fa] flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+            <div className="px-4 py-4 border-b border-[#eaeaec] bg-white flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-black text-[#7a8b95] uppercase tracking-widest bg-white border border-[#eaeaec] px-4 py-2 rounded-xl shadow-sm">
                   Filter Compliance Levels
@@ -354,23 +356,23 @@ export default function QualityMetrics() {
 
             {/* MAIN DATA TABLE */}
             <div className="overflow-auto custom-scrollbar">
-              <table className="w-full text-left font-sans border-collapse">
-                <thead className="sys-table-header bg-[#212c46] text-white border-[#b7a159]">
-                  <tr>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">ID / Date</th>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Batch ID / Product</th>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Inspection Category</th>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Measured Value</th>
-                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Inspector</th>
-                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">QA Supervisor Sig</th>
-                    <th className="font-black uppercase tracking-widest text-center">Status</th>
-                    <th className="font-black uppercase tracking-widest text-center">Action</th>
+              <table className="w-full text-left border-collapse table-font">
+                <thead className="sys-table-header [#b7a159] ">
+                    <tr>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">ID / Date</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Batch ID / Product</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Inspection Category</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Measured Value</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap   ">Inspector</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap   ">QA Supervisor Sig</th>
+                    <th className="font-black uppercase tracking-widest text-center   ">Status</th>
+                    <th className="font-black uppercase tracking-widest text-center   ">Action</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-[#eaeaec]">
                   {currentData.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-12 text-[#7a8b95] uppercase font-black tracking-widest text-[12px]">No tracked quality inspection logs located</td>
+                      <td className="text-center text-[#7a8b95] uppercase font-black tracking-widest text-[12px] py-2.5 px-4">No tracked quality inspection logs located</td>
                     </tr>
                   ) : (
                     currentData.map(log => {
@@ -380,54 +382,54 @@ export default function QualityMetrics() {
 
                       return (
                         <tr key={log.id} className="hover:bg-[#f8f9fa] transition-colors group">
-                          <td className="sys-table-td font-mono font-black text-[#212c46]">
+                          <td className="sys-table-td font-mono font-black text-[#212c46] py-2.5 px-4">
                             <div className="flex flex-col">
                               <span>{log.id}</span>
                               <span className="text-[10px] text-[#7a8b95] font-bold">{log.date}</span>
                             </div>
                           </td>
-                          <td className="sys-table-td">
+                          <td className="sys-table-td py-2.5 px-4">
                             <div className="flex flex-col">
                               <span className="font-black uppercase text-[#212c46] text-[12px]">{log.productName}</span>
                               <span className="text-[10px] text-[#3f809e] font-bold tracking-wider uppercase">{log.batchId}</span>
                             </div>
                           </td>
-                          <td className="sys-table-td">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-sm" style={{ backgroundColor: testType.color }}>
+                          <td className="sys-table-td py-2.5 px-4">
+                            <span className="inline-flex items-center gap-[1px] px-3 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-sm" style={{ backgroundColor: testType.color }}>
                               <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                               {testType.name}
                             </span>
                           </td>
-                          <td className="sys-table-td">
+                          <td className="sys-table-td py-2.5 px-4">
                             <div className="flex flex-col">
                               <span className="font-black text-[#212c46] text-[12px]">{log.valueMeasured}</span>
                               <span className="text-[10px] text-[#7a8b95] font-bold max-w-[200px] truncate" title={log.remarks}>{log.remarks}</span>
                             </div>
                           </td>
-                          <td className="sys-table-td text-center font-bold text-[#414757] text-[12px]">
+                          <td className="sys-table-td text-center font-bold text-[#414757] text-[12px] py-2.5 px-4">
                             {log.inspectedBy}
                           </td>
-                          <td className="sys-table-td text-center font-black">
+                          <td className="sys-table-td text-center font-black py-2.5 px-4">
                             {log.supervisorSig ? (
-                              <span className="inline-flex items-center gap-1 text-[#657f4d] text-[11px] font-black bg-[#657f4d]/10 px-2.5 py-1 rounded-lg border border-[#657f4d]/20 uppercase tracking-widest">
+                              <span className="inline-flex items-center gap-[1px] text-[#657f4d] text-[11px] font-black bg-[#657f4d]/10 px-2.5 py-1 rounded-lg border border-[#657f4d]/20 uppercase tracking-widest">
                                 <Icons.CheckCircle size={12} /> {log.supervisorSig}
                               </span>
                             ) : requiresSignature ? (
-                              <span className="inline-flex items-center gap-1 text-[#932c2e] text-[10px] font-black bg-[#932c2e]/10 px-2 py-1 rounded-lg border border-[#932c2e]/30 uppercase tracking-widest animate-pulse">
+                              <span className="inline-flex items-center gap-[1px] text-[#932c2e] text-[10px] font-black bg-[#932c2e]/10 px-2 py-1 rounded-lg border border-[#932c2e]/30 uppercase tracking-widest animate-pulse">
                                 <Icons.AlertCircle size={10} /> Pending Sig
                               </span>
                             ) : (
                               <span className="text-[#aaeaec] opacity-40 text-[13px] font-bold">-</span>
                             )}
                           </td>
-                          <td className="sys-table-td text-center">
+                          <td className="sys-table-td text-center py-2.5 px-4">
                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${log.status === 'Passed' ? 'bg-[#657f4d]/20 text-[#657f4d] border border-[#657f4d]/30' : log.status === 'Re-work' ? 'bg-[#b58c4f]/20 text-[#b58c4f] border border-[#b58c4f]/30' : 'bg-[#932c2e]/10 text-[#d96245] border border-[#932c2e]/30'}`}>
                               {log.status}
                             </span>
                           </td>
-                          <td className="sys-table-td text-center">
+                          <td className="sys-table-td text-center py-2.5 px-4">
                             <div className="flex justify-center items-center gap-[1px]">
-                              <button onClick={() => openEditModal(log)} className="sys-table-action-btn text-[#4d87a8] hover:bg-[#4d87a8]/10 border-transparent transition-all">
+                              <button onClick={() => openEditModal(log)} className="sys-table-action-btn w-8 h-8 text-[#4d87a8] hover:bg-[#4d87a8]/10 border-transparent transition-all">
                                 <Icons.Edit3 size={15} />
                               </button>
                             </div>
@@ -468,7 +470,7 @@ export default function QualityMetrics() {
           /* ANALYTICS TAB */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
             {/* QUALITY PARETO BARS */}
-            <div className="lg:col-span-6 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec]">
+            <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
               <div className="border-b-2 border-[#b7a159] pb-4 mb-6">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.BarChart3 size={20} className="text-[#657f4d]" /> Inspection Category Distribution & Defects
@@ -491,7 +493,7 @@ export default function QualityMetrics() {
             </div>
 
             {/* PASS RATE TREND LINE */}
-            <div className="lg:col-span-6 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec]">
+            <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
               <div className="border-b-2 border-[#b7a159] pb-4 mb-6">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.TrendingUp size={20} className="text-[#b58c4f]" /> Daily Quality Pass Rate Trend (%)
@@ -586,21 +588,21 @@ export default function QualityMetrics() {
                   <p className="text-[10px] text-[#7a8b95] uppercase font-bold mt-0.5">กฎเกณฑ์ความปลอดภัยเพื่อบังคับการทำงานให้สอดคล้องกัน</p>
                 </div>
                 <div className="space-y-3">
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#657f4d] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#657f4d] transition-colors">
                     <input type="checkbox" checked={settings.requireSigForRejectScrap} onChange={e => setSettings({ ...settings, requireSigForRejectScrap: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Require Supervisor Signature for Rejects/Scraps</span>
                       <span className="block text-[9px] text-[#7a8b95] font-bold mt-0.5">ต้องลงลายมือชื่อกำกับความเสี่ยงทุกครั้งหากระบุของเสียคัดแยก</span>
                     </div>
                   </label>
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#657f4d] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#657f4d] transition-colors">
                     <input type="checkbox" checked={settings.autoEscalateQualityAuditor} onChange={e => setSettings({ ...settings, autoEscalateQualityAuditor: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Auto-escalate Critical QA defects to Manager</span>
                       <span className="block text-[9px] text-[#7a8b95] font-bold mt-0.5">ส่งเรื่องเตือนไปยังผู้จัดการฝ่ายตรวจสอบทันทีหากเกินเป้าหมายจำกัด</span>
                     </div>
                   </label>
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#657f4d] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#657f4d] transition-colors">
                     <input type="checkbox" checked={settings.enforceHaccpCompliant} onChange={e => setSettings({ ...settings, enforceHaccpCompliant: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Enforce Regulatory HACCP Parameters Verification</span>

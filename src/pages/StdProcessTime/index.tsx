@@ -265,7 +265,7 @@ function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
 
     return (
         <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-3xl" hideDefaultHeader>
-            <div className="bg-white rounded-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white rounded-xl w-full overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="p-5 border-b border-[#eaeaec] flex justify-between items-center bg-[#212c46] text-white">
                     <h3 className="font-black flex items-center gap-2 uppercase tracking-widest text-sm"><LucideIcon name="upload-cloud" /> Import CSV</h3>
                     <button onClick={onClose} className="hover:bg-white/20 p-1.5 rounded-lg transition-colors"><LucideIcon name="x" /></button>
@@ -284,22 +284,22 @@ function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
                                 <span>Preview Data ({previewData.length} rows)</span>
                                 <button onClick={() => setPreviewData([])} className="text-[10px] text-[#932c2e] uppercase tracking-widest bg-red-50 px-2 py-1 rounded">Clear</button>
                             </h4>
-                            <table className="w-full text-left whitespace-nowrap">
-                                <thead className="bg-[#f8f9fa] text-[#212c46] sticky top-0">
-                                    <tr>
-                                        <th className="p-3 font-bold uppercase border-b align-middle">ID</th>
-                                        <th className="p-3 font-bold uppercase border-b align-middle">Name</th>
-                                        <th className="p-3 font-bold uppercase border-b align-middle">Category</th>
-                                        <th className="p-3 font-bold uppercase text-right border-b align-middle">Raw Batch</th>
+                            <table className="w-full text-left whitespace-nowrap table-font">
+                                <thead className="sys-table-header sticky top-0 ">
+                    <tr>
+                                        <th className="p-3 font-black uppercase  align-middle   ">ID</th>
+                                        <th className="p-3 font-black uppercase  align-middle   ">Name</th>
+                                        <th className="p-3 font-black uppercase  align-middle   ">Category</th>
+                                        <th className="p-3 font-black uppercase text-right  align-middle   ">Raw Batch</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {previewData.slice(0, 10).map((row, i) => (
                                         <tr key={i} className="hover:bg-slate-50 border-b">
-                                            <td className="p-3 font-mono font-bold text-[#932c2e]">{row.ID || '-'}</td>
-                                            <td className="p-3 text-[#212c46] font-bold">{row.Name || '-'}</td>
-                                            <td className="p-3 text-[#4d87a8]">{row.Category || '-'}</td>
-                                            <td className="p-3 font-mono text-right">{row.Raw_Batch || '-'}</td>
+                                            <td className="p-3 font-mono font-bold text-[#932c2e] py-2.5 px-4">{row.ID || '-'}</td>
+                                            <td className="p-3 text-[#212c46] font-bold py-2.5 px-4">{row.Name || '-'}</td>
+                                            <td className="p-3 text-[#4d87a8] py-2.5 px-4">{row.Category || '-'}</td>
+                                            <td className="p-3 font-mono text-right py-2.5 px-4">{row.Raw_Batch || '-'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -372,7 +372,7 @@ function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
 
     return (
         <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-6xl" hideDefaultHeader>
-            <div className="bg-white rounded-2xl w-full h-[90vh] flex flex-col shadow-2xl overflow-hidden relative border border-white/40">
+            <div className="bg-white rounded-xl w-full h-[90vh] flex flex-col shadow-2xl overflow-hidden relative border border-white/40">
                 <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#212c46]">
                     <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
                         <Icons.Settings2 size={24} className="text-[#b7a159]" />
@@ -394,7 +394,7 @@ function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-[#f8f9fa]">
                         {activeTab === 'batter' && (
                             <div className="space-y-6 animate-fadeIn">
-                                <div className="bg-white p-8 rounded-2xl border border-[#eaeaec] shadow-sm">
+                                <div className="bg-white p-8 rounded-xl border border-[#eaeaec] shadow-sm">
                                     <h4 className="text-[12px] font-black text-[#212c46] border-b border-[#eaeaec] pb-3 mb-6 uppercase tracking-widest">Product Information</h4>
                                     <div className="grid grid-cols-2 gap-6">
                                         <div className="col-span-2">
@@ -420,7 +420,7 @@ function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
                             </div>
                         )}
                         {activeTab !== 'batter' && (
-                             <div className="bg-white p-8 rounded-2xl border border-[#eaeaec] shadow-sm animate-fadeIn flex flex-col items-center justify-center text-[#7a8b95] py-20">
+                             <div className="bg-white p-8 rounded-xl border border-[#eaeaec] shadow-sm animate-fadeIn flex flex-col items-center justify-center text-[#7a8b95] py-20">
                                  <Icons.Settings size={48} className="mb-4 text-[#eaeaec]"/>
                                  <p className="font-bold uppercase tracking-widest text-[12px]">Advanced Config Panel placeholder</p>
                              </div>
@@ -519,12 +519,71 @@ export default function STDProcess() {
                 <Icons.HelpCircle size={18} className="shrink-0 group-hover:rotate-12 transition-transform text-[#7a8b95] group-hover:text-white" />
                 <span className="font-black tracking-[0.3em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap uppercase text-[11px]">USER GUIDE</span>
             </button>
-            <UserGuidePanel isOpen={showGuide} onClose={() => setShowGuide(false)} />
+            <UserGuidePanel isOpen={showGuide} onClose={() => setShowGuide(false)} title="STANDARD TIME GUIDE" subtitle="STANDARD PROCESS TIME MANAGEMENT">
+                <div className="space-y-8 font-sans">
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Timer size={16} className="text-[#3f809e]" /> 1. ภาพรวมระบบ (System Overview)
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            โมดูลทำหน้าที่จัดการเวลามาตรฐานในการผลิต (Standard Time) เช่น เวลาสูตรผสม หรือ เครื่องแพ็คแยกย่อยตามชนิดสินค้า เพื่อให้นำค่าตรงนี้ไปคำนวณในปฏิทิน และเป็น Core Engine ในการใช้งาน AI วางแผน
+                        </p>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Settings size={16} className="text-[#b58c4f]" /> 2. การจัดการข้อมูลเวลามาตรฐาน (Management)
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            ข้อมูลแต่ละรายการ (Item) จะเก็บพารามิเตอร์ต่างๆ ได้แก่:
+                        </p>
+                        <div className="space-y-3">
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4 text-[12px]">
+                                <div className="p-2 bg-[#d55a6d] text-white rounded-lg"><Icons.Briefcase size={16} /></div>
+                                <div>
+                                    <strong className="text-[#212c46]">Setup Time (Prep)</strong>
+                                    <p className="text-[#7a8b95]">เวลาตระเตรียม เช่น อุ่นเครื่อง ซับน้ำ ทำความสะอาด ฯลฯ</p>
+                                </div>
+                            </div>
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4 text-[12px]">
+                                <div className="p-2 bg-[#3f809e] text-white rounded-lg"><Icons.PlayCircle size={16} /></div>
+                                <div>
+                                    <strong className="text-[#212c46]">Process Time (Run)</strong>
+                                    <p className="text-[#7a8b95]">เวลาที่ใช้ผลิตจริง มีหน่วยเวลาต่อชิ้น, ต่อกิโลกรัม, ต่อล๊อตผลิต</p>
+                                </div>
+                            </div>
+                            <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4 text-[12px]">
+                                <div className="p-2 bg-[#b58c4f] text-white rounded-lg"><Icons.MonitorStop size={16} /></div>
+                                <div>
+                                    <strong className="text-[#212c46]">Teardown Time (End)</strong>
+                                    <p className="text-[#7a8b95]">เวลาเก็บกวาด ซักล้าง ปิดเครื่อง หลังจากผลิตจบออเดอร์แล้ว</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.DownloadCloud size={16} className="text-[#688a58]" /> 3. IMPORT / EXPORT (ข้อมูลจำนวนมาก)
+                        </h3>
+                        <div className="space-y-3 p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757]">
+                            <ul className="list-disc pl-5 space-y-2">
+                                <li><strong>CSV Import:</strong> สามารถอัปโหลดไฟล์ Excel (.csv) โดยโครงสร้างต้องมี Columns: ItemCode, Type, Target, Batch Size</li>
+                                <li><strong>Export Data:</strong> การสำรองข้อมูลทั้งหมดในฐานข้อมูล เป็นเอกสาร Excel ภายนอก</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </UserGuidePanel>
             <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={(d: any) => setMasterData([...d, ...masterData])} />
             <ConfigModal isOpen={modalConfig.isOpen} onClose={() => setModalConfig({ ...modalConfig, isOpen: false, data: null })} data={modalConfig.data} mode={modalConfig.mode} onSave={handleSave} categories={categories} />
 
             {/* Header Bar synced with other modules */}
-            <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
                     <div className="relative flex items-center justify-center group cursor-default shrink-0">
                         <div className="absolute inset-0 bg-[#212c46] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -563,7 +622,7 @@ export default function STDProcess() {
                 </div>
             </div>
 
-            <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
                 {/* KPI STATS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
                     <KpiCard label="Process Standards" value={masterData.length} icon="settings" colorAccent="#4d87a8" colorValue={THEME.primary} desc="Configured Routings" />
@@ -573,10 +632,10 @@ export default function STDProcess() {
                 </div>
 
                 <div className="w-full flex-1 flex flex-col min-h-[500px]">
-                    <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-3xl border">
+                    <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-xl border">
                         
                         {/* TOOLBAR */}
-                        <div className="px-5 py-4 border-b border-[#eaeaec] flex flex-col md:flex-row justify-between items-center bg-white shrink-0 gap-4">
+                        <div className="px-4 py-4 border-b border-[#eaeaec] flex flex-col md:flex-row justify-between items-center bg-white shrink-0 gap-4">
                             <div className="flex items-center gap-4 w-full md:w-auto">
                                 <span className="bg-[#f8f9fa] text-[#7a8b95] border border-[#eaeaec] font-mono font-black text-[11px] px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm">
                                     {filteredData.length} RECORDS
@@ -605,38 +664,38 @@ export default function STDProcess() {
                         {/* TABLE */}
                         <div className="flex-1 overflow-hidden flex flex-col">
                             <div className="overflow-y-auto flex-1 custom-scrollbar bg-slate-50/50">
-                                <table className="w-full text-left min-w-[1000px] border-collapse bg-white">
-                                    <thead className="bg-[#f8f9fa] text-[#7a8b95] border-b border-[#eaeaec] sticky top-0 z-10 font-bold uppercase tracking-widest text-[10px]">
-                                        <tr>
-                                            <th className="py-4 px-6 pl-8 w-[15%] align-middle font-black">Standard ID</th>
-                                            <th className="py-4 px-6 w-[25%] align-middle font-black">Standard Name</th>
-                                            <th className="py-4 px-6 w-[15%] align-middle font-black">Category</th>
-                                            <th className="py-4 px-6 w-[12%] text-right align-middle font-black">Batch Size</th>
-                                            <th className="py-4 px-6 w-[10%] text-center align-middle font-black">Yield</th>
-                                            <th className="py-4 px-6 w-[10%] text-center align-middle font-black">Status</th>
-                                            <th className="py-4 px-6 pr-8 text-right w-24 align-middle font-black">Action</th>
+                                <table className="w-full text-left min-w-[1000px] border-collapse bg-white table-font">
+                                    <thead className="sys-table-header [#eaeaec] sticky top-0 z-10 font-black uppercase tracking-widest ">
+                    <tr>
+                                            <th className="pl-8 w-[15%] align-middle font-black ">Standard ID</th>
+                                            <th className="w-[25%] align-middle font-black ">Standard Name</th>
+                                            <th className="w-[15%] align-middle font-black ">Category</th>
+                                            <th className="w-[12%] text-right align-middle font-black ">Batch Size</th>
+                                            <th className="w-[10%] text-center align-middle font-black ">Yield</th>
+                                            <th className="w-[10%] text-center align-middle font-black ">Status</th>
+                                            <th className="pr-8 text-right w-24 align-middle font-black ">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[#eaeaec]">
                                         {currentItems.map((item: any) => (
                                             <tr key={item.id} className="hover:bg-[#f8f9fa] transition-colors group">
-                                                <td className="py-3 px-6 pl-8 align-middle">
+                                                <td className="px-4 pl-8 align-middle py-2.5">
                                                     <span className="font-bold text-[#4d87a8] text-[12px] font-mono leading-tight bg-[#4d87a8]/10 px-2.5 py-1 rounded-md border border-[#4d87a8]/20 cursor-pointer hover:bg-[#4d87a8] hover:text-white transition-colors" onClick={() => setModalConfig({ isOpen: true, mode: 'view', data: item })}>
                                                         {item.id}
                                                     </span>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle">
+                                                <td className="px-4 align-middle py-2.5">
                                                     <div className="font-bold text-[#212c46] text-[12px] leading-tight cursor-pointer hover:text-[#4d87a8] transition-colors" onClick={() => setModalConfig({ isOpen: true, mode: 'view', data: item })}>
                                                         {item.name}
                                                     </div>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle">
+                                                <td className="px-4 align-middle py-2.5">
                                                     <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold uppercase tracking-widest shadow-sm ${getCategoryStyle(item.category)}`}>
                                                         {item.category}
                                                     </span>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-right">
-                                                    <div className="flex items-baseline justify-end gap-1 whitespace-nowrap">
+                                                <td className="px-4 align-middle text-right py-2.5">
+                                                    <div className="flex items-baseline justify-end gap-[1px] whitespace-nowrap">
                                                         <span className="font-mono font-black text-[#212c46] text-[12px]">
                                                             {item.rawWeightPerBatch}
                                                         </span>
@@ -645,20 +704,20 @@ export default function STDProcess() {
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-center">
-                                                    <div className="flex flex-col items-center justify-center gap-1.5 w-full max-w-[80px] mx-auto">
+                                                <td className="px-4 align-middle text-center py-2.5">
+                                                    <div className="flex flex-col items-center justify-center gap-[1px] w-full max-w-[80px] mx-auto">
                                                         <div className="w-full h-1.5 bg-[#eaeaec] rounded-full overflow-hidden">
                                                             <div className="h-full bg-[#4d87a8] rounded-full" style={{ width: `${item.yieldPercent}%` }}></div>
                                                         </div>
                                                         <span className="font-mono font-black text-[#212c46] text-[11px] leading-none">{item.yieldPercent}%</span>
                                                     </div>
                                                 </td>
-                                                <td className="py-3 px-6 align-middle text-center">
+                                                <td className="px-4 align-middle text-center py-2.5">
                                                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border whitespace-nowrap ${getStatusStyle(item.status)}`}>
                                                         {item.status.toUpperCase()}
                                                     </span>
                                                 </td>
-                                                <td className="py-3 px-6 pr-8 align-middle">
+                                                <td className="px-4 pr-8 align-middle py-2.5">
                                                     <div className="flex justify-end gap-[1px] transition-opacity">
                                                         <button onClick={() => setModalConfig({ isOpen: true, mode: 'edit', data: item })} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90" title="Edit">
                                                             <Icons.Pencil size={16} />
@@ -674,8 +733,8 @@ export default function STDProcess() {
                                         ))}
                                         {currentItems.length === 0 && (
                                             <tr>
-                                                <td colSpan={7} className="py-16 text-center">
-                                                    <div className="flex flex-col items-center justify-center gap-3">
+                                                <td className="text-center py-2.5 px-4">
+                                                    <div className="flex flex-col items-center justify-center gap-[1px]">
                                                         <Icons.Inbox size={48} className="text-[#eaeaec]" />
                                                         <span className="text-[#7a8b95] font-bold uppercase tracking-widest text-[12px]">No Standards Found</span>
                                                     </div>

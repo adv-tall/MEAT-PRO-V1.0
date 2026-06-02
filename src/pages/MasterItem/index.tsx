@@ -144,7 +144,7 @@ function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
 
     return (
         <div className="fixed inset-0 z-[500] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fadeIn font-sans">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] border border-white/40" onClick={e => e.stopPropagation()}>
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] border border-white/40" onClick={e => e.stopPropagation()}>
                 <div className="p-5 border-b border-slate-200 flex justify-between items-center bg-[#212c46] text-white">
                     <h3 className="font-black flex items-center gap-2 uppercase tracking-widest text-sm"><LucideIcon name="upload-cloud" /> Import Bulk CSV</h3>
                     <button onClick={onClose} className="hover:bg-white/20 p-1.5 rounded-lg transition-colors"><LucideIcon name="x" /></button>
@@ -164,26 +164,26 @@ function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
                                 <span>Preview Data ({previewData.length} rows)</span>
                                 <button onClick={() => setPreviewData([])} className="text-[10px] text-red-600 font-bold uppercase tracking-widest bg-red-50 px-2 py-1 rounded">Clear</button>
                             </h4>
-                            <table className="w-full text-left whitespace-nowrap">
-                                <thead className="bg-[#212c46] text-white sticky top-0 z-10 text-[10px] uppercase font-bold tracking-widest">
-                                    <tr>
-                                        <th className="p-3">SKU</th>
-                                        <th className="p-3">Name</th>
-                                        <th className="p-3">Category</th>
-                                        <th className="p-3">Brand</th>
-                                        <th className="p-3 text-right">Weight</th>
-                                        <th className="p-3 text-center">Status</th>
+                            <table className="w-full text-left whitespace-nowrap table-font">
+                                <thead className="sys-table-header sticky top-0 z-10 uppercase font-black tracking-widest ">
+                    <tr>
+                                        <th className="p-3   ">SKU</th>
+                                        <th className="p-3   ">Name</th>
+                                        <th className="p-3   ">Category</th>
+                                        <th className="p-3   ">Brand</th>
+                                        <th className="p-3 text-right   ">Weight</th>
+                                        <th className="p-3 text-center   ">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 bg-white">
                                     {previewData.slice(0, 10).map((row, i) => (
                                         <tr key={i} className="hover:bg-slate-50 text-[12px]">
-                                            <td className="p-3 font-mono font-bold text-red-600">{row.SKU || '-'}</td>
-                                            <td className="p-3 text-[#212c46] font-bold">{row.Name || '-'}</td>
-                                            <td className="p-3 text-slate-500">{row.Category || '-'}</td>
-                                            <td className="p-3 text-slate-400">{row.Brand || '-'}</td>
-                                            <td className="p-3 text-[#212c46] font-mono text-right">{row.Weight || '-'}</td>
-                                            <td className="p-3 text-center">{row.Status || '-'}</td>
+                                            <td className="p-3 font-mono font-bold text-red-600 py-2.5 px-4">{row.SKU || '-'}</td>
+                                            <td className="p-3 text-[#212c46] font-bold py-2.5 px-4">{row.Name || '-'}</td>
+                                            <td className="p-3 text-slate-500 py-2.5 px-4">{row.Category || '-'}</td>
+                                            <td className="p-3 text-slate-400 py-2.5 px-4">{row.Brand || '-'}</td>
+                                            <td className="p-3 text-[#212c46] font-mono text-right py-2.5 px-4">{row.Weight || '-'}</td>
+                                            <td className="p-3 text-center py-2.5 px-4">{row.Status || '-'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -242,7 +242,7 @@ function ItemModal({ isOpen, onClose, data, onSave, categories, brands, activeMa
 
     return (
         <div className="fixed inset-0 z-[500] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fadeIn font-sans">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col overflow-hidden relative border border-white/40 h-[85vh] md:h-auto" onClick={e => e.stopPropagation()}>
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col overflow-hidden relative border border-white/40 h-[85vh] md:h-auto" onClick={e => e.stopPropagation()}>
                 <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#212c46]">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20">
@@ -445,7 +445,53 @@ export default function MasterItems() {
                 <Icons.HelpCircle size={18} className="shrink-0 group-hover:rotate-12 transition-transform text-[#7a8b95] group-hover:text-white" />
                 <span className="font-black tracking-[0.3em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap uppercase text-[11px]">USER GUIDE</span>
             </button>
-            <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+            <UserGuidePanel
+                isOpen={isGuideOpen}
+                onClose={() => setIsGuideOpen(false)}
+                title="MASTER ITEM GUIDE"
+                subtitle="MASTER DATA MANAGEMENT MANUAL"
+            >
+                <div className="space-y-8 font-sans">
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Database size={16} className="text-[#3f809e]" /> 1. ภาพรวมของฐานข้อมูลสินค้า (MASTER DATA OVERVIEW)
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            โมดูลนี้ใช้เพื่อสร้าง แก้ไข และลบข้อมูลของสินค้าที่จะถูกใช้ในกระบวนการวางแผนและติดตามการผลิตทั้งหมด ต้องระวังให้ข้อมูล <strong>SKU Code</strong> ตรงกับ ERP เสมอเพื่อไม่ให้การเชื่อมต่อและดึงข้อมูลมีปัญหา
+                        </p>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Package size={16} className="text-[#b58c4f]" /> 2. หมวดหมู่สินค้าหลัก (ITEM CATEGORIES)
+                        </h3>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3"><div className="p-1 border border-[#eaeaec] rounded bg-[#f8f9fa] text-[10px] font-bold text-[#b58c4f] w-14 text-center">BATTER</div><span className="text-[#414757] text-[12px]"><strong>ส่วนผสม/น้ำเนื้อ</strong> - เนื้อบดผสมตามสูตรแล้ว รอนำไปขึ้นรูป</span></div>
+                            <div className="flex items-center gap-3"><div className="p-1 border border-[#eaeaec] rounded bg-[#f8f9fa] text-[10px] font-bold text-[#3f809e] w-14 text-center">SFG</div><span className="text-[#414757] text-[12px]"><strong>สินค้ากึ่งสำเร็จรูป</strong> - เช่นไส้กรอกที่ตัดแล้ว, ลูกชิ้น ที่พร้อมจะนำไปแพคและติดแบรนด์ต่างๆ</span></div>
+                            <div className="flex items-center gap-3"><div className="p-1 border border-[#eaeaec] rounded bg-[#f8f9fa] text-[10px] font-bold text-[#a94228] w-14 text-center">FG</div><span className="text-[#414757] text-[12px]"><strong>สินค้าสำเร็จรูป</strong> - สินค้าสำเร็จรูปพร้อมจำหน่าย บรรจุในภาชนะบรรจุที่มีแบรนด์เรียบร้อยแล้ว</span></div>
+                        </div>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Settings size={16} className="text-[#688a58]" /> 3. การใช้งานเครื่องมือ (TOOLS & WORKFLOW)
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            วิธีใช้เครื่องมืออัปเดตข้อมูลจำนวนมาก:
+                        </p>
+                        <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757]">
+                            <ul className="list-decimal pl-5 space-y-2 text-[12px]">
+                                <li><strong>ปุ่ม Csv Import:</strong> ถ้าสร้างสินค้าทีละตัวใช้เวลานาน ให้ลากไฟล์ CSV (ที่หัวคอลัมน์ตั้งตามมาตรฐาน) มาทิ้งได้เลย</li>
+                                <li><strong>แก้ไขข้อมูล:</strong> หากดับเบิลคลิกบนรายชื่อสินค้า จะสามารถดู History Log ว่าใครเป็นคนกดเซฟการเปลี่ยนแปลงล่าสุด (พร้อมเวลาและชื่อ User)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </UserGuidePanel>
             
             <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={handleCsvUpload} />
             <ItemModal 
@@ -459,7 +505,7 @@ export default function MasterItems() {
             />
 
             {/* Header Bar */}
-            <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
                     <div className="relative flex items-center justify-center group cursor-default shrink-0">
                         <div className="absolute inset-0 bg-[#932c2e] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -497,7 +543,7 @@ export default function MasterItems() {
                 </div>
             </div>
 
-            <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
                 {/* KPI STATS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
                     <KpiCard label="Total Items" value={items.length} icon="package" colorAccent="#4d87a8" colorValue={THEME.primary} desc="Registered Master Items" />
@@ -507,7 +553,7 @@ export default function MasterItems() {
                 </div>
 
                 <div className="w-full flex-1 flex flex-col min-h-[500px]">
-                    <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-3xl border">
+                    <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-xl border">
                     
                     {/* TOOLBAR */}
                     <div className="sys-table-toolbar border-b border-slate-200 bg-white">
@@ -592,17 +638,17 @@ export default function MasterItems() {
                     {/* TABLE */}
                     <div className="flex-1 overflow-auto flex flex-col bg-white">
                         <div className="overflow-y-auto flex-1 custom-scrollbar">
-                            <table className="w-full text-left min-w-[1050px] border-collapse relative font-sans">
-                                <thead className="sys-table-header bg-[#212c46] text-white border-slate-200">
-                                    <tr>
-                                        <th className="pl-6 w-[14%] whitespace-nowrap">SKU / Code</th>
-                                        <th className="w-[30%] whitespace-nowrap">Item Name</th>
-                                        <th className="w-[12%] whitespace-nowrap">Category</th>
-                                        <th className="w-[10%] whitespace-nowrap">Brand</th>
-                                        <th className="w-[12%] text-right whitespace-nowrap">Size</th>
-                                        <th className="w-[10%] text-center whitespace-nowrap">Status</th>
-                                        <th className="w-[12%] text-center whitespace-nowrap">Last Update</th>
-                                        <th className="pr-6 text-right w-20 whitespace-nowrap">Action</th>
+                            <table className="w-full text-left min-w-[1050px] border-collapse relative table-font">
+                                <thead className="sys-table-header slate-200 ">
+                    <tr>
+                                        <th className="pl-6 w-[14%] whitespace-nowrap   ">SKU / Code</th>
+                                        <th className="w-[30%] whitespace-nowrap   ">Item Name</th>
+                                        <th className="w-[12%] whitespace-nowrap   ">Category</th>
+                                        <th className="w-[10%] whitespace-nowrap   ">Brand</th>
+                                        <th className="w-[12%] text-right whitespace-nowrap   ">Size</th>
+                                        <th className="w-[10%] text-center whitespace-nowrap   ">Status</th>
+                                        <th className="w-[12%] text-center whitespace-nowrap   ">Last Update</th>
+                                        <th className="pr-6 text-right w-20 whitespace-nowrap   ">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white">
@@ -610,17 +656,17 @@ export default function MasterItems() {
                                         <tr key={item.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-100 group h-16">
                                             
                                             {/* Col 1: SKU */}
-                                            <td className="sys-table-td pl-6 align-middle">
+                                            <td className="sys-table-td pl-6 align-middle py-2.5 px-4">
                                                 <span className="font-bold text-red-600 text-[12px] font-mono leading-tight px-2 py-1 bg-red-50 rounded-md border border-red-100 shadow-sm">{item.sku}</span>
                                             </td>
 
                                             {/* Col 2: Name */}
-                                            <td className="sys-table-td align-middle font-bold text-[#212c46] text-[12px] leading-tight font-exception-header">
+                                            <td className="sys-table-td align-middle font-bold text-[#212c46] text-[12px] leading-tight font-exception-header py-2.5 px-4">
                                                 {item.name}
                                             </td>
 
                                             {/* Col 3: Category (Stacked) */}
-                                            <td className="sys-table-td align-middle">
+                                            <td className="sys-table-td align-middle py-2.5 px-4">
                                                 <div className="flex flex-col items-start gap-1.5">
                                                     <span className={`px-2.5 py-0.5 rounded-md border text-[11px] font-bold uppercase tracking-widest ${getCategoryStyle(item.cat)}`}>
                                                         {item.cat}
@@ -629,7 +675,7 @@ export default function MasterItems() {
                                             </td>
 
                                             {/* Col 4: Brand */}
-                                            <td className="sys-table-td align-middle">
+                                            <td className="sys-table-td align-middle py-2.5 px-4">
                                                 {item.type === 'FG' ? (
                                                     <span className={`text-[11px] font-bold px-2 py-1 rounded-md border uppercase tracking-widest flex items-center justify-center shadow-sm ${
                                                         item.brand === 'AFM' ? 'bg-gradient-to-r from-orange-500 to-rose-500 text-white border-transparent' : 
@@ -644,7 +690,7 @@ export default function MasterItems() {
                                             </td>
 
                                             {/* Col 5: Size (Stacked) */}
-                                            <td className="sys-table-td align-middle text-right">
+                                            <td className="sys-table-td align-middle text-right py-2.5 px-4">
                                                 {item.type === 'FG' ? (
                                                     <div className="flex flex-col items-end gap-1">
                                                         <span className="font-mono font-black text-[#212c46] text-[12px] leading-none whitespace-nowrap">
@@ -660,19 +706,19 @@ export default function MasterItems() {
                                             </td>
                                             
                                             {/* Col 6: Status */}
-                                            <td className="sys-table-td align-middle text-center">
+                                            <td className="sys-table-td align-middle text-center py-2.5 px-4">
                                                 <span className={`px-3 py-1 rounded-md text-[11px] font-black uppercase tracking-widest shadow-sm border ${getStatusStyle(item.status)}`}>
                                                     {item.status}
                                                 </span>
                                             </td>
                                             
                                             {/* Col 7: Last Update */}
-                                            <td className="sys-table-td align-middle text-center">
+                                            <td className="sys-table-td align-middle text-center py-2.5 px-4">
                                                 <span className="font-mono font-bold text-slate-400 text-[11px] whitespace-nowrap bg-slate-50 px-2 py-1 rounded-md border border-slate-100">{item.updated}</span>
                                             </td>
 
                                             {/* Col 8: Action */}
-                                            <td className="sys-table-td pr-6 align-middle">
+                                            <td className="sys-table-td pr-6 align-middle py-2.5 px-4">
                                                 <div className="flex justify-end items-center gap-[1px] transition-opacity">
                                                     <button onClick={() => setItemModal({ isOpen: true, data: item })} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90" title="Edit">
                                                         <Icons.Pencil size={16} />
@@ -687,7 +733,7 @@ export default function MasterItems() {
                                     ))}
                                     {paginatedData.length === 0 && (
                                         <tr>
-                                            <td colSpan={8} className="py-16 text-center text-slate-400 font-bold uppercase tracking-widest text-[12px] opacity-70">
+                                            <td className="text-center text-slate-400 font-bold uppercase tracking-widest text-[12px] opacity-70 py-2.5 px-4">
                                                 No Records Found
                                             </td>
                                         </tr>

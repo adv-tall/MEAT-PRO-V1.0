@@ -454,49 +454,75 @@ export default function EfficiencySummary() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-        title="EFFICIENCY SUMMARY COMPLIANCE HANDBOOK"
-        subtitle="คู่มือวิเคราะห์ประสิทธิภาพสังเคราะห์และการใช้ทรัพยากรพลังงานสายผลิต"
+        title="EFFICIENCY GUIDE"
+        subtitle="ENERGY & PERFORMANCE HANDBOOK"
       >
-        <div className="space-y-6">
-          <div className="border-l-4 border-[#b58c4f] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 1: ISO 50001 Energy & OEE Standards</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">เกณฑ์การวัดดัชนีประสิทธิภาพและการบริหารพลังงานระดับสากล</p>
-          </div>
-          <p className="leading-relaxed text-[#414757]">
-            โครงสร้างการประมวลประสิทธิภาพแบบองค์รวม (Efficiency Synthesis) ดำเนินงานสอดคล้องกับระเบียบอุตสาหกรรมแปรรูปอาหารสากล 
-            ข้อกำหนดระบบจัดการพลังงาน <strong>ISO 50001:2018</strong> และระบบบริหารงานภาพรวม <strong>OEE (Overall Equipment Effectiveness)</strong>:
-          </p>
-          <ul className="list-inside list-disc space-y-2.5 pl-1 font-bold text-[#4d5a44]">
-            <li><strong>Specific Energy Consumption (SEC Target): ไม่เกิน {settings.maxSecLimit} kWh/Ton</strong> เป็นการตรวจสอบสัดส่วนการใช้พลังงานไฟฟ้าเทียบต่อผลผลิตหนึ่งตัน เพื่อหลีกเลี่ยงการกระชากคาร์บอนและการสูญเสียความร้อนสะสม</li>
-            <li><strong>Asset Overall Equipment Effectiveness (OEE Target): {settings.targetOeeLevel}%</strong> ระบุค่าดัชนีความพร้อมในการทำงานของเครื่องจักร, สมรรถภาพความเร่ง และความสอดคล้องด้านคุณภาพแบทช์โดยรวม</li>
-            <li><strong>Employee Labor Productivity (เป้าหมายอัตราผลิตภาพแรงงาน): {settings.targetLaborProd} Kg/Man-hour</strong> พลังประสิทธิภาพเฉลี่ยของกำลังพนักงานควบคุมหน้าสายพาน เพื่อรักษาขีดความเร็วคงระดับปลอดภัยสูงสุด</li>
-          </ul>
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.TrendingUp size={16} className="text-[#3f809e]" /> 1. OEE & ENERGY STANDARDS
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    โครงสร้างการประมวลประสิทธิภาพทำงานสอดคล้องกับมาตรฐานอุตสาหกรรม การวัดดัชนีภาพรวม (OEE) และระบบจัดการพลังงาน (ISO 50001:2018)
+                </p>
+                <div className="space-y-3">
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4">
+                        <div className="p-2 bg-[#d55a6d] text-white rounded-lg shrink-0"><Icons.Zap size={16} /></div>
+                        <div>
+                            <span className="font-bold text-[#212c46] text-[12px] mb-1 block">SEC Target (Energy)</span>
+                            <span className="text-[#7a8b95] text-[12px]">ตรวจสอบสัดส่วนพลังงานไฟฟ้าที่ใช้ต่อผลผลิต 1 ตัน (<strong className="text-[#d55a6d]">{settings.maxSecLimit} kWh/Ton</strong>) เพื่อคุมต้นทุนด้านพลังงาน</span>
+                        </div>
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4">
+                        <div className="p-2 bg-[#b58c4f] text-white rounded-lg shrink-0"><Icons.Activity size={16} /></div>
+                        <div>
+                            <span className="font-bold text-[#212c46] text-[12px] mb-1 block">OEE Target Level</span>
+                            <span className="text-[#7a8b95] text-[12px]">เป้าหมายมาตรฐานประสิทธิภาพเครื่องจักรตั้งไว้ที่ <strong className="text-[#b58c4f]">{settings.targetOeeLevel}%</strong> เสมอ</span>
+                        </div>
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4">
+                        <div className="p-2 bg-[#3f809e] text-white rounded-lg shrink-0"><Icons.Users size={16} /></div>
+                        <div>
+                            <span className="font-bold text-[#212c46] text-[12px] mb-1 block">Labor Productivity</span>
+                            <span className="text-[#7a8b95] text-[12px]">ประสิทธิภาพจากกำลังคนที่ใช้เพื่อเทียบจำนวนแรงงานต่อกิโลกรัมสินค้า (<strong className="text-[#3f809e]">{settings.targetLaborProd} Kg/Man-hour</strong>)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-          <div className="p-4 bg-[#657f4d]/10 border border-[#657f4d]/30 rounded-2xl space-y-2.5">
-            <h5 className="font-black text-[#657f4d] uppercase text-[11px] tracking-wider flex items-center gap-1.5">
-              <Icons.ShieldCheck size={14} /> แผนงานควบคุมเชิงรุก (Energy Conservation Steps)
-            </h5>
-            <p className="text-[#212c46] leading-relaxed text-[11px]">
-              - ผลการสุ่มที่พบว่ามีพารามิเตอร์พลังงานลื่นหลุดเป้าหมาย (Status: <strong>Critical Review</strong>) จะต้องได้รับการตรวจสอบระบบวาล์วไอน้ำและการสูญเสียกำลังท่อหล่อเย็นทันทีภายใน 2 ชั่วโมง
-              <br />- รายงานที่ผิดปกติอย่างมากจะถูกทรานสคริประบบส่งสัญญาณแจ้งไปยัง <strong>{settings.reportRecipients}</strong> สำหรับการวิเคราะห์ประเมินพลังงานรายวันคู่ขนาน
-            </p>
-          </div>
+            <div className="h-px bg-[#eaeaec] w-full" />
 
-          <div className="border-l-4 border-[#3f809e] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 2: Interactive Entry Instructions</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">ระเบียบปฏิบัติและมาตรฐานการกรองข้อมูลความสอดคล้อง</p>
-          </div>
-          <p className="leading-relaxed">
-            ขั้นตอนปฏิบัติสำหรับหัวหน้าผู้ควบคุมกะ (Shift Supervisors) ในการรายงานประสิทธิผล:
-            <br />1. กรอกข้อมูลปริมาณผลผลิตสุทธิที่กักชั่งเรียบร้อย (เป็นกิโลกรัม) และจำนวนชั่วโมงทำงานสะสมของพนักงานในฟอร์ม Metadata
-            <br />2. บันทึกกำลังกระแสไฟฟ้าที่อ่านได้จากมิเตอร์วัดประจำตู้ควบคุมพลังงานยูนิตไลน์ (หน่วยกิโลวัตต์ชั่วโมง Electricity kWh)
-            <br />3. ตรวจสอบทวนลายเซ็นร่วมกันกับช่างเทคนิคซ่อมบำรุงกรณีเกิดเหตุการณ์ downtime เกินรอบกำหนดเวลาก่อนส่งตรวจสอบขั้นถัดไป
-          </p>
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Settings size={16} className="text-[#b58c4f]" /> 2. ขั้นตอนการบันทึกข้อมูลและส่งรายงาน
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    ขั้นตอนปฏิบัติสำหรับ Supervisor/หัวหน้ากะ เพื่อทำการประเมินสายผลิต:
+                </p>
+                <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757]">
+                    <ul className="list-decimal pl-5 space-y-2">
+                        <li>กรอกเป้าหมายผลผลิต (Target) และยอดที่ทำได้จริง (Actual)</li>
+                        <li>จดมิเตอร์พลังงานไฟฟ้ารวมต่อกะการผลิต (KwH)</li>
+                        <li>ตรวจสอบค่าที่หน้าเครื่อง และแนบเหตุผลที่ทำประสิทธิภาพต่ำกว่าเป้าก่อนยืนยันลงระบบ</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Mail size={16} className="text-[#688a58]" /> 3. ระบบกระจายข่าวอัตโนมัติ (AUTO-ALERTS)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    สถานะที่เสี่ยง หรือตัวเลขผลการวิเคราะห์ในเชิงลบ จะถูกทริกเกอร์ส่งหาฝ่ายบริหารที่กำหนดไว้อัตโนมัติ: <strong className="text-[#688a58]">{settings.reportRecipients}</strong>
+                </p>
+            </div>
         </div>
       </UserGuidePanel>
 
       {/* HEADER SECTION PANEL */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#b58c4f] blur-[15px] opacity-25 rounded-full group-hover:opacity-75 transition-all duration-700"></div>
@@ -542,7 +568,7 @@ export default function EfficiencySummary() {
       </div>
 
       {/* KPI DASHBOARD CARDS */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
           <KpiCard
             label="Synthesis OEE Avg"
@@ -580,7 +606,7 @@ export default function EfficiencySummary() {
 
         {/* VIEW CONDITIONAL */}
         {activeTab === 'list_mode' ? (
-          <div className="bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
             {/* SUB-HEADER FILTER STRAPS */}
             <div className="px-8 py-4 border-b border-[#eaeaec] bg-[#f8f9fa] flex flex-col lg:flex-row justify-between items-center gap-4 shrink-0">
               <span className="text-[11px] font-black text-[#7a8b95] uppercase tracking-widest bg-white border border-[#eaeaec] px-4 py-2 rounded-xl shadow-sm">
@@ -618,25 +644,25 @@ export default function EfficiencySummary() {
 
             {/* LEDGER DATA TABLE */}
             <div className="overflow-auto custom-scrollbar">
-              <table className="w-full text-left font-sans border-collapse">
-                <thead className="bg-[#212c46] text-white border-b-2 border-[#b58c4f]">
-                  <tr>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Efficiency ID / Date</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Shift Coordinates</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest whitespace-nowrap w-[150px] max-w-[150px]">Active Product Name</th>
-                    <th className="px-4 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap w-[130px]">Produced Vol (Kg)</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Overall OEE %</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Labor Index</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Specific Energy (SEC)</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest whitespace-nowrap w-[350px]">Auditor / remarks</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Status</th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Action</th>
+              <table className="w-full text-left border-collapse table-font">
+                <thead className="sys-table-header [#b58c4f] ">
+                    <tr>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Efficiency ID / Date</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Shift Coordinates</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap w-[150px] max-w-[150px]">Active Product Name</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap w-[130px]">Produced Vol (Kg)</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Overall OEE %</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Labor Index</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Specific Energy (SEC)</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap w-[350px]">Auditor / remarks</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Status</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Action</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-[#eaeaec]">
                   {currentData.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="text-center py-12 text-[#7a8b95] uppercase font-black tracking-widest text-[12px]">
+                      <td className="text-center text-[#7a8b95] uppercase font-black tracking-widest text-[12px] py-2.5 px-4">
                         No recorded efficiency entries found matching filters.
                       </td>
                     </tr>
@@ -649,52 +675,52 @@ export default function EfficiencySummary() {
 
                       return (
                         <tr key={rec.id} className="hover:bg-[#f8f9fa] transition-colors group">
-                          <td className="px-6 py-4 whitespace-nowrap font-mono font-black text-[#212c46]">
+                          <td className="px-4 whitespace-nowrap font-mono font-black text-[#212c46] py-2.5">
                             <div className="flex flex-col">
                               <span className="text-[12px]">{rec.id}</span>
                               <span className="text-[9px] text-[#7a8b95] font-bold mt-0.5">{rec.date}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-4 whitespace-nowrap py-2.5">
                             <div className="flex flex-col">
                               <span className="font-extrabold uppercase text-[#212c46] text-[11px]">{rec.shift}</span>
                               <span className="text-[10px] text-[#3f809e] font-bold uppercase mt-0.5">{rec.lineId}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap w-[150px] max-w-[150px]" title={rec.productName}>
+                          <td className="px-4 whitespace-nowrap w-[150px] max-w-[150px] py-2.5" title={rec.productName}>
                             <span className="font-black text-[#212c46] uppercase text-[12px] tracking-tight block truncate">{rec.productName}</span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-center font-black text-[12px] text-[#212c46] w-[130px]">
+                          <td className="px-4 whitespace-nowrap text-center font-black text-[12px] text-[#212c46] w-[130px] py-2.5">
                             {Number(rec.volumeKg).toLocaleString()} Kg
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <span className={`px-2.5 py-1 rounded-md text-[11px] font-black border tracking-wider text-center ${isLowOee ? 'bg-[#932c2e]/10 text-[#d96245] border-[#932c2e]/20' : 'bg-[#657f4d]/10 text-[#657f4d] border-[#657f4d]/20'}`}>
                               {rec.oee}%
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <span className={`text-[12px] font-extrabold inline-flex items-center gap-1 ${isLowLabor ? 'text-[#b58c4f]' : 'text-[#657f4d]'}`}>
                               {rec.laborProd} Kg/h
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <span className={`text-[12px] font-black inline-flex items-center gap-1 ${isHighSec ? 'text-[#932c2e]' : 'text-[#3f809e]'}`}>
                               {rec.sec}  <span className="text-[9px] text-[#7a8b95] font-semibold">kWh/T</span>
                             </span>
                           </td>
-                          <td className="px-6 py-4 w-[350px] max-w-[350px]">
+                          <td className="px-4 w-[350px] max-w-[350px] py-2.5">
                             <div className="w-full relative group" title={rec.remarks || '-'}>
                               <p className="text-[11px] font-bold text-[#414757] leading-tight truncate">{rec.remarks || '-'}</p>
                               <span className="text-[9px] uppercase font-bold text-[#7a8b95] mt-0.5 block truncate">Supervisor: {rec.supervisor}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase border tracking-wider shadow-sm ${!isCritical ? 'bg-[#657f4d]/15 text-[#657f4d] border-[#657f4d]/30' : 'bg-[#932c2e]/10 text-[#a94228] border-[#a94228]/35 animate-pulse'}`}>
                               {!isCritical ? <Icons.Check size={10}/> : <Icons.AlertCircle size={10}/>}
                               {!isCritical ? 'Optimal' : 'Review Prompt'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                          <td className="px-4 whitespace-nowrap text-center py-2.5">
                             <button
                               onClick={() => handleOpenEdit(rec)}
                               className="p-2 text-[#4d87a8] hover:bg-[#4d87a8]/10 rounded-xl border border-transparent hover:border-[#4d87a8]/30 transition-all cursor-pointer"
@@ -750,7 +776,7 @@ export default function EfficiencySummary() {
           /* ANALYTICS CHARTS MODE VIEW */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
             {/* OEE & SEC TIMELINE TREND CORRELATION */}
-            <div className="lg:col-span-8 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
+            <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
               <div className="border-b-2 border-[#b58c4f] pb-4 mb-4">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.Activity size={20} className="text-[#3f809e]" /> OEE vs Specific Energy Trend Map
@@ -773,7 +799,7 @@ export default function EfficiencySummary() {
             </div>
 
             {/* ELECTRICITY LOSS SEGREGATION CORES */}
-            <div className="lg:col-span-4 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
+            <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec] flex flex-col justify-between">
               <div className="border-b-2 border-[#b58c4f] pb-4 mb-4">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.PieChart size={20} className="text-[#a94228]" /> Energy Load Allocation Share
@@ -821,7 +847,7 @@ export default function EfficiencySummary() {
             </div>
 
             {/* LABOR CAPACITY COMPARATOR BY LINE */}
-            <div className="lg:col-span-12 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec]">
+            <div className="lg:col-span-12 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
               <div className="border-b-2 border-[#b58c4f] pb-4 mb-4">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.Users size={20} className="text-[#657f4d]" /> Labor Productivity Index Benchmarks
@@ -1089,7 +1115,7 @@ export default function EfficiencySummary() {
                   <p className="text-[10px] text-[#7a8b95] uppercase font-bold mt-0.5">กติกาการกักและสั่งระงับกะการผลิตกรณีพลังงานลื่นไถลสูงเกินมาตรฐาน</p>
                 </div>
                 <div className="space-y-3">
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#a94228] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#a94228] transition-colors">
                     <input type="checkbox" checked={settings.autoFlagDeficiency} onChange={e => setSettings({ ...settings, autoFlagDeficiency: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Automated Critical review status flag overrides</span>
@@ -1097,7 +1123,7 @@ export default function EfficiencySummary() {
                     </div>
                   </label>
                   
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#a94228] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#a94228] transition-colors">
                     <input type="checkbox" checked={settings.requireDoubleReview} onChange={e => setSettings({ ...settings, requireDoubleReview: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Require Double Verification signatory audit and technical approval</span>

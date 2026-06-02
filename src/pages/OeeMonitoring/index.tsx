@@ -242,69 +242,85 @@ export default function OeeMonitoring() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-        title="OEE MONITORING STANDARD MANUAL"
-        subtitle="ระบบวิเคราะห์ผลสัมฤทธิ์ของเครื่องจักร (Overall Equipment Effectiveness Manual)"
+        title="OEE MONITORING GUIDE"
+        subtitle="OVERALL EQUIPMENT EFFECTIVENESS MANUAL"
       >
-        <div className="space-y-6">
-          
-          {/* Section 1 */}
-          <section className="bg-[#212c46]/5 p-4 rounded-xl border border-[#212c46]/20">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2 uppercase flex items-center gap-2 border-b border-[#212c46]/20 pb-2 font-mono">
-              <Icons.Info size={16} className="text-[#a94228]" />
-              1. ดัชนีวัดประสิทธิภาพหลัก (Three Pillars of OEE)
-            </h4>
-            <p className="leading-relaxed text-[11px] text-[#414757] font-semibold">
-              OEE ย่อมาจาก **Overall Equipment Effectiveness** เป็นสูตรคูณมาตรฐานโลกเพื่อประเมินประสิทธิภาพในสายการผลิตจริง โดยประกอบด้วยปัจจัยย่อย 3 ด่าน:
-            </p>
-            <ul className="list-decimal pl-5 mt-2 space-y-1 text-[10.5px] text-[#414757]">
-              <li><strong className="text-secondary">Availability (ความพร้อมใช้งาน):</strong> อัตราส่วนระหว่างเวลาประมวลผลงานเทียบกับเวลาตามแผนงานทั้งหมด (Operating Time / Planned Time) หากเกิดเครื่องจักรขัดข้อง (Breakdown) หรือเตรียมเครื่องนาน ค่านี้จะปรับตัวลดลง</li>
-              <li><strong className="text-secondary">Performance (ประสิทธิภาพการเดินเครื่อง):</strong> อัตราสปีดการเดินงานว่าช้ากว่าความเร็ววิศวกรรมการผลิตสูงสุดหรือไม่ คำนวณข้ามตัวแปรเป้าประสงค์ Ideal Run Rate</li>
-              <li><strong className="text-secondary">Quality (คุณภาพของผลผลิต):</strong> ปริมาณสุทธิของงานดีทั้งหมดไม่รวมของเสีย เศษหล่น ของบกพร่องสัดส่วนเทียบเคียง (Good Output / Total Output)</li>
-            </ul>
-          </section>
-
-          {/* Section 2 */}
-          <section className="space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-2 uppercase flex items-center gap-2 border-b border-[#b7a159]/30 pb-2 font-mono">
-              <Icons.Award size={16} className="text-[#b7a159]" />
-              2. เกณฑ์วัดระดับมาตรฐานสากล (World Class OEE Target)
-            </h4>
-            <div className="space-y-2">
-              <div className="p-3 bg-[#657f4d]/5 border border-[#657f4d]/20 rounded-xl text-[11px]">
-                <strong className="text-[#657f4d] block font-mono">WORLD CLASS STANDARD: OEE ≥ 85.0%</strong>
-                <p className="text-slate-500 mt-1">เป็นที่รับรู้สากลว่าหากโรงงานรักษาอัตราเฉลี่ย OEE ได้สูงกว่าระดับ 85% ถือว่ามีเสถียรภาพและขีดความสามารถการแข่งขันระดับแนวหน้า ซึ่งประกอบด้วย Availability 90%, Performance 95%, และ Quality 99%</p>
-              </div>
-              <div className="p-3 bg-[#932c2e]/5 border border-[#932c2e]/20 rounded-xl text-[11px]">
-                <strong className="text-[#932c2e] block font-mono">ALERT LIMIT WARNING: OEE &lt; 75.0%</strong>
-                <p className="text-slate-500 mt-1">หากค่ามาตรฐานเครื่องยนต์ตกต่ำกว่าเกณฑ์อันตราย จะสังเกตเห็นไฟกะพริบแจ้งเตือนระดับวิกฤตความผิดพลาด ฝ่ายบริหารจำเป็นต้องลงลายมือชื่ออนุมัติควบคุมกระบิลงาน</p>
-              </div>
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Activity size={16} className="text-[#3f809e]" /> 1. ดัชนีวัดประสิทธิภาพหลัก (THREE PILLARS OF OEE)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    OEE คือมาตรฐานระดับโลกที่ใช้วัดและประมวลผลสมรรถภาพของเครื่องจักร ว่าทำงานได้เต็มประสิทธิภาพมากน้อยเพียงใด โดยแบ่งออกเป็น 3 ปัจจัยหลัก (Pillars) ดังนี้:
+                </p>
+                <div className="space-y-3">
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4 text-[12px]">
+                        <div className="p-2 bg-[#d55a6d] text-white rounded-lg"><Icons.Clock size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">Availability (A) - ความพร้อมใช้งาน</strong>
+                            <p className="text-[#7a8b95]">เปรียบเทียบเวลาที่เครื่องจักรทำงานได้จริง กับเวลาที่วางแผนไว้ (หักลบเวลาเสีย, รอซ่อม, และสลับรุ่น)</p>
+                        </div>
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4 text-[12px]">
+                        <div className="p-2 bg-[#3f809e] text-white rounded-lg"><Icons.Gauge size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">Performance (P) - ประสิทธิภาพเดินเครื่อง</strong>
+                            <p className="text-[#7a8b95]">เปรียบเทียบความเร็วในการผลิตจริง กับความเร็วมาตรฐานสูงสุดของเครื่องจักร (Ideal Run Rate)</p>
+                        </div>
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4 text-[12px]">
+                        <div className="p-2 bg-[#688a58] text-white rounded-lg"><Icons.CheckCircle2 size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">Quality (Q) - คุณภาพผลผลิต</strong>
+                            <p className="text-[#7a8b95]">เปรียบเทียบยอดสินค้าดี (Good Parts) กับปริมาณของที่ผลิตออกมาทั้งหมด (Total Output) หักลบของเสีย/คัดทิ้งทั้งหมด</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </section>
 
-          {/* Section 3 */}
-          <section className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-            <h4 className="text-[13px] font-black text-[#212c46] mb-1 uppercase flex items-center gap-2 border-b border-[#212c46]/20 pb-1.5 font-mono">
-              <Icons.Sliders size={16} className="text-primary" />
-              3. โครงสร้างการปรับตั้งค่าเสถียรภาพ (Multi-Step Configurations)
-            </h4>
-            <p className="text-[11px] text-[#414757] font-bold">
-              ปุ่มตั้งค่าระบบด่วน (Settings) ได้ออกแบบข้ามระบบมาตรฐานความปลอดภัย มีลักษณะดังนี้:
-            </p>
-            <ul className="list-disc pl-5 space-y-1.5 text-[10.5px] text-[#414757]">
-              <li><strong className="text-primary font-mono">STEP 1: Target Thresholds</strong> - ตั้งเกณฑ์ควบคุมส่วน OEE, Availability, Performance, Quality Targets</li>
-              <li><strong className="text-primary font-mono">STEP 2: Control Safeguards</strong> - เปิด/ปิด สัญญาณความคุ้มครอง, Supervisor Lock, และระบบเวลาชิฟต์ทำงานสูงสุด</li>
-              <li><strong className="text-primary font-mono">STEP 3: Engine Selectors</strong> - เลือกรุ่น Engine สูตรการวิเคราะห์ค่า (SEMI Standard หรือ MES Custom Formula) ลิงก์ระบบ Alarm</li>
-            </ul>
-          </section>
+            <div className="h-px bg-[#eaeaec] w-full" />
 
-          <footer className="pt-4 border-t border-slate-200 text-center text-[10px] text-slate-400 font-black uppercase tracking-wider">
-            MES SYSTEM MODULE INSTRUCTION • OEE ANALYTICS v2.1
-          </footer>
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Award size={16} className="text-[#b58c4f]" /> 2. เกณฑ์วัดระดับมาตรฐานสากล (TARGETS)
+                </h3>
+                <div className="space-y-3">
+                    <div className="p-4 bg-[#f1f0ee] border border-[#eaeaec] flex items-start gap-4 rounded-xl">
+                        <div className="bg-[#688a58] text-white p-2 rounded-lg shrink-0"><Icons.Trophy size={16} /></div>
+                        <div>
+                            <div className="font-bold text-[#688a58] mb-1">WORLD CLASS: OEE &ge; 85%</div>
+                            <div className="text-[#414757] text-[12px]">ถือเป็นจุดมุ่งหมายสูงสุดของโรงงาน โดยมาจากเป้า Availability 90%, Performance 95%, Quality 99.9%</div>
+                        </div>
+                    </div>
+                    <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] flex items-start gap-4 rounded-xl">
+                        <div className="bg-[#a94228] text-white p-2 rounded-lg shrink-0"><Icons.AlertTriangle size={16} /></div>
+                        <div>
+                            <div className="font-bold text-[#a94228] mb-1">CRITICAL ALERT: OEE &lt; 75%</div>
+                            <div className="text-[#414757] text-[12px]">หากค่า OEE รวมต่ำกว่า 75% ระบบจะขึ้นไฟเตือนและสถานะ Critical พร้อมแจ้งเตือนไปยังผู้จัดการโรงงาน</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Settings size={16} className="text-[#b58c4f]" /> 3. การตั้งค่าระบบ (SETTINGS)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    ปุ่ม Settings ทางขวาบน ใช้ปรับแต่งพารามิเตอร์ของบอร์ด:
+                </p>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#3f809e]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Target Thresholds</strong> - ตั้งเป้าหมาย OEE/A/P/Q ของโรงงานประจำปี</span></div>
+                    <div className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-[#d55a6d]"></div><span className="text-[#414757] text-[12px]"><strong className="text-[#212c46]">Control Safeguards</strong> - เปิดระบบล็อคเวลา Breakdown ย้อนหลัง หรือแจ้งเตือนความผิดปกติ</span></div>
+                </div>
+            </div>
         </div>
       </UserGuidePanel>
 
       {/* DISTINCT UNIFIED HEADER */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#212c46] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -339,7 +355,7 @@ export default function OeeMonitoring() {
       </div>
 
       {/* KPI GRID */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-2">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <KpiCard 
             label="Plant OEE Index" 
@@ -379,7 +395,7 @@ export default function OeeMonitoring() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
           
           {/* Trend Chart - Left Column */}
-          <div className="lg:col-span-8 bg-white rounded-3xl border border-[#eaeaec] p-6 shadow-lg flex flex-col min-h-[400px]">
+          <div className="lg:col-span-8 bg-white rounded-xl border border-[#eaeaec] p-6 shadow-lg flex flex-col min-h-[400px]">
             <h3 className="font-black text-[#212c46] flex items-center gap-2 uppercase tracking-widest text-xs mb-6 pb-3 border-b border-slate-100">
               <Icons.TrendingUp size={16} className="text-[#a94228]" /> Overall OEE Trend (Last 7 Days)
             </h3>
@@ -401,7 +417,7 @@ export default function OeeMonitoring() {
           </div>
 
           {/* Machine Comparison Chart - Right Column */}
-          <div className="lg:col-span-4 bg-white rounded-3xl border border-[#eaeaec] p-6 shadow-lg flex flex-col min-h-[400px]">
+          <div className="lg:col-span-4 bg-white rounded-xl border border-[#eaeaec] p-6 shadow-lg flex flex-col min-h-[400px]">
             <h3 className="font-black text-[#212c46] flex items-center gap-2 uppercase tracking-widest text-xs mb-6 pb-3 border-b border-slate-100">
               <Icons.BarChart3 size={16} className="text-[#a94228]" /> OEE Rating by Machinery
             </h3>
@@ -421,7 +437,7 @@ export default function OeeMonitoring() {
         </div>
 
         {/* DETAILS TABLE CARD */}
-        <div className="bg-white rounded-3xl border border-[#eaeaec] shadow-lg overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl border border-[#eaeaec] shadow-lg overflow-hidden flex flex-col">
           
           <div className="p-6 border-b border-[#eaeaec] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white">
             <div className="relative w-full sm:w-96">
@@ -441,17 +457,17 @@ export default function OeeMonitoring() {
           </div>
 
           <div className="overflow-x-auto custom-scrollbar bg-slate-50">
-            <table className="w-full text-left min-w-[1000px] border-collapse bg-white">
-              <thead>
-                <tr className="bg-[#212c46] text-[#d7d7d7] border-b-2 border-[#b7a159]">
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Equip ID</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5">Machine Name</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-center">Status</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-center">Availability</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-center">Performance</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-center">Quality</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest border-r border-white/5 text-center">Calculated OEE</th>
-                  <th className="py-4 px-6 text-[10px] font-black uppercase tracking-widest text-center">Action</th>
+            <table className="w-full text-left min-w-[1000px] border-collapse bg-white table-font">
+              <thead className="sys-table-header">
+                <tr className="bg-[#212c46] text-[#d7d7d7]  [#b7a159]">
+                  <th className="font-black uppercase tracking-widest ">Equip ID</th>
+                  <th className="font-black uppercase tracking-widest ">Machine Name</th>
+                  <th className="font-black uppercase tracking-widest  text-center">Status</th>
+                  <th className="font-black uppercase tracking-widest  text-center">Availability</th>
+                  <th className="font-black uppercase tracking-widest  text-center">Performance</th>
+                  <th className="font-black uppercase tracking-widest  text-center">Quality</th>
+                  <th className="font-black uppercase tracking-widest  text-center">Calculated OEE</th>
+                  <th className="font-black uppercase tracking-widest text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#eaeaec]">
@@ -462,12 +478,12 @@ export default function OeeMonitoring() {
                     
                     return (
                       <tr key={m.id} className="hover:bg-slate-50/80 transition-colors group">
-                        <td className="py-4 px-6 font-mono font-black text-[#a94228] text-xs">{m.id}</td>
-                        <td className="py-4 px-6 text-xs text-[#212c46]">
+                        <td className="px-4 font-mono font-black text-[#a94228] text-xs py-2.5">{m.id}</td>
+                        <td className="px-4 text-xs text-[#212c46] py-2.5">
                           <p className="font-black uppercase">{m.name}</p>
                           <p className="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5">{m.line}</p>
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <span className={`px-2.5 py-1 rounded text-[9.5px] font-black uppercase tracking-wider border ${
                             m.status === 'Running' 
                               ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
@@ -478,19 +494,19 @@ export default function OeeMonitoring() {
                             {m.status}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <p className="font-mono text-xs font-black text-[#212c46]">{m.availability.toFixed(1)} %</p>
                           <p className="text-[9px] text-slate-400 font-bold">{m.operatingMins} / {m.plannedMins} min</p>
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <p className="font-mono text-xs font-black text-[#212c46]">{m.performance.toFixed(1)} %</p>
                           <p className="text-[9px] text-slate-400 font-bold">ideal: {m.idealCycleTime} min/unit</p>
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <p className="font-mono text-xs font-black text-[#212c46]">{m.quality.toFixed(1)} %</p>
                           <p className="text-[9px] text-slate-400 font-bold">defects: {m.defectOutput} / total: {m.actualOutput}</p>
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <div className="flex flex-col items-center justify-center">
                             <span className={`px-3 py-1 rounded-full text-xs font-black font-mono border ${
                               oeePass 
@@ -503,7 +519,7 @@ export default function OeeMonitoring() {
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-6 text-center">
+                        <td className="px-4 text-center py-2.5">
                           <button 
                             onClick={() => {
                               setSelectedMachine({ ...m });
@@ -520,7 +536,7 @@ export default function OeeMonitoring() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-xs font-black text-slate-400 uppercase tracking-widest">
+                    <td className="text-center text-xs font-black text-slate-400 uppercase tracking-widest py-2.5 px-4">
                       <Icons.Database className="mx-auto text-slate-300 mb-2" size={32} />
                       No equipment records found matching query
                     </td>

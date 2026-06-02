@@ -116,7 +116,7 @@ function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
 
     return (
          <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-3xl" hideDefaultHeader>
-            <div className="bg-white rounded-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white rounded-xl w-full overflow-hidden flex flex-col max-h-[90vh]">
                 <div className="p-5 border-b border-[#eaeaec] flex justify-between items-center bg-[#212c46] text-white">
                     <h3 className="font-black flex items-center gap-2 uppercase tracking-widest text-sm"><LucideIcon name="upload-cloud" /> Import Equipment CSV</h3>
                     <button onClick={onClose} className="hover:bg-white/20 p-1.5 rounded-lg transition-colors"><LucideIcon name="x" /></button>
@@ -135,22 +135,22 @@ function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
                                 <span>Preview Data ({previewData.length} rows)</span>
                                 <button onClick={() => setPreviewData([])} className="text-[10px] text-[#932c2e] uppercase tracking-widest bg-red-50 px-2 py-1 rounded">Clear</button>
                             </h4>
-                            <table className="w-full text-left whitespace-nowrap">
-                                <thead className="bg-[#f8f9fa] text-[#212c46] sticky top-0 z-10">
-                                    <tr>
-                                        <th className="p-3 font-bold uppercase tracking-wider text-[10px] border-b align-middle">ID</th>
-                                        <th className="p-3 font-bold uppercase tracking-wider text-[10px] border-b align-middle">Name</th>
-                                        <th className="p-3 font-bold uppercase tracking-wider text-[10px] border-b align-middle">Step</th>
-                                        <th className="p-3 font-bold uppercase tracking-wider text-[10px] text-center border-b align-middle">Quantity</th>
+                            <table className="w-full text-left whitespace-nowrap table-font">
+                                <thead className="sys-table-header sticky top-0 z-10 ">
+                    <tr>
+                                        <th className="p-3 font-black uppercase tracking-wider   align-middle  ">ID</th>
+                                        <th className="p-3 font-black uppercase tracking-wider   align-middle  ">Name</th>
+                                        <th className="p-3 font-black uppercase tracking-wider   align-middle  ">Step</th>
+                                        <th className="p-3 font-black uppercase tracking-wider  text-center  align-middle  ">Quantity</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {previewData.slice(0, 10).map((row, i) => (
                                         <tr key={i} className="hover:bg-slate-50 border-b">
-                                            <td className="p-3 font-mono font-bold text-[#932c2e]">{row.ID || '-'}</td>
-                                            <td className="p-3 text-[#212c46] font-bold">{row.Name || '-'}</td>
-                                            <td className="p-3 text-[#4d87a8]">{row.Step || '-'}</td>
-                                            <td className="p-3 text-[#212c46] font-mono text-center">{row.Quantity || '-'}</td>
+                                            <td className="p-3 font-mono font-bold text-[#932c2e] py-2.5 px-4">{row.ID || '-'}</td>
+                                            <td className="p-3 text-[#212c46] font-bold py-2.5 px-4">{row.Name || '-'}</td>
+                                            <td className="p-3 text-[#4d87a8] py-2.5 px-4">{row.Step || '-'}</td>
+                                            <td className="p-3 text-[#212c46] font-mono text-center py-2.5 px-4">{row.Quantity || '-'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -196,7 +196,7 @@ function EquipmentModal({ isOpen, onClose, data, onSave }: any) {
 
     return (
         <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-2xl" hideDefaultHeader>
-            <div className="bg-white rounded-2xl w-full flex flex-col overflow-hidden max-h-[90vh]">
+            <div className="bg-white rounded-xl w-full flex flex-col overflow-hidden max-h-[90vh]">
                 <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#eaeaec]">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20">
@@ -211,7 +211,7 @@ function EquipmentModal({ isOpen, onClose, data, onSave }: any) {
                 </div>
                 
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-[#f8f9fa]">
-                    <div className="bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm grid grid-cols-2 gap-6">
+                    <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm grid grid-cols-2 gap-6">
                         <div className="col-span-2">
                             <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Equipment ID</label>
                             <input type="text" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} disabled={!!data} className={`w-full border border-[#eaeaec] bg-[#f8f9fa] focus:bg-white rounded-xl p-3 text-[12px] font-mono font-bold focus:border-[#4d87a8] transition-all outline-none ${data ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#212c46]'}`} placeholder="EQ-XXX-001" />
@@ -268,7 +268,7 @@ function BreakdownModal({ isOpen, onClose, data, onSave, equipment }: any) {
 
     return (
         <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-2xl" hideDefaultHeader>
-            <div className="bg-white rounded-2xl w-full flex flex-col overflow-hidden max-h-[90vh]">
+            <div className="bg-white rounded-xl w-full flex flex-col overflow-hidden max-h-[90vh]">
                 <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#eaeaec]">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20">
@@ -283,7 +283,7 @@ function BreakdownModal({ isOpen, onClose, data, onSave, equipment }: any) {
                 </div>
                 
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-[#f8f9fa]">
-                    <div className="bg-white p-6 rounded-2xl border border-[#eaeaec] shadow-sm grid grid-cols-2 gap-6">
+                    <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm grid grid-cols-2 gap-6">
                         <div className="col-span-2">
                             <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Machine</label>
                             <select 
@@ -512,14 +512,72 @@ export default function EquipmentRegistry() {
                 <Icons.HelpCircle size={18} className="shrink-0 group-hover:rotate-12 transition-transform text-[#7a8b95] group-hover:text-white" />
                 <span className="font-black tracking-[0.3em] [writing-mode:vertical-rl] rotate-180 whitespace-nowrap uppercase text-[11px]">USER GUIDE</span>
             </button>
-            <UserGuidePanel isOpen={showGuide} onClose={() => setShowGuide(false)} />
+            <UserGuidePanel
+                isOpen={showGuide}
+                onClose={() => setShowGuide(false)}
+                title="EQUIPMENT REGISTRY GUIDE"
+                subtitle="ASSET MANAGEMENT MANUAL"
+            >
+                <div className="space-y-8 font-sans">
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Database size={16} className="text-[#3f809e]" /> 1. ภาพรวมของทะเบียนเครื่องจักร
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            ระบบนี้ใช้สำหรับขึ้นทะเบียนทรัพย์สินและเครื่องจักรในไลน์ผลิตทั้งหมด เพื่อเป็นฐานข้อมูลหลัก (Master Data) สำหรับให้แผนกอื่นนำไปอ้างอิง เช่น การแจ้งซ่อม การบำรุงรักษา หรือการคำนวณต้นทุนการเดินเครื่องต่างๆ
+                        </p>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Activity size={16} className="text-[#b58c4f]" /> 2. การควบคุมสถานะการทำงาน (MACHINE STATUS)
+                        </h3>
+                        <p className="mb-4 text-[#414757]">
+                            การอัพเดทสถานะเครื่องจักรให้ตรงความจริงเสมอจะช่วยลดการวางแผนการผลิตที่ผิดพลาด:
+                        </p>
+                        <div className="space-y-3 relative pb-2 border-l-2 border-[#eaeaec] ml-2 pl-4">
+                            <div className="relative">
+                                <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#688a58] border-2 border-white"></div>
+                                <strong className="text-[#688a58] block text-[12px]">Operational (พร้อมใช้งาน):</strong>
+                                <p className="text-[#7a8b95] text-[11px] mt-0.5">เครื่องจักรอยู่ในสภาพ 100% พร้อมรับงานใหม่</p>
+                            </div>
+                            <div className="relative mt-4">
+                                <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#a94228] border-2 border-white"></div>
+                                <strong className="text-[#a94228] block text-[12px]">Down (เสีย/ไฟดับ):</strong>
+                                <p className="text-[#7a8b95] text-[11px] mt-0.5">เครื่องจักรขัดข้องรุนแรง ไม่สามารถใช้งานได้ ต้องเรียกช่างเคลียร์งาน</p>
+                            </div>
+                            <div className="relative mt-4">
+                                <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#b58c4f] border-2 border-white"></div>
+                                <strong className="text-[#b58c4f] block text-[12px]">Maintenance (ซ่อมบำรุง/ล้างเครื่อง):</strong>
+                                <p className="text-[#7a8b95] text-[11px] mt-0.5">หยุดเครื่องตามแผน หรืออยู่ระหว่างเปลี่ยนอะไหล่ตามรอบเวลา</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="h-px bg-[#eaeaec] w-full" />
+
+                    <div>
+                        <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                            <Icons.Cpu size={16} className="text-[#688a58]" /> 3. คำอธิบายหมวดหมู่ระบบเครื่องจักร
+                        </h3>
+                        <ul className="list-decimal pl-5 space-y-2 text-[#414757] text-[12px]">
+                            <li><strong>Mixing:</strong> เครื่องผสม, เครื่องบดเนื้อ, ถังลดอุณหภูมิ</li>
+                            <li><strong>Processing:</strong> ตู้อบรมควัน, เครื่องอัดไส้, เครื่องขึ้นรูปลูกชิ้น</li>
+                            <li><strong>Packaging:</strong> เครื่องซีลสุญญากาศ, เครื่องแพ็คอัตโนมัติ, เครื่องพิมพ์วันหมดอายุ</li>
+                            <li><strong>Utilities:</strong> ปั๊มลม, หม้อไอน้ำ, คอมเพรสเซอร์ทำความเย็นระดับโรงงาน</li>
+                        </ul>
+                    </div>
+                </div>
+            </UserGuidePanel>
             
             <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={handleCsvUpload} />
             <EquipmentModal isOpen={eqModal.isOpen} onClose={() => setEqModal({ isOpen: false, data: null })} data={eqModal.data} onSave={handleSaveEquipment} />
             <BreakdownModal isOpen={bdModal.isOpen} onClose={() => setBdModal({ isOpen: false, data: null })} data={bdModal.data} onSave={handleSaveBreakdown} equipment={equipment} />
 
             {/* Header Bar synced with other modules */}
-            <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
                     <div className="relative flex items-center justify-center group cursor-default shrink-0">
                         <div className="absolute inset-0 bg-[#212c46] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -559,7 +617,7 @@ export default function EquipmentRegistry() {
                 </div>
             </div>
 
-            <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
                 {/* KPI STATS */}
                 {(activeTab === 'equipment' || activeTab === 'breakdowns') && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
@@ -583,10 +641,10 @@ export default function EquipmentRegistry() {
 
                 <div className="w-full flex-1 flex flex-col min-h-[500px]">
                     {(activeTab === 'equipment' || activeTab === 'breakdowns') && (
-                        <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-3xl border">
+                        <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-xl border">
                             
                             {/* TOOLBAR */}
-                            <div className="px-5 py-4 border-b border-[#eaeaec] flex flex-col md:flex-row justify-between items-center bg-white shrink-0 gap-4">
+                            <div className="px-4 py-4 border-b border-[#eaeaec] flex flex-col md:flex-row justify-between items-center bg-white shrink-0 gap-4">
                                 <div className="flex items-center gap-4 w-full md:w-auto">
                                     <span className="bg-[#f8f9fa] text-[#7a8b95] border border-[#eaeaec] font-mono font-black text-[11px] px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm">
                                         {activeData.length} RECORDS
@@ -626,26 +684,26 @@ export default function EquipmentRegistry() {
                             {/* TABLE */}
                             <div className="flex-1 overflow-hidden flex flex-col">
                                 <div className="overflow-y-auto flex-1 custom-scrollbar bg-slate-50/50">
-                                    <table className="w-full text-left min-w-[900px] border-collapse bg-white">
-                                        <thead className="bg-[#f8f9fa] text-[#7a8b95] border-b border-[#eaeaec] sticky top-0 z-10 font-bold uppercase tracking-widest text-[10px]">
+                                    <table className="w-full text-left min-w-[900px] border-collapse bg-white table-font">
+                                        <thead className="sys-table-header [#eaeaec] sticky top-0 z-10 font-black uppercase tracking-widest ">
                                             {activeTab === 'equipment' ? (
                                                 <tr>
-                                                    <th className="py-4 px-6 pl-8 w-[15%] align-middle font-black whitespace-nowrap">ID</th>
-                                                    <th className="py-4 px-6 w-auto align-middle font-black whitespace-nowrap">Machine Name</th>
-                                                    <th className="py-4 px-6 w-[15%] text-center align-middle font-black whitespace-nowrap">Process Step</th>
-                                                    <th className="py-4 px-6 w-[15%] text-center align-middle font-black whitespace-nowrap">Quantity</th>
-                                                    <th className="py-4 px-6 w-[20%] align-middle font-black whitespace-nowrap">Note</th>
-                                                    <th className="py-4 px-6 pr-8 text-right w-20 align-middle font-black whitespace-nowrap">Action</th>
+                                                    <th className="pl-8 w-[15%] align-middle font-black whitespace-nowrap ">ID</th>
+                                                    <th className="w-auto align-middle font-black whitespace-nowrap ">Machine Name</th>
+                                                    <th className="w-[15%] text-center align-middle font-black whitespace-nowrap ">Process Step</th>
+                                                    <th className="w-[15%] text-center align-middle font-black whitespace-nowrap ">Quantity</th>
+                                                    <th className="w-[20%] align-middle font-black whitespace-nowrap ">Note</th>
+                                                    <th className="pr-8 text-right w-20 align-middle font-black whitespace-nowrap ">Action</th>
                                                 </tr>
                                             ) : (
                                                 <tr>
-                                                    <th className="py-4 px-6 pl-8 w-[12%] align-middle font-black whitespace-nowrap">Date</th>
-                                                    <th className="py-4 px-6 w-[20%] align-middle font-black whitespace-nowrap">Machine</th>
-                                                    <th className="py-4 px-6 w-[25%] align-middle font-black whitespace-nowrap">Problem</th>
-                                                    <th className="py-4 px-6 w-[20%] align-middle font-black whitespace-nowrap">Action Taken</th>
-                                                    <th className="py-4 px-6 w-[10%] text-right align-middle font-black whitespace-nowrap">Downtime</th>
-                                                    <th className="py-4 px-6 w-[10%] text-center align-middle font-black whitespace-nowrap">Status</th>
-                                                    <th className="py-4 px-6 pr-8 text-right w-20 align-middle font-black whitespace-nowrap">Action</th>
+                                                    <th className="pl-8 w-[12%] align-middle font-black whitespace-nowrap ">Date</th>
+                                                    <th className="w-[20%] align-middle font-black whitespace-nowrap ">Machine</th>
+                                                    <th className="w-[25%] align-middle font-black whitespace-nowrap ">Problem</th>
+                                                    <th className="w-[20%] align-middle font-black whitespace-nowrap ">Action Taken</th>
+                                                    <th className="w-[10%] text-right align-middle font-black whitespace-nowrap ">Downtime</th>
+                                                    <th className="w-[10%] text-center align-middle font-black whitespace-nowrap ">Status</th>
+                                                    <th className="pr-8 text-right w-20 align-middle font-black whitespace-nowrap ">Action</th>
                                                 </tr>
                                             )}
                                         </thead>
@@ -655,20 +713,20 @@ export default function EquipmentRegistry() {
                                                     
                                                     {activeTab === 'equipment' ? (
                                                         <>
-                                                            <td className="py-3 px-6 pl-8 align-middle">
+                                                            <td className="px-4 pl-8 align-middle py-2.5">
                                                                 <span className="font-bold text-[#4d87a8] text-[12px] font-mono leading-tight bg-[#4d87a8]/10 px-2.5 py-1 rounded-md border border-[#4d87a8]/20">{item.id}</span>
                                                             </td>
-                                                            <td className="py-3 px-6 align-middle font-bold text-[#212c46] text-[12px]">{item.name}</td>
-                                                            <td className="py-3 px-6 align-middle text-center">
+                                                            <td className="px-4 align-middle font-bold text-[#212c46] text-[12px] py-2.5">{item.name}</td>
+                                                            <td className="px-4 align-middle text-center py-2.5">
                                                                 <span className="bg-white text-[#7a8b95] px-3 py-1 rounded-full text-[10px] font-bold border border-[#eaeaec] uppercase tracking-widest shadow-sm">{item.step}</span>
                                                             </td>
-                                                            <td className="py-3 px-6 align-middle text-center">
+                                                            <td className="px-4 align-middle text-center py-2.5">
                                                                 <div className="font-black text-[#212c46] text-[12px] font-mono bg-slate-50 px-3 py-1 rounded-md border border-[#eaeaec] inline-block shadow-sm">{item.qty}</div>
                                                             </td>
-                                                            <td className="py-3 px-6 align-middle">
+                                                            <td className="px-4 align-middle py-2.5">
                                                                 <div className="text-[11px] text-[#7a8b95] font-normal truncate max-w-xs">{item.note || '-'}</div>
                                                             </td>
-                                                            <td className="py-3 px-6 pr-8 align-middle">
+                                                            <td className="px-4 pr-8 align-middle py-2.5">
                                                                 <div className="flex justify-end gap-[1px] transition-opacity">
                                                                     <button onClick={() => setEqModal({ isOpen: true, data: item })} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90" title="Edit"><Icons.Pencil size={16} /></button>
                                                                     {!IS_DEMO && (
@@ -679,31 +737,31 @@ export default function EquipmentRegistry() {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <td className="py-3 px-6 pl-8 align-middle">
+                                                            <td className="px-4 pl-8 align-middle py-2.5">
                                                                 <div className="flex flex-col items-start gap-1">
                                                                     <span className="font-bold text-[#212c46] text-[12px] font-mono">{item.date}</span>
                                                                     <span className="text-[#932c2e] text-[10px] font-mono font-bold bg-[#932c2e]/10 px-1 py-0.5 rounded">{item.id}</span>
                                                                 </div>
                                                             </td>
-                                                            <td className="py-3 px-6 align-middle font-bold text-[#212c46] text-[12px]">
+                                                            <td className="px-4 align-middle font-bold text-[#212c46] text-[12px] py-2.5">
                                                                 {item.machineName}
                                                             </td>
-                                                            <td className="py-3 px-6 align-middle">
+                                                            <td className="px-4 align-middle py-2.5">
                                                                 <div className="text-[12px] text-[#932c2e] font-bold truncate max-w-[200px]" title={item.problem}>{item.problem}</div>
                                                             </td>
-                                                            <td className="py-3 px-6 align-middle">
+                                                            <td className="px-4 align-middle py-2.5">
                                                                 <div className="text-[11px] text-[#7a8b95] font-normal truncate max-w-[200px]" title={item.actionTaken || 'Pending action'}>{item.actionTaken || <span className="italic text-[#b2cade]">-</span>}</div>
                                                             </td>
-                                                            <td className="py-3 px-6 align-middle text-right">
-                                                                <div className="flex items-baseline justify-end gap-1 whitespace-nowrap">
+                                                            <td className="px-4 align-middle text-right py-2.5">
+                                                                <div className="flex items-baseline justify-end gap-[1px] whitespace-nowrap">
                                                                     <span className="font-mono font-black text-[#932c2e] text-[12px]">{item.downtimeMinutes}</span>
                                                                     <span className="text-[10px] text-[#7a8b95] font-bold uppercase tracking-widest">Min</span>
                                                                 </div>
                                                             </td>
-                                                            <td className="py-3 px-6 align-middle text-center">
+                                                            <td className="px-4 align-middle text-center py-2.5">
                                                                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border whitespace-nowrap ${item.status === 'Resolved' ? 'bg-[#2e7d32]/10 text-[#2e7d32] border-[#2e7d32]/20' : 'bg-[#f59e0b]/10 text-[#f59e0b] border-[#f59e0b]/20'}`}>{item.status}</span>
                                                             </td>
-                                                            <td className="py-3 px-6 pr-8 align-middle">
+                                                            <td className="px-4 pr-8 align-middle py-2.5">
                                                                 <div className="flex justify-end gap-[1px] transition-opacity">
                                                                     <button onClick={() => setBdModal({ isOpen: true, data: item })} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90" title="Edit"><Icons.Pencil size={16} /></button>
                                                                     {!IS_DEMO && (
@@ -717,8 +775,8 @@ export default function EquipmentRegistry() {
                                             ))}
                                             {paginatedData.length === 0 && (
                                                 <tr>
-                                                    <td colSpan={activeTab === 'equipment' ? 6 : 7} className="py-16 text-center">
-                                                        <div className="flex flex-col items-center justify-center gap-3">
+                                                    <td className="text-center py-2.5 px-4">
+                                                        <div className="flex flex-col items-center justify-center gap-[1px]">
                                                             <Icons.Inbox size={48} className="text-[#eaeaec]" />
                                                             <span className="text-[#7a8b95] font-bold uppercase tracking-widest text-[12px]">No Records Found</span>
                                                         </div>
@@ -752,11 +810,11 @@ export default function EquipmentRegistry() {
 
                     {activeTab === 'oee' && (
                         <div className="flex flex-col gap-6 animate-fadeIn h-full">
-                            <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-[#eaeaec] shadow-lg p-8">
+                            <div className="bg-white/80 backdrop-blur-md rounded-xl border border-[#eaeaec] shadow-lg p-8">
                                 <h3 className="font-black text-[#212c46] flex items-center gap-2 uppercase tracking-widest mb-8 text-[14px]"><LucideIcon name="activity" size={18} className="text-[#932c2e]" /> Overall Equipment Effectiveness (OEE)</h3>
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="flex flex-col items-center justify-center p-8 bg-[#f8f9fa] rounded-2xl border border-[#eaeaec] shadow-sm">
+                                    <div className="flex flex-col items-center justify-center p-8 bg-[#f8f9fa] rounded-xl border border-[#eaeaec] shadow-sm">
                                         <h4 className="text-[11px] font-black text-[#7a8b95] uppercase tracking-widest mb-6">Overall OEE</h4>
                                         <div className="relative w-44 h-44 flex items-center justify-center">
                                             <svg className="w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 100 100">
@@ -769,7 +827,7 @@ export default function EquipmentRegistry() {
                                         </div>
                                         <p className="text-[10px] text-[#7a8b95] mt-6 text-center font-bold uppercase tracking-widest bg-white px-3 py-1 rounded-md border border-[#eaeaec]">Target: 85%</p>
                                     </div>
-                                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-[#eaeaec] shadow-sm">
+                                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-xl border border-[#eaeaec] shadow-sm">
                                         <h4 className="text-[11px] font-black text-[#7a8b95] uppercase tracking-widest mb-6">Availability</h4>
                                         <div className="relative w-44 h-44 flex items-center justify-center">
                                             <svg className="w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 100 100">
@@ -782,7 +840,7 @@ export default function EquipmentRegistry() {
                                         </div>
                                         <p className="text-[10px] text-[#7a8b95] mt-6 text-center font-bold uppercase tracking-widest">Operating / Planned</p>
                                     </div>
-                                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-[#eaeaec] shadow-sm">
+                                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-xl border border-[#eaeaec] shadow-sm">
                                         <h4 className="text-[11px] font-black text-[#7a8b95] uppercase tracking-widest mb-6">Quality</h4>
                                         <div className="relative w-44 h-44 flex items-center justify-center">
                                             <svg className="w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 100 100">
@@ -797,7 +855,7 @@ export default function EquipmentRegistry() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-[#eaeaec] shadow-lg p-8 flex-1 min-h-[350px]">
+                            <div className="bg-white/80 backdrop-blur-md rounded-xl border border-[#eaeaec] shadow-lg p-8 flex-1 min-h-[350px]">
                                 <h3 className="font-black text-[#212c46] flex items-center gap-2 uppercase tracking-widest mb-6 text-[14px]"><LucideIcon name="trending-up" size={18} className="text-[#932c2e]" /> OEE Trend (Last 7 Days)</h3>
                                 <div className="h-64 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -824,7 +882,7 @@ export default function EquipmentRegistry() {
                     {activeTab === 'dashboard' && (
                         <div className="flex flex-col gap-6 animate-fadeIn h-full">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-[#eaeaec] shadow-lg p-8 h-[450px]">
+                                <div className="bg-white/80 backdrop-blur-md rounded-xl border border-[#eaeaec] shadow-lg p-8 h-[450px]">
                                     <h3 className="font-black text-[#212c46] flex items-center gap-2 uppercase tracking-widest mb-6 text-[14px]"><LucideIcon name="bar-chart-2" size={18} className="text-[#932c2e]" /> Downtime by Machine</h3>
                                     <div className="h-[320px] w-full">
                                         <ResponsiveContainer width="100%" height="100%">
@@ -844,7 +902,7 @@ export default function EquipmentRegistry() {
                                         </ResponsiveContainer>
                                     </div>
                                 </div>
-                                <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-[#eaeaec] shadow-lg p-8 h-[450px]">
+                                <div className="bg-white/80 backdrop-blur-md rounded-xl border border-[#eaeaec] shadow-lg p-8 h-[450px]">
                                     <h3 className="font-black text-[#212c46] flex items-center gap-2 uppercase tracking-widest mb-6 text-[14px]"><LucideIcon name="pie-chart" size={18} className="text-[#932c2e]" /> Top Issues</h3>
                                     <div className="h-[320px] w-full flex items-center justify-center">
                                         <ResponsiveContainer width="100%" height="100%">

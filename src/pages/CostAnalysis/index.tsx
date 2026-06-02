@@ -311,22 +311,54 @@ export default function CostAnalysis() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-        content={{
-          title: 'MONTHLY COST ANALYSIS COMPLIANCE',
-          sections: [
-            {
-              heading: 'Overview',
-              text: 'This module calculates manufacturing costs on a monthly basis. Volume data is aggregated automatically from production logs, allowing you to input actual monthly expenses for accurate THB/Kg metrics.',
-            },
-            {
-              heading: 'Features',
-              text: 'Input Total Energy, Water, Labor, and Overhead expenses. The system prorates these costs across all active Product Categories (referenced directly from the Master Item properties) based on production volume share.',
-            }
-          ]
-        }}
-      />
+        title="COST ANALYSIS GUIDE"
+        subtitle="MONTHLY COST & KPI MANUAL"
+      >
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Calculator size={16} className="text-[#3f809e]" /> 1. ภาพรวมการวิเคราะห์ต้นทุน (OVERVIEW)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    โมดูลนี้ใช้เพื่อสรุปต้นทุนการผลิตรายเดือน โดยระบบจะนำเอาข้อมูล <strong>ปริมาณการผลิต (Production Volume)</strong> ที่ถูกบันทึกมาจากสายการผลิตจริง มาจับคู่กับ ค่าใช้จ่าย (Expenses) ที่ผู้ใช้งานกรอกเข้าไปเพื่อหาราคาสุทธิแบบ <strong>THB / Kg</strong>
+                </p>
+                <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757] text-[12px]">
+                    ทุกการคำนวณจะถูกเฉลี่ย (Prorate) ไปยัง Category (หมวดหมู่สินค้าหลักจาก Master Data) โดยยึดหลักสัดส่วนสัดส่วนเปอร์เซ็นต์ยอดผลิต (Volume Share) ของเดือนนั้นๆ
+                </div>
+            </div>
 
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.FileEdit size={16} className="text-[#b58c4f]" /> 2. การบันทึกค่าใช้จ่ายรายเดือน (UPDATE COST)
+                </h3>
+                <div className="space-y-3">
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl flex items-start gap-4 text-[12px]">
+                        <div className="p-2 bg-[#b58c4f] text-white rounded-lg shrink-0"><Icons.Zap size={16} /></div>
+                        <div>
+                            <strong className="text-[#212c46]">Energy / Water / Labor Expense</strong>
+                            <p className="text-[#7a8b95]">กดปุ่ม [ UPDATE {selectedMonth} COST ] ทางขวามือของตาราง Category Cost Allocation เพื่อแก้ไขค่าใช้จ่ายค่าไฟฟ้า น้ำ แรงงาน และอื่นๆ ให้ตรงกับบิลชำระของเดือนนั้นๆ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.LineChart size={16} className="text-[#688a58]" /> 3. โหมดการวิเคราะห์ (ANALYSIS MODES)
+                </h3>
+                <ul className="list-decimal pl-5 space-y-2 text-[#414757] text-[12px]">
+                    <li><strong className="text-[#212c46]">MONTHLY COST:</strong> แสดงตัวเลขภาพรวมเจาะจงเดือนที่เลือก ช่วยให้เห็นว่า Category ไหนกินต้นทุนมากที่สุด</li>
+                    <li><strong className="text-[#212c46]">TREND ANALYSIS:</strong> เปรียบเทียบตัวเลขแบบปีต่อปี (Year on Year) ช่วยวิเคราะห์แนวโน้มต้นทุนค่าแรงและค่าไฟที่อาจพุ่งสูงขึ้นตามซีซั่น</li>
+                </ul>
+            </div>
+        </div>
+      </UserGuidePanel>
+
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
           <div className="flex items-center gap-5">
               <div className="relative flex items-center justify-center group cursor-default shrink-0">
                   <div className="absolute inset-0 bg-[#b58c4f] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -382,7 +414,7 @@ export default function CostAnalysis() {
           </div>
       </div>
 
-      <div className="px-4 sm:px-8 max-w-[1532px] mx-auto w-full flex flex-col gap-6">
+      <div className="px-4 sm:px-8  mx-auto w-full flex flex-col gap-6">
         {mainTab === 'monthly' ? (
           <>
             {/* KPIs */}
@@ -461,38 +493,38 @@ export default function CostAnalysis() {
             
             <div className="flex-1 overflow-auto bg-white p-0">
               {activeTab === 'list_mode' ? (
-                <table className="w-full text-left border-collapse min-w-[700px]">
-                  <thead className="bg-[#212c46] text-white">
+                <table className="w-full text-left border-collapse min-w-[700px] table-font">
+                  <thead className="sys-table-header">
                     <tr>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Master Category</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Volume (Kg)</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Energy (THB)</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Labor (THB)</th>
-                      <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right text-[#b7a159]">Total Category Cost (THB)</th>
+                      <th className="font-black uppercase tracking-widest">Master Category</th>
+                      <th className="font-black uppercase tracking-widest text-right">Volume (Kg)</th>
+                      <th className="font-black uppercase tracking-widest text-right">Energy (THB)</th>
+                      <th className="font-black uppercase tracking-widest text-right">Labor (THB)</th>
+                      <th className="font-black uppercase tracking-widest text-right ">Total Category Cost (THB)</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#eaeaec]">
                     {chartDataBar.length > 0 ? chartDataBar.map((item, idx) => (
                       <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 whitespace-nowrap py-2.5">
                           <span className="font-black text-[#212c46] text-[12px] uppercase">{item.category}</span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <td className="px-4 whitespace-nowrap text-right py-2.5">
                           <span className="text-[12px] font-bold text-[#414757]">{item.volume.toLocaleString()} Kg</span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <td className="px-4 whitespace-nowrap text-right py-2.5">
                           <span className="text-[12px] font-bold text-[#b58c4f]">฿{item.energyCost.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <td className="px-4 whitespace-nowrap text-right py-2.5">
                           <span className="text-[12px] font-bold text-[#3f809e]">฿{item.laborCost.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <td className="px-4 whitespace-nowrap text-right py-2.5">
                           <span className="text-[13px] font-black text-[#a94228] bg-[#a94228]/10 px-3 py-1 rounded-lg">฿{item.totalCategoryCost.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
                         </td>
                       </tr>
                     )) : (
                       <tr>
-                        <td colSpan={5} className="text-center py-10 text-[12px] font-bold text-[#7a8b95] uppercase tracking-widest">
+                        <td className="text-center text-[12px] font-bold text-[#7a8b95] uppercase tracking-widest py-2.5 px-4">
                           No production volume detected for {selectedMonth}
                         </td>
                       </tr>
@@ -501,11 +533,11 @@ export default function CostAnalysis() {
                   {chartDataBar.length > 0 && (
                     <tfoot className="bg-[#f8f9fa] border-t-2 border-[#eaeaec]">
                       <tr>
-                        <td className="px-6 py-4 whitespace-nowrap font-black text-[#212c46] text-[12px] uppercase text-right">MONTHLY TOTAL</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right font-black text-[#212c46] text-[12px]">{monthlyVolumeData.totalVolume.toLocaleString()} Kg</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right font-black text-[#b58c4f] text-[12px]">฿{currentMonthCosts.energy.toLocaleString()}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right font-black text-[#3f809e] text-[12px]">฿{currentMonthCosts.labor.toLocaleString()}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right font-black text-[#a94228] text-[13px]">฿{totalMonthlyCost.toLocaleString()}</td>
+                        <td className="px-4 whitespace-nowrap font-black text-[#212c46] text-[12px] uppercase text-right py-2.5">MONTHLY TOTAL</td>
+                        <td className="px-4 whitespace-nowrap text-right font-black text-[#212c46] text-[12px] py-2.5">{monthlyVolumeData.totalVolume.toLocaleString()} Kg</td>
+                        <td className="px-4 whitespace-nowrap text-right font-black text-[#b58c4f] text-[12px] py-2.5">฿{currentMonthCosts.energy.toLocaleString()}</td>
+                        <td className="px-4 whitespace-nowrap text-right font-black text-[#3f809e] text-[12px] py-2.5">฿{currentMonthCosts.labor.toLocaleString()}</td>
+                        <td className="px-4 whitespace-nowrap text-right font-black text-[#a94228] text-[13px] py-2.5">฿{totalMonthlyCost.toLocaleString()}</td>
                       </tr>
                     </tfoot>
                   )}

@@ -267,45 +267,68 @@ export default function DowntimeTracking() {
       {/* USER GUIDE FLOATING BUTTON & PANEL */}
       <UserGuideButton onClick={() => setIsGuideOpen(true)} />
 
-      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="DOWNTIME TRACKING MANUAL" subtitle="คู่มือติดตามและลดความสูญเสียจากเครื่องจักรหยุดทำงาน">
-        <div className="space-y-6">
-          <div className="border-l-4 border-[#b7a159] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 1: Downtime Definitions & KPIs</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">คำจำกัดความและตัวชี้วัดประสิทธิภาพของเวลาสูญเสีย</p>
-          </div>
-          <p className="leading-relaxed">
-            ระบบติดตามเวลาเครื่องจักรหยุดทำงานแบ่งการสูญเสียออกเป็น 5 หมวดหมู่หลัก ได้แก่ Mechanical Breakdown, Electrical & Sensor, Changeover & Setup, Utilities Failure, และ Operational Delay คู่ค้ายอดเยี่ยมนิยมวัดผ่านทาง <strong>MTTR (Mean Time to Repair)</strong> หมายถึงเวลาเฉลี่ยที่ช่างใช้แก้ไขความบกพร่องในแต่ละเหตุการณ์ และ <strong>MTBF (Mean Time Between Failures)</strong> หมายถึงระยะเวลาเฉลี่ยที่เครื่องจักรทำงานปกติอย่างไร้ปัญหา
-          </p>
-          <div className="p-4 bg-[#f3f3f1] rounded-2xl border border-[#eaeaec] space-y-2">
-            <p className="font-bold flex items-center gap-2 text-[#932c2e]"><Icons.ShieldAlert size={14} /> ข้อควรระวังในการปฏิบัติหน้าที่:</p>
-            <ul className="list-disc list-inside space-y-1 text-[#414757]">
-              <li>หากมูลค่าเวลาหยุดสะสมเกินเป้าหมาย (Max Allowed 45 นาที) ระบบจะส่งสัญญาณเตือนผ่าน Level Alert ทันที</li>
-              <li>กรณีที่มีระยะเวลาเกินกำหนดตามเกราะความปลอดภัย จะต้องได้รับการลงลายมือชื่อรับรอง (Supervisor Signature) เท่านั้น</li>
-            </ul>
-          </div>
+      <UserGuidePanel isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} title="DOWNTIME TRACKING GUIDE" subtitle="คู่มือติดตามและลดความสูญเสียจากเครื่องจักรหยุดทำงาน">
+        <div className="space-y-8 font-sans">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.Clock size={16} className="text-[#3f809e]" /> 1. ภาพรวมการติดตาม Downtime
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    โมดูลนี้ใช้เพื่อแสดงภาพรวมของเวลาที่เครื่องจักรหยุดทำงานทั้งหมดในกะปัจจุบัน (Accumulated Downtime) เพื่อเฝ้าระวังไม่ให้เกิดการสูญเสียทางการผลิต (Production Deficit) เกินเกณฑ์มาตรฐานที่ยอมรับได้
+                </p>
+                <div className="p-4 bg-[#f8f9fa] border border-[#eaeaec] flex items-start gap-4 rounded-xl text-[12px]">
+                    <div className="bg-[#a94228] text-white p-2 rounded-lg shrink-0"><Icons.ShieldAlert size={16} /></div>
+                    <div>
+                        <strong className="text-[#212c46]">Downtime KPI Alert</strong>
+                        <p className="text-[#7a8b95]">เป้าหมายจำกัดเวลาสูญเสียสูงสุด (Max Downtime Alert Limit) ถูกตั้งไว้ที่ <strong>{settings.maxDowntimeAlertLimit} นาที</strong> หากผลรวมของกะทะลุเกณฑ์นี้ จะต้องให้ผู้บริหารอนุมัติความเสียหาย</p>
+                    </div>
+                </div>
+            </div>
 
-          <div className="border-l-4 border-[#3f809e] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 2: Root Cause Classification</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">วิเคราะห์สาเหตุเชิงลึกและมาตรฐานการควบคุม</p>
-          </div>
-          <p className="leading-relaxed">
-            อิงตามระบบบริหารจัดการแบบสากล <strong>TPM (Total Productive Maintenance)</strong> โดยแยกแยะลักษณะปัญหาเพื่อระบุมาตรการกำจัดความสูญเสียขั้นรุนแรง (Six Big Losses) ช่างผู้รายงานต้องระบุหมวดหมู่ให้ถูกต้อง เพื่อการประมวลผลระบบกราฟวิเคราะห์ Pareto แบบเรียลไทม์
-          </p>
+            <div className="h-px bg-[#eaeaec] w-full" />
 
-          <div className="border-l-4 border-[#657f4d] pl-4 py-1">
-            <h4 className="text-[14px] font-black text-[#212c46] uppercase tracking-widest">Section 3: Response Playbook & Escalation</h4>
-            <p className="text-[11px] text-[#7a8b95] uppercase font-bold mt-1">ระเบียบปฏิบัติและขั้นตอนการตอบสนองเมื่อเกิดเหตุวิกฤต</p>
-          </div>
-          <p className="leading-relaxed">
-            1. <strong>รายงานเหตุ:</strong> ทันทีที่หยุดเกิน 5 นาทีพนักงานหน้างานต้องระบุบันทึก<br />
-            2. <strong>เข้าตรวจสอบ:</strong> ทีมซ่อมบำรุงดำเนินการระบุเครื่องมือ LOTO (Lockout/Tagout) ก่อนการซ่อม<br />
-            3. <strong>บันทึกรับรอง:</strong> ลงสัญญลักษณ์รับประกันความปลอดภัยเพื่ออนุมัติเปิดเดินเครื่องได้ปกติ
-          </p>
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.PieChart size={16} className="text-[#b58c4f]" /> 2. การวิเคราะห์สาเหตุ (ROOT CAUSE ANALYSIS)
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    ระบบจะทำการแบ่งหมวดหมู่สาเหตุ (Classification) โดยอัตโนมัติ ตามมาตรฐาน TPM (Total Productive Maintenance) ออกเป็น 5 ปัจจัยหลัก:
+                </p>
+                <div className="space-y-3 relative pb-2 border-l-2 border-[#eaeaec] ml-2 pl-4">
+                    <div className="relative">
+                        <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#a94228] border-2 border-white"></div>
+                        <strong className="text-[#a94228] block text-[12px]">Mechanical Breakdown (ขัดข้องด้านโครงสร้าง):</strong>
+                        <p className="text-[#7a8b95] text-[11px] mt-0.5">สายพานขาด, ลูกปืนแตก, มอเตอร์ไหม้</p>
+                    </div>
+                    <div className="relative mt-4">
+                        <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#b58c4f] border-2 border-white"></div>
+                        <strong className="text-[#b58c4f] block text-[12px]">Electrical & Sensor (ขัดข้องระบบไฟ/เซ็นเซอร์):</strong>
+                        <p className="text-[#7a8b95] text-[11px] mt-0.5">ระบบควบคุมเออเร่อ, เบรกเกอร์ตัด, เซ็นเซอร์อ่านพลาด</p>
+                    </div>
+                    <div className="relative mt-4">
+                        <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-[#3f809e] border-2 border-white"></div>
+                        <strong className="text-[#3f809e] block text-[12px]">Changeover & Setup (เปลี่ยนโมลด์ตั้งค่า):</strong>
+                        <p className="text-[#7a8b95] text-[11px] mt-0.5">ช่างใช้เวลาล้างเครื่องหรือเปลี่ยนฟิล์มแพ็คเกินมาตรฐาน</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <Icons.TrendingDown size={16} className="text-[#688a58]" /> 3. ค่าชี้วัดความทนทาน (MTBF / MTTR)
+                </h3>
+                <ul className="list-decimal pl-5 space-y-2 text-[#414757] text-[12px]">
+                    <li><strong>MTBF (Mean Time Between Failures):</strong> การวัดว่าเครื่องจักรเดินได้เฉลี่ยกี่ชั่วโมงก่อนจะพังอีกรอบ (ยิ่งค่านี้นาน ยิ่งดี)</li>
+                    <li><strong>MTTR (Mean Time To Repair):</strong> ช่างใช้เวลาซ่อมเฉลี่ยกี่นาทีต่อการพังหนึ่งครั้ง (ยิ่งค่านี้น้อย ยิ่งดี)</li>
+                </ul>
+            </div>
         </div>
       </UserGuidePanel>
 
       {/* HEADER NODES */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#a94228] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -339,7 +362,7 @@ export default function DowntimeTracking() {
       </div>
 
       {/* KPI METRIC CARDS */}
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
           <KpiCard label="Downtime Minutes" value={`${totalDowntimeMins} min`} icon="clock" colorAccent={THEME.accent} colorValue={THEME.primary} desc={`vs Target ${settings.maxAllowedDowntimeMins} min Limit`} />
           <KpiCard label="MTTR (Mean Repair Time)" value={`${mttrMins} min`} icon="wrench" colorAccent={THEME.primaryLight} colorValue={THEME.primary} desc={`Target: < ${settings.targetMttrMins} Mins`} />
@@ -349,9 +372,9 @@ export default function DowntimeTracking() {
 
         {/* LIST VIEW TAB */}
         {activeTab === 'list_mode' ? (
-          <div className="bg-white rounded-3xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-lg border border-[#eaeaec] overflow-hidden flex flex-col animate-fadeIn">
             {/* SEARCH AND CONTROLS HEADER */}
-            <div className="px-8 py-4 border-b border-[#eaeaec] bg-[#f8f9fa] flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
+            <div className="px-4 py-4 border-b border-[#eaeaec] bg-white flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
               <div className="flex items-center gap-3">
                 <span className="text-[11px] font-black text-[#7a8b95] uppercase tracking-widest bg-white border border-[#eaeaec] px-4 py-2 rounded-xl shadow-sm">
                   Filter Category Status
@@ -370,23 +393,23 @@ export default function DowntimeTracking() {
 
             {/* MAIN DATA TABLE */}
             <div className="overflow-auto custom-scrollbar">
-              <table className="w-full text-left font-sans border-collapse">
-                <thead className="sys-table-header bg-[#212c46] text-white border-[#b7a159]">
-                  <tr>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">ID / Date</th>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Machine / Line</th>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Category Root Cause</th>
-                    <th className="font-black uppercase tracking-widest whitespace-nowrap">Description of Problem</th>
-                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Duration</th>
-                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap">Supervisor Sig</th>
-                    <th className="font-black uppercase tracking-widest text-center">Status</th>
-                    <th className="font-black uppercase tracking-widest text-center">Action</th>
+              <table className="w-full text-left border-collapse table-font">
+                <thead className="sys-table-header [#b7a159] ">
+                    <tr>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">ID / Date</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Machine / Line</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Category Root Cause</th>
+                    <th className="font-black uppercase tracking-widest whitespace-nowrap   ">Description of Problem</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap   ">Duration</th>
+                    <th className="font-black uppercase tracking-widest text-center whitespace-nowrap   ">Supervisor Sig</th>
+                    <th className="font-black uppercase tracking-widest text-center   ">Status</th>
+                    <th className="font-black uppercase tracking-widest text-center   ">Action</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-[#eaeaec]">
                   {currentData.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-12 text-[#7a8b95] uppercase font-black tracking-widest text-[12px]">No tracked downtime records located</td>
+                      <td className="text-center text-[#7a8b95] uppercase font-black tracking-widest text-[12px] py-2.5 px-4">No tracked downtime records located</td>
                     </tr>
                   ) : (
                     currentData.map(inc => {
@@ -396,25 +419,25 @@ export default function DowntimeTracking() {
 
                       return (
                         <tr key={inc.id} className="hover:bg-[#f8f9fa] transition-colors group">
-                          <td className="sys-table-td font-mono font-black text-[#212c46]">
+                          <td className="sys-table-td font-mono font-black text-[#212c46] py-2.5 px-4">
                             <div className="flex flex-col">
                               <span>{inc.id}</span>
                               <span className="text-[10px] text-[#7a8b95] font-bold">{inc.date}</span>
                             </div>
                           </td>
-                          <td className="sys-table-td">
+                          <td className="sys-table-td py-2.5 px-4">
                             <div className="flex flex-col">
                               <span className="font-black uppercase text-[#212c46] text-[12px]">{inc.machineName}</span>
                               <span className="text-[10px] text-[#3f809e] font-bold tracking-wider uppercase">{inc.machineId}</span>
                             </div>
                           </td>
-                          <td className="sys-table-td">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-sm" style={{ backgroundColor: category.color }}>
+                          <td className="sys-table-td py-2.5 px-4">
+                            <span className="inline-flex items-center gap-[1px] px-3 py-1 rounded-full text-[10px] font-black uppercase text-white shadow-sm" style={{ backgroundColor: category.color }}>
                               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                               {category.name}
                             </span>
                           </td>
-                          <td className="sys-table-td font-bold text-[#414757] text-[12px] max-w-sm truncate" title={inc.problem}>
+                          <td className="sys-table-td font-bold text-[#414757] text-[12px] max-w-sm truncate py-2.5 px-4" title={inc.problem}>
                             {inc.problem}
                           </td>
                           <td className={`sys-table-td text-center font-black ${isHighDowntime ? 'text-[#932c2e] bg-[#932c2e]/5' : 'text-[#657f4d]'}`}>
@@ -423,27 +446,27 @@ export default function DowntimeTracking() {
                               {isHighDowntime && <span className="text-[9px] uppercase tracking-widest font-black text-[#932c2e]">LIMIT EXCEEDED</span>}
                             </div>
                           </td>
-                          <td className="sys-table-td text-center font-black">
+                          <td className="sys-table-td text-center font-black py-2.5 px-4">
                             {inc.supervisorSig ? (
-                              <span className="inline-flex items-center gap-1 text-[#657f4d] text-[11px] font-black bg-[#657f4d]/10 px-2.5 py-1 rounded-lg border border-[#657f4d]/20 uppercase tracking-widest">
+                              <span className="inline-flex items-center gap-[1px] text-[#657f4d] text-[11px] font-black bg-[#657f4d]/10 px-2.5 py-1 rounded-lg border border-[#657f4d]/20 uppercase tracking-widest">
                                 <Icons.CheckCircle size={12} /> {inc.supervisorSig}
                               </span>
                             ) : requiresSignature ? (
-                              <span className="inline-flex items-center gap-1 text-[#932c2e] text-[10px] font-black bg-[#932c2e]/10 px-2 py-1 rounded-lg border border-[#932c2e]/30 uppercase tracking-widest animate-pulse">
+                              <span className="inline-flex items-center gap-[1px] text-[#932c2e] text-[10px] font-black bg-[#932c2e]/10 px-2 py-1 rounded-lg border border-[#932c2e]/30 uppercase tracking-widest animate-pulse">
                                 <Icons.AlertCircle size={10} /> Pending Sig
                               </span>
                             ) : (
                               <span className="text-[#aaeaec] opacity-40 text-[13px] font-bold">-</span>
                             )}
                           </td>
-                          <td className="sys-table-td text-center">
+                          <td className="sys-table-td text-center py-2.5 px-4">
                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm ${inc.status === 'Resolved' ? 'bg-[#657f4d]/20 text-[#657f4d] border border-[#657f4d]/30' : 'bg-[#932c2e]/10 text-[#d96245] border border-[#932c2e]/30'}`}>
                               {inc.status}
                             </span>
                           </td>
-                          <td className="sys-table-td text-center">
+                          <td className="sys-table-td text-center py-2.5 px-4">
                             <div className="flex justify-center items-center gap-[1px]">
-                              <button onClick={() => openEditModal(inc)} className="sys-table-action-btn text-[#4d87a8] hover:bg-[#4d87a8]/10 border-transparent transition-all">
+                              <button onClick={() => openEditModal(inc)} className="sys-table-action-btn w-8 h-8 text-[#4d87a8] hover:bg-[#4d87a8]/10 border-transparent transition-all">
                                 <Icons.Edit3 size={15} />
                               </button>
                             </div>
@@ -484,7 +507,7 @@ export default function DowntimeTracking() {
           /* ANALYTICS TAB */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
             {/* PARETO CATEGORY BARS */}
-            <div className="lg:col-span-6 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec]">
+            <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
               <div className="border-b-2 border-[#b7a159] pb-4 mb-6">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.BarChart2 size={20} className="text-[#a94228]" /> Downtime Pareto Distribution (Minutes)
@@ -509,7 +532,7 @@ export default function DowntimeTracking() {
             </div>
 
             {/* TREND LINE */}
-            <div className="lg:col-span-6 bg-white p-6 rounded-3xl shadow-lg border border-[#eaeaec]">
+            <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
               <div className="border-b-2 border-[#b7a159] pb-4 mb-6">
                 <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
                   <Icons.TrendingUp size={20} className="text-[#3f809e]" /> Daily Downtime Trend Line
@@ -604,21 +627,21 @@ export default function DowntimeTracking() {
                   <p className="text-[10px] text-[#7a8b95] uppercase font-bold mt-0.5">ระเบียบอนุมัติทางความปลอดภัยและสิทธิเข้าถึงข้อมูล</p>
                 </div>
                 <div className="space-y-3">
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#a94228] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#a94228] transition-colors">
                     <input type="checkbox" checked={settings.requireSigForLongEvents} onChange={e => setSettings({ ...settings, requireSigForLongEvents: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Require Supervisor Signature for High Events</span>
                       <span className="block text-[9px] text-[#7a8b95] font-bold mt-0.5">ต้องลงลายมือชื่อควบคุมหากหยุดพาร์ทมากกว่าเวลาที่กำหนด</span>
                     </div>
                   </label>
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#a94228] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#a94228] transition-colors">
                     <input type="checkbox" checked={settings.autoEscalateProductionLead} onChange={e => setSettings({ ...settings, autoEscalateProductionLead: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Auto-escalate Incident status to Production Lead</span>
                       <span className="block text-[9px] text-[#7a8b95] font-bold mt-0.5">เลื่อนระดับการแจ้งเตือนไปที่หัวหน้าฝ่ายผลิตพึงระวังสถานการณ์</span>
                     </div>
                   </label>
-                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-2xl cursor-pointer hover:border-[#a94228] transition-colors">
+                  <label className="flex items-center gap-3 p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-xl cursor-pointer hover:border-[#a94228] transition-colors">
                     <input type="checkbox" checked={settings.enforceLockouts} onChange={e => setSettings({ ...settings, enforceLockouts: e.target.checked })} className="w-4 h-4 accent-[#212c46]" />
                     <div>
                       <span className="block text-[11px] font-black text-[#212c46] uppercase tracking-wider">Enforce LOTO (Lockout/Tagout) Safeguards Check</span>

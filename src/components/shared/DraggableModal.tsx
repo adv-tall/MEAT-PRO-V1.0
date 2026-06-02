@@ -35,6 +35,7 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
                  // Close when clicking the backdrop
                  if (e.target === e.currentTarget) onClose(); 
              }}>
+          {/* @ts-ignore */}
           <Draggable nodeRef={nodeRef} handle=".drag-handle">
             <div ref={nodeRef} className="absolute w-full max-w-lg pointer-events-auto" style={{ zIndex: 101 }}>
               <motion.div

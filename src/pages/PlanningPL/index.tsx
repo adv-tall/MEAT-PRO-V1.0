@@ -221,7 +221,69 @@ export default function PlanningPL() {
       <UserGuidePanel
         isOpen={isGuideOpen}
         onClose={() => setIsGuideOpen(false)}
-      />
+        title="PLANNING GUIDE"
+        subtitle="CENTRAL PLANNING & ORDER MANAGEMENT"
+      >
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <div className="bg-[#212c46] text-white w-5 h-5 rounded flex items-center justify-center text-[10px] shrink-0">1</div> 
+                    ข้อมูลการขายรอประเมิน
+                </h3>
+                <p className="mb-4 text-[#414757]">
+                    ใบสั่งขาย (Sales Order) จากออฟฟิศที่รอการจับคู่กับกำลังการผลิต (Capacity) เพื่อนำมาสร้างเป็นตารางการผลิต (Production Plan)
+                </p>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <div className="bg-[#d55a6d] text-white w-5 h-5 rounded flex items-center justify-center text-[10px] shrink-0">2</div> 
+                    สถานะ (STATUS)
+                </h3>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#7a8b95] shrink-0"></div>
+                        <div><span className="font-bold text-[#414757]">DRAFT:</span> ร่างแผน ยังไม่ได้รับการยืนยัน</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#3f809e] shrink-0"></div>
+                        <div><span className="font-bold text-[#414757]">CONFIRMED:</span> แผนผลิตยืนยันแล้ว รอเข้าสายการผลิต</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#b58c4f] shrink-0"></div>
+                        <div><span className="font-bold text-[#414757]">IN PROCESS:</span> กำลังดำเนินการผลิตจริง</div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#688a58] shrink-0"></div>
+                        <div><span className="font-bold text-[#414757]">COMPLETED:</span> ปิดแผนการผลิตแล้ว</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <div className="bg-[#3f809e] text-white w-5 h-5 rounded flex items-center justify-center text-[10px] shrink-0">3</div> 
+                    ACTION BUTTONS
+                </h3>
+                <p className="mb-4">การจัดการข้อมูลแผนการผลิตสามารถทำได้ผ่านปุ่มคำสั่งต่อไปนี้ :</p>
+                <div className="space-y-3">
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-lg">
+                        <span className="font-bold text-[#212c46]">BULK UPLOAD:</span> นำเข้าแผนการผลิตหลายรายการพร้อมกันผ่านไฟล์ Excel/CSV 
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-lg">
+                        <span className="font-bold text-[#212c46]">EXPORT:</span> ส่งออกข้อมูลแผนการผลิตทั้งหมดในรูปแบบตารางเพื่อนำไปวิเคราะห์ต่อ
+                    </div>
+                    <div className="p-3 bg-[#f8f9fa] border border-[#eaeaec] rounded-lg">
+                        <span className="font-bold text-[#212c46]">CREATE PL:</span> สร้างแผนการผลิตใหม่แบบ Manual พร้อมระบุรายละเอียด ลูกค้า สินค้า และเป้าหมาย
+                    </div>
+                </div>
+            </div>
+        </div>
+      </UserGuidePanel>
 
       <DraggableModal
         isOpen={isUploadOpen}
@@ -248,7 +310,7 @@ export default function PlanningPL() {
 
       {/* ALARM POP-UP */}
       {showAlarm && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white border border-red-200 shadow-2xl rounded-2xl p-4 w-[320px] animate-fadeIn flex flex-col gap-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-white border border-red-200 shadow-2xl rounded-xl p-4 w-[320px] animate-fadeIn flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
@@ -272,7 +334,7 @@ export default function PlanningPL() {
       )}
 
       {/* Header Area synced with other modules */}
-      <div className="h-14 px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
+      <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
         <div className="flex items-center gap-5">
           <div className="relative flex items-center justify-center group cursor-default shrink-0">
             <div className="absolute inset-0 bg-[#212c46] blur-[15px] opacity-20 rounded-full group-hover:opacity-60 transition-all duration-700"></div>
@@ -330,7 +392,7 @@ export default function PlanningPL() {
         </div>
       </div>
 
-      <div className="max-w-[1532px] mx-auto px-4 sm:px-8 w-full mt-[2px]">
+      <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         {/* KPI STATS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
           <KpiCard
@@ -369,9 +431,9 @@ export default function PlanningPL() {
         </div>
 
         <div className="w-full flex-1 flex flex-col min-h-[500px]">
-          <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-3xl border">
+          <div className="sys-table-card border-[#eaeaec] flex flex-col flex-1 shadow-lg bg-white overflow-hidden rounded-xl border">
             {/* TOOLBAR */}
-            <div className="px-5 py-4 border-b border-[#eaeaec] flex flex-col md:flex-row justify-between items-center bg-white shrink-0 gap-4">
+            <div className="px-4 py-4 border-b border-[#eaeaec] flex flex-col md:flex-row justify-between items-center bg-white shrink-0 gap-4">
               <div className="flex items-center gap-4 w-full md:w-auto">
                 <div className="relative group">
                   <Icons.Filter
@@ -425,40 +487,40 @@ export default function PlanningPL() {
 
             {/* TABLE */}
             <div className="flex-1 overflow-auto custom-scrollbar bg-slate-50/50">
-              <table className="w-full text-left min-w-[1100px] border-collapse bg-white">
-                <thead className="bg-[#f8f9fa] text-[#7a8b95] border-b border-[#eaeaec] sticky top-0 z-10 font-bold uppercase tracking-widest text-[10px]">
-                  <tr>
-                    <th className="py-4 px-6 text-center w-16 align-middle font-black shadow-sm">
+              <table className="w-full text-left min-w-[1100px] border-collapse bg-white table-font">
+                <thead className="sys-table-header [#eaeaec] sticky top-0 z-10 font-black uppercase tracking-widest ">
+                    <tr>
+                    <th className="text-center w-16 align-middle font-black shadow-sm ">
                       #
                     </th>
-                    <th className="py-4 px-6 align-middle font-black shadow-sm">
+                    <th className="align-middle font-black shadow-sm ">
                       PL NO.
                     </th>
-                    <th className="py-4 px-6 align-middle font-black shadow-sm">
+                    <th className="align-middle font-black shadow-sm ">
                       Date
                     </th>
-                    <th className="py-4 px-6 text-center align-middle font-black shadow-sm">
+                    <th className="text-center align-middle font-black shadow-sm ">
                       Shift
                     </th>
-                    <th className="py-4 px-6 align-middle font-black shadow-sm">
+                    <th className="align-middle font-black shadow-sm ">
                       Customer/Ref
                     </th>
-                    <th className="py-4 px-6 align-middle font-black shadow-sm">
+                    <th className="align-middle font-black shadow-sm ">
                       Priority
                     </th>
-                    <th className="py-4 px-6 text-center align-middle font-black shadow-sm">
+                    <th className="text-center align-middle font-black shadow-sm ">
                       Items
                     </th>
-                    <th className="py-4 px-6 text-right align-middle font-black shadow-sm">
+                    <th className="text-right align-middle font-black shadow-sm ">
                       Volume (KG)
                     </th>
-                    <th className="py-4 px-6 w-[150px] align-middle font-black shadow-sm">
+                    <th className="w-[150px] align-middle font-black shadow-sm ">
                       Progress
                     </th>
-                    <th className="py-4 px-6 text-center align-middle font-black shadow-sm">
+                    <th className="text-center align-middle font-black shadow-sm ">
                       Status
                     </th>
-                    <th className="py-4 px-6 text-right w-24 align-middle font-black shadow-sm pr-8">
+                    <th className="text-right w-24 align-middle font-black shadow-sm pr-8 ">
                       Actions
                     </th>
                   </tr>
@@ -469,10 +531,10 @@ export default function PlanningPL() {
                       key={item.plNo}
                       className="hover:bg-slate-50 transition-colors group border-b border-[#eaeaec]"
                     >
-                      <td className="py-3 px-6 text-center text-[#7a8b95] font-black font-mono text-[11px] align-middle">
+                      <td className="px-4 text-center text-[#7a8b95] font-black font-mono text-[12px] align-middle py-2.5">
                         {indexOfFirstItem + idx + 1}
                       </td>
-                      <td className="py-3 px-6 align-middle">
+                      <td className="px-4 align-middle py-2.5">
                         <div className="flex flex-col">
                           <span className="font-mono font-bold text-[#932c2e] text-[12px] leading-tight">
                             {item.plNo}
@@ -482,20 +544,20 @@ export default function PlanningPL() {
                           </span>
                         </div>
                       </td>
-                      <td className="py-3 px-6 text-[#212c46] font-mono font-black text-[11px] align-middle">
+                      <td className="px-4 text-[#212c46] font-mono font-black text-[12px] align-middle py-2.5">
                         {new Date(item.date).toLocaleDateString("en-GB")}
                       </td>
-                      <td className="py-3 px-6 text-center align-middle">
+                      <td className="px-4 text-center align-middle py-2.5">
                         <span className={`border font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-md shadow-sm ${getShiftStyle(item.shift)}`}>
                           {item.shift}
                         </span>
                       </td>
-                      <td className="py-3 px-6 align-middle">
+                      <td className="px-4 align-middle py-2.5">
                         <span className="bg-[#f8f9fa] border border-[#eaeaec] text-[#414757] font-bold text-[11px] px-2.5 py-1 rounded-md">
                           {item.customer}
                         </span>
                       </td>
-                      <td className="py-3 px-6 align-middle text-[11px]">
+                      <td className="px-4 align-middle text-[12px] py-2.5">
                         <span className={getPriorityStyle(item.priority)}>
                           {item.priority === "Urgent" && (
                             <Icons.AlertCircle size={14} />
@@ -509,12 +571,12 @@ export default function PlanningPL() {
                           {item.priority}
                         </span>
                       </td>
-                      <td className="py-3 px-6 text-center align-middle">
+                      <td className="px-4 text-center align-middle py-2.5">
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#f8f9fa] border border-[#eaeaec] text-[#212c46] font-black text-[11px] font-mono">
                           {item.skuCount}
                         </span>
                       </td>
-                      <td className="py-3 px-6 text-right align-middle">
+                      <td className="px-4 text-right align-middle py-2.5">
                         <div className="flex flex-col items-end">
                           <span className="font-mono font-black text-[#212c46] text-[12px] flex items-center justify-end gap-1.5">
                             {item.status === "IN_PROCESS" && !item.delayDetected && <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>}
@@ -526,7 +588,7 @@ export default function PlanningPL() {
                           </span>
                         </div>
                       </td>
-                      <td className="py-3 px-6 align-middle">
+                      <td className="px-4 align-middle py-2.5">
                         <div className="flex flex-col gap-1.5 w-full">
                           <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest text-[#7a8b95]">
                             <span>{item.progress}%</span>
@@ -540,14 +602,14 @@ export default function PlanningPL() {
                           </div>
                         </div>
                       </td>
-                      <td className="py-3 px-6 text-center align-middle relative">
+                      <td className="px-4 text-center align-middle relative py-2.5">
                         <span
                           className={`border font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-md ${item.delayDetected ? 'bg-red-100 text-red-600 border-red-300 animate-pulse' : getStatusStyle(item.status)}`}
                         >
                           {item.delayDetected ? "DELAYED" : item.status.replace("_", " ")}
                         </span>
                       </td>
-                      <td className="py-3 px-6 text-right pr-8 align-middle">
+                      <td className="px-4 text-right pr-8 align-middle py-2.5">
                         <div className="flex items-center justify-end gap-[1px]">
                           <button
                             className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90"
@@ -571,8 +633,8 @@ export default function PlanningPL() {
                   ))}
                   {currentItems.length === 0 && (
                     <tr>
-                      <td colSpan={10} className="py-16 text-center">
-                        <div className="flex flex-col items-center justify-center gap-3">
+                      <td className="text-center py-2.5 px-4">
+                        <div className="flex flex-col items-center justify-center gap-[1px]">
                           <div className="w-12 h-12 bg-[#f8f9fa] border border-[#eaeaec] rounded-full flex items-center justify-center text-[#7a8b95] mb-2">
                             <Icons.SearchX size={24} />
                           </div>

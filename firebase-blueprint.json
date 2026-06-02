@@ -1,0 +1,24 @@
+{
+  "entities": {
+    "AccessLog": {
+      "title": "AccessLog",
+      "description": "Log of user access activities",
+      "type": "object",
+      "properties": {
+        "action": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "userAgent": { "type": "string" },
+        "timestamp": { "type": "string", "format": "timestamp" }
+      },
+      "required": ["action", "employeeId"]
+    }
+  },
+  "firestore": {
+    "/accessLogs/{logId}": {
+      "schema": "AccessLog",
+      "description": "Log entries for application access"
+    }
+  }
+}

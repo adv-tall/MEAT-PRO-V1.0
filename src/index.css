@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Noto Sans Thai", sans-serif;
+  --font-mono: "JetBrains Mono", "Noto Sans Thai", monospace;
+}
+
+body { 
+  @apply text-slate-800 antialiased;
+}
+
+/* Typography Utility Classes */
+.font-ui, .font-technical, .font-exception-header, .font-exception-system, .font-exception-hero, .font-exception-greeting {
+  font-family: var(--font-sans) !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; height: 5px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #5372ba22; border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #5372ba44; }
+
+.sidebar-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+.sidebar-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.sidebar-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* System Module Styles */
+.sys-title-main {
+  @apply text-[22px] md:text-[26px] font-black uppercase tracking-widest text-[#212c46];
+}
+.sys-title-sub {
+  @apply text-[10px] text-slate-500 mt-1;
+}
+.sys-header-icon-box {
+  @apply bg-red-50 p-3 rounded-2xl border border-red-100 shadow-inner;
+}
+.sys-tab-btn {
+  @apply px-5 py-2 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all h-9 bg-white;
+}
+.sys-tab-active {
+  @apply bg-[#212c46] text-white shadow-md border-transparent;
+}
+.sys-tab-inactive {
+  @apply text-slate-500 hover:bg-slate-50 hover:text-[#212c46] border border-transparent;
+}
+.sys-page-layout {
+  @apply w-full;
+}
+
+/* Updated Table UI Standard */
+.sys-table-card {
+  @apply bg-white shadow-lg overflow-hidden flex flex-col flex-1 border border-slate-200 rounded-2xl;
+}
+.sys-table-toolbar {
+  @apply bg-white p-4 shrink-0 flex flex-col md:flex-row justify-between items-center gap-4;
+}
+.sys-table-header {
+  @apply sticky top-0 z-10 shadow-sm border-b-2;
+}
+.sys-table-header th {
+  @apply py-4 px-4 text-[12px] font-black uppercase tracking-widest;
+}
+.sys-table-td {
+  @apply py-2.5 px-4 text-[12px] border-b border-slate-100;
+}
+.sys-table-action-btn {
+  @apply w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:border-slate-300 transition-colors shadow-sm bg-slate-50;
+}
+.sys-table-pagination {
+  @apply py-3 px-4 bg-[#F0EAE1]/80 border-t-[1.5px] border-[#adb2b0]/50 flex justify-between items-center font-bold text-slate-500 uppercase tracking-widest shrink-0 text-[10px];
+}
+
+.sys-input {
+  @apply border border-slate-200 rounded-xl px-4 py-2 text-[12px] font-bold outline-none transition-all text-[#212c46];
+}
+.sys-btn-primary {
+  @apply bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl px-6 py-2.5 text-[11px] font-black uppercase tracking-widest transition-all shadow-md shadow-red-600/20 hover:shadow-lg hover:shadow-red-600/30 flex items-center justify-center;
+}

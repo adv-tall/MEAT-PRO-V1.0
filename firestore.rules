@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Helpers
+    function isValidId(id) { 
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // Validation Blueprint for AccessLog
+    function isValidAccessLog(data) {
+      return data.keys().hasAll(['action', 'employeeId'])
+        && data.action is string && data.action.size() <= 200
+        && data.employeeId is string && data.employeeId.size() <= 128
+        && (!('name' in data) || (data.name is string && data.name.size() <= 256))
+        && (!('role' in data) || (data.role is string && data.role.size() <= 128))
+        && (!('userAgent' in data) || (data.userAgent is string && data.userAgent.size() <= 1024))
+        && (!('timestamp' in data) || data.timestamp is timestamp || (data.timestamp is string && data.timestamp.size() <= 100))
+        && data.keys().size() <= 10;
+    }
+
+    match /accessLogs/{logId} {
+      allow read: if true;
+      allow create: if true;
+      // Logs are immutable, no update or delete
+    }
+
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    match /downtime_tracking/{id} {
+      allow read, write: if true;
+    }
+
+    match /quality_metrics/{id} {
+      allow read, write: if true;
+    }
+
+    match /reject_logs_database/{id} {
+      allow read, write: if true;
+    }
+
+    match /daily_production_reports/{id} {
+      allow read, write: if true;
+    }
+
+    match /efficiency_summary_ledger/{id} {
+      allow read, write: if true;
+    }
+
+    match /cost_analysis_ledger/{id} {
+      allow read, write: if true;
+    }
+
+    match /cost_analysis_monthly/{id} {
+      allow read, write: if true;
+    }
+
+    match /system/connection {
+      allow read: if true;
+    }
+  }
+}

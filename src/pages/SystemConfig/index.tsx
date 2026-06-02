@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { DraggableModal } from '../../components/shared/DraggableModal';
+import { googleSignIn, initAuth, logout, formatGoogleSheet } from '../../utils/googleWorkspace';
+import { User } from 'firebase/auth';
 import { 
   Settings2, 
   Building2, 
@@ -145,7 +147,8 @@ const TABS = [
   { id: 'brands', label: 'Brand', icon: 'Tag', title: 'Brands', desc: 'Manage manufacturing and OEM branding.' },
   { id: 'customers', label: 'Customer', icon: 'Users', title: 'Customers', desc: 'Manage external client and partner profiles.' },
   { id: 'pdfTemplates', label: 'PDF Templates', icon: 'Printer', title: 'PDF FORM TEMPLATES', desc: 'Configure official document layouts and compliance headers.' },
-  { id: 'idFormats', label: 'ID Formats', icon: 'Barcode', title: 'ID FORMAT CONFIG', desc: 'Define auto-generation rules for system identifiers.' }
+  { id: 'idFormats', label: 'ID Formats', icon: 'Barcode', title: 'ID FORMAT CONFIG', desc: 'Define auto-generation rules for system identifiers.' },
+  { id: 'googleSheets', label: 'Google Sheets', icon: 'Database', title: 'GOOGLE SHEETS SYNC', desc: 'Manage database connection and format spreadsheets.' }
 ];
 
 const AVAILABLE_PAGES = ['Plan from Planning', 'Production Planning', 'Daily Problem', 'Master Item', 'Equipment Registry', 'STD Process'];
@@ -176,6 +179,63 @@ export default function SystemConfig() {
       name: '', code: '', dept: '', revision: '', 
       pages: [], prefix: '', format: 'YYMMDD', sequenceDigit: 3, reset: 'Daily', note: '' 
   });
+
+  // Google Sheets state
+  const [googleUser, setGoogleUser] = useState<User | null>(null);
+  const [needsAuth, setNeedsAuth] = useState(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [spreadsheetId, setSpreadsheetId] = useState('1L7smTyoFDIRaQk-NDivWTMwgQ52V4ezSfagWOIR6x0s');
+  const [isFormatting, setIsFormatting] = useState(false);
+  const [formatSuccess, setFormatSuccess] = useState('');
+  const [formatError, setFormatError] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = initAuth(
+      (user) => { setGoogleUser(user); setNeedsAuth(false); },
+      () => { setGoogleUser(null); setNeedsAuth(true); }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  const handleGoogleLogin = async () => {
+    setIsLoggingIn(true);
+    try {
+      const result = await googleSignIn();
+      if (result) {
+        setGoogleUser(result.user);
+        setNeedsAuth(false);
+      }
+    } catch (err: any) {
+      console.error('Login failed:', err);
+      setFormatError(err.message || 'Login failed');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleGoogleLogout = async () => {
+    await logout();
+    setGoogleUser(null);
+    setNeedsAuth(true);
+  };
+
+  const handleFormatSheet = async () => {
+    if (!spreadsheetId) {
+      setFormatError("Please enter a Spreadsheet ID.");
+      return;
+    }
+    setFormatError("");
+    setFormatSuccess("");
+    setIsFormatting(true);
+    try {
+      await formatGoogleSheet(spreadsheetId);
+      setFormatSuccess("Spreadsheet formatted successfully! Headers added, frozen, and highlighted #d0e0e3.");
+    } catch (err: any) {
+      setFormatError(err.message || "An error occurred while formatting.");
+    } finally {
+      setIsFormatting(false);
+    }
+  };
 
   const activeTabData: any = TABS.find(t => t.id === activeTab);
   const currentList = data[activeTab] || [];
@@ -372,7 +432,7 @@ export default function SystemConfig() {
                             </div>
                             <div className="flex-1 text-left overflow-hidden">
                                 <p className={`text-[13px] font-black uppercase tracking-tight truncate ${activeTab === tab.id ? 'text-[#d7d7d7]' : 'text-[#212c46]'}`}>{tab.label}</p>
-                                <p className={`text-[11px] font-bold uppercase tracking-widest mt-0.5 truncate ${activeTab === tab.id ? 'text-[#b7a159]' : 'text-[#7a8b95]'}`}>{data[tab.id].length} Items</p>
+                                <p className={`text-[11px] font-bold uppercase tracking-widest mt-0.5 truncate ${activeTab === tab.id ? 'text-[#b7a159]' : 'text-[#7a8b95]'}`}>{(data[tab.id] || []).length} Items</p>
                             </div>
                             {activeTab === tab.id && <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-[#b7a159] shadow-[0_0_8px_#b7a159]"></div>}
                         </button>
@@ -388,6 +448,7 @@ export default function SystemConfig() {
                             </h4>
                             <p className="text-[11px] font-bold text-[#7a8b95] uppercase tracking-widest mt-1">{activeTabData.desc}</p>
                         </div>
+                        {activeTab !== 'googleSheets' && (
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             <div className="relative flex-1 md:w-64">
                                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a8b95]" />
@@ -397,7 +458,63 @@ export default function SystemConfig() {
                                 <Plus size={16} /> New Record
                             </button>
                         </div>
+                        )}
                     </div>
+
+                    {activeTab === 'googleSheets' ? (
+                       <div className="p-8 pb-12 flex flex-col gap-8 bg-[#f8f9fa] h-full">
+                           <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm flex flex-col items-start gap-4">
+                                <h3 className="text-lg font-black text-[#212c46] uppercase tracking-widest">Authentication</h3>
+                                <p className="text-[12px] font-bold text-[#7a8b95]">Connect your Google Account to authorize database synchronizations and create sheets automatically.</p>
+                                
+                                {needsAuth ? (
+                                    <button onClick={handleGoogleLogin} disabled={isLoggingIn} className="gsi-material-button mt-4 bg-white border border-[#eaeaec] px-4 py-2.5 rounded shadow-sm hover:shadow-md transition-shadow flex items-center gap-3">
+                                    <div className="gsi-material-button-icon">
+                                      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20" style={{display: 'block'}}>
+                                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                                        <path fill="none" d="M0 0h48v48H0z"></path>
+                                      </svg>
+                                    </div>
+                                    <span className="font-bold text-[#212c46] text-sm">{isLoggingIn ? "Signing in..." : "Sign in with Google"}</span>
+                                  </button>
+                                ) : (
+                                    <div className="mt-4 flex items-center justify-between w-full border border-[#eaeaec] p-4 rounded-xl">
+                                        <div className="flex items-center gap-4">
+                                            <img src={googleUser?.photoURL || ''} alt="Profile" className="w-10 h-10 rounded-full border border-[#eaeaec]" />
+                                            <div>
+                                                <p className="text-[13px] font-black text-[#212c46]">{googleUser?.displayName}</p>
+                                                <p className="text-[11px] font-bold text-[#b7a159]">{googleUser?.email}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={handleGoogleLogout} className="text-[11px] font-black uppercase tracking-widest text-[#932c2e] hover:bg-[#932c2e]/10 px-4 py-2 rounded-lg transition-colors border border-[#932c2e]/20">
+                                            Disconnect
+                                        </button>
+                                    </div>
+                                )}
+                           </div>
+
+                             <div className={`bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm flex flex-col items-start gap-4 transition-opacity ${needsAuth ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+                                <h3 className="text-lg font-black text-[#212c46] uppercase tracking-widest">Sheet Setup & Formatting</h3>
+                                <p className="text-[12px] font-bold text-[#7a8b95]">Automatically format the target spreadsheet (Adds headers, freezes top row, and highlights column #d0e0e3).</p>
+                                
+                                <div className="w-full mt-4">
+                                    <label className="text-[11px] font-black text-[#212c46] uppercase tracking-widest block mb-2">Spreadsheet ID</label>
+                                    <div className="flex gap-4 w-full">
+                                        <input type="text" value={spreadsheetId} onChange={(e) => setSpreadsheetId(e.target.value)} className="flex-1 bg-white border border-[#eaeaec] rounded-lg px-4 py-2.5 text-[12px] font-black text-[#212c46] outline-none focus:border-[#b7a159] shadow-inner font-mono" placeholder="Enter ID from URL..." />
+                                        <button onClick={handleFormatSheet} disabled={isFormatting || !spreadsheetId} className="bg-[#b7a159] text-white px-6 py-2.5 rounded-lg font-black text-[12px] uppercase tracking-widest shadow-md hover:bg-[#a18c47] transition-all whitespace-nowrap min-w-[120px]">
+                                            {isFormatting ? 'Formatting...' : 'Run Setup'}
+                                        </button>
+                                    </div>
+                                </div>
+                                {formatSuccess && <p className="text-[11px] font-black text-[#657f4d] uppercase tracking-widest mt-2 flex items-center gap-2"><CheckCircle size={14}/> {formatSuccess}</p>}
+                                {formatError && <p className="text-[11px] font-black text-[#932c2e] uppercase tracking-widest mt-2 flex items-center gap-2"><AlertTriangle size={14}/> {formatError}</p>}
+                           </div>
+                       </div>
+                    ) : (
+                      <>
 
                     <div className="overflow-x-auto custom-scrollbar">
                         <table className="w-full text-left border-collapse table-font">
@@ -510,6 +627,8 @@ export default function SystemConfig() {
                             </button>
                         </div>
                     </div>
+                  </>
+                  )}
                 </div>
             </div>
             

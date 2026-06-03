@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import * as Icons from "lucide-react";
 import { DraggableModal } from "@/src/components/shared/DraggableModal";
@@ -6,6 +6,7 @@ import { UserGuidePanel } from "@/src/components/shared/UserGuidePanel";
 import UserGuideButton from "@/src/components/shared/UserGuideButton";
 import KpiCard from "@/src/components/shared/KpiCard";
 import { useSharedOrders } from "@/src/store/ordersStore";
+import { BatchQrScannerModal } from "@/src/pages/ProductionTracking/BatchQrScannerModal";
 
 const THEME = {
   bgMain: "#f3f3f1",
@@ -979,7 +980,54 @@ export default function DailyBoard() {
   const [activeView, setActiveView] = useState("execution");
   const [showGuide, setShowGuide] = useState(false);
   const [isPlannerOpen, setIsPlannerOpen] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [processSets, setProcessSets] = useState(INITIAL_SETS);
+
+  const trackItems = useMemo(() => {
+    return orders.map((o: any) => {
+      const target = o.qty;
+      const progressOverride = o.status === 'COMPLETED' ? 100 : (o.status === 'PLANNED' ? 0 : null);
+      
+      const mixVal = o.mixingCount !== undefined ? o.mixingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.9)));
+      const formVal = o.formingCount !== undefined ? o.formingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.7)));
+      const cookVal = o.cookingCount !== undefined ? o.cookingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.5)));
+      const coolVal = o.coolingCount !== undefined ? o.coolingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.4)));
+      const cutVal = o.cuttingCount !== undefined ? o.cuttingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.3)));
+      const packVal = o.packingCount !== undefined ? o.packingCount : (o.status === 'COMPLETED' ? target : 0);
+      const whVal = o.whCount !== undefined ? o.whCount : 0;
+
+      const sumVal = mixVal + formVal + cookVal + coolVal + cutVal + packVal + whVal;
+      const calculatedProgress = target > 0 ? Math.round((sumVal / (target * 7)) * 100) : 0;
+      const progress = progressOverride !== null ? progressOverride : Math.min(99, calculatedProgress);
+
+      return {
+        id: o.id,
+        sku: o.sku || o.id,
+        customer: o.shift ? `${o.shift} Shift` : "Standard",
+        name: o.name,
+        target: target,
+        time: o.deadline,
+        progress: progress,
+        status: o.status,
+        stages: [
+          { step: "mixing", count: mixVal, color: "#537E72" },
+          { step: "forming", count: formVal, color: "#DCBC1B" },
+          { step: "cooking", count: cookVal, color: "#C22D2E" },
+          { step: "cooling", count: coolVal, color: "#90B7BF" },
+          { step: "cutting", count: cutVal, color: "#BB8588" },
+          { step: "packing", count: packVal, color: "#2E395F" },
+          { step: "wh", count: whVal, color: "#537E72" }
+        ],
+        mixingCount: mixVal,
+        formingCount: formVal,
+        cookingCount: cookVal,
+        coolingCount: coolVal,
+        cuttingCount: cutVal,
+        packingCount: packVal,
+        whCount: whVal
+      };
+    });
+  }, [orders]);
 
   const handleFinishSet = (setId: string) => {
     setProcessSets((prev) =>
@@ -1057,6 +1105,13 @@ export default function DailyBoard() {
         </div>
 
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsScannerOpen(true)}
+            className="px-5 py-2.5 bg-[#a94228] hover:bg-[#c22d2e] text-white rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2"
+          >
+            <Icons.QrCode size={16} />
+            SCAN BATCH QR
+          </button>
           <div className="bg-white/50 p-1.5 rounded-xl border border-white/60 shadow-inner flex flex-wrap items-center gap-1">
             {[
               { id: "execution", label: "BATTER \u2192 SFG", icon: "layers" },
@@ -1177,6 +1232,13 @@ export default function DailyBoard() {
           </div>
         </main>
       </div>
+
+      <BatchQrScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        ordersList={trackItems}
+        onUpdateOrder={updateOrder}
+      />
     </div>
   );
 }

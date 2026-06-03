@@ -1,24 +1,116 @@
 {
   "entities": {
-    "AccessLog": {
-      "title": "AccessLog",
-      "description": "Log of user access activities",
+    "order": {
+      "title": "Production Order",
+      "description": "Represents a physical production batch processed along the factory floor",
       "type": "object",
       "properties": {
-        "action": { "type": "string" },
-        "employeeId": { "type": "string" },
-        "name": { "type": "string" },
-        "role": { "type": "string" },
-        "userAgent": { "type": "string" },
-        "timestamp": { "type": "string", "format": "timestamp" }
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the production batch (format: YYMMDD-NNN)"
+        },
+        "sku": {
+          "type": "string",
+          "description": "Finished Good Stock Keeping Unit"
+        },
+        "name": {
+          "type": "string",
+          "description": "Detailed product description or name"
+        },
+        "qty": {
+          "type": "number",
+          "description": "Target quantity in packages/pieces"
+        },
+        "fgKg": {
+          "type": "number",
+          "description": "Target Finished Goods in kg"
+        },
+        "sfgKg": {
+          "type": "number",
+          "description": "Target Semi-Finished Goods in kg"
+        },
+        "batterKg": {
+          "type": "number",
+          "description": "Batter mass input required in kg"
+        },
+        "deadline": {
+          "type": "string",
+          "description": "Target deadline time (e.g. 12:00, 16:00)"
+        },
+        "status": {
+          "type": "string",
+          "description": "Order batch general status",
+          "enum": ["DRAFT", "APPROVED", "PLANNED", "IN PROGRESS", "COMPLETED"]
+        },
+        "isReplacement": {
+          "type": "boolean",
+          "description": "Whether this order represents an QA replacement batch"
+        },
+        "shift": {
+          "type": "string",
+          "description": "The operating shift allocated for production",
+          "enum": ["Morning", "Afternoon", "Night"]
+        },
+        "currentStep": {
+          "type": "string",
+          "description": "The dynamic processing station where this batch currently resides"
+        },
+        "mixingCount": {
+          "type": "integer"
+        },
+        "formingCount": {
+          "type": "integer"
+        },
+        "cookingCount": {
+          "type": "integer"
+        },
+        "coolingCount": {
+          "type": "integer"
+        },
+        "cuttingCount": {
+          "type": "integer"
+        },
+        "packingCount": {
+          "type": "integer"
+        },
+        "whCount": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["action", "employeeId"]
+      "required": ["id", "sku", "name", "qty", "status", "deadline", "shift"]
+    },
+    "admin": {
+      "title": "System Administrator",
+      "description": "Identifies users with absolute system and configuration access",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["email"]
     }
   },
   "firestore": {
-    "/accessLogs/{logId}": {
-      "schema": "AccessLog",
-      "description": "Log entries for application access"
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "Dynamic production batches active on the factory floor"
+    },
+    "/admins/{adminId}": {
+      "schema": "admin",
+      "description": "Privileged administrator documents identified by Auth UID"
     }
   }
 }

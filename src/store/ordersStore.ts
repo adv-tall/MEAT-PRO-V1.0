@@ -1,25 +1,143 @@
 import { useState, useEffect } from 'react';
-
-// Shared database implementation to simulate real-time updates across components
-type Order = any; // Assuming any structure the app uses for now
-
+import { 
+  collection, 
+  onSnapshot, 
+  doc, 
+  setDoc, 
+  writeBatch 
+} from 'firebase/firestore';
+import { db, auth, handleFirestoreError, OperationType } from '../services/firebase';
 import { MOCK_ORDERS as initialMockOrders } from '../data/mockOrders';
 
+type Order = any;
+
 class OrdersStore {
-  private orders: Order[];
-  private listeners: Set<() => void>;
+  private orders: Order[] = [];
+  private listeners: Set<() => void> = new Set();
+  private isLoaded: boolean = false;
+  private unsubscribeFn: (() => void) | null = null;
 
   constructor() {
-    this.listeners = new Set();
-    const stored = localStorage.getItem('prod_orders');
-    if (stored) {
-      try {
-        this.orders = JSON.parse(stored);
-      } catch (e) {
+    this.initFirestoreListener();
+  }
+
+  private initFirestoreListener() {
+    try {
+      const colRef = collection(db, 'orders');
+      this.unsubscribeFn = onSnapshot(colRef, (snapshot) => {
+        const dbOrders: Order[] = [];
+        snapshot.forEach((docSnap) => {
+          dbOrders.push(docSnap.data() as Order);
+        });
+
+        if (dbOrders.length === 0 && !this.isLoaded) {
+          // Empty remote database -> seed with mock orders if authenticated, else fallback to local/storage
+          if (auth.currentUser) {
+            this.seedMockOrders();
+          } else {
+            const stored = localStorage.getItem('prod_orders');
+            if (stored) {
+              try {
+                this.orders = JSON.parse(stored);
+              } catch (e) {
+                this.orders = initialMockOrders;
+              }
+            } else {
+              this.orders = initialMockOrders;
+            }
+            this.isLoaded = true;
+            this.listeners.forEach(l => l());
+          }
+        } else {
+          // Sort items by ID so they stay in precise lexicographical order
+          this.orders = dbOrders.sort((a, b) => a.id.localeCompare(b.id));
+          this.isLoaded = true;
+          this.listeners.forEach(l => l());
+        }
+      }, (error) => {
+        // Fallback to local storage if user gets permission denied during unauthenticated load
+        console.warn("Firestore snapshot listener failed, using local fallback:", error);
+        
+        const stored = localStorage.getItem('prod_orders');
+        if (stored) {
+          try {
+            this.orders = JSON.parse(stored);
+          } catch (e) {
+            this.orders = initialMockOrders;
+          }
+        } else {
+          this.orders = initialMockOrders;
+        }
+        this.isLoaded = true;
+        this.listeners.forEach(l => l());
+        
+        // Log the permission error to console for diagnostic purposes without crashing the entire React UI
+        try {
+          handleFirestoreError(error, OperationType.LIST, 'orders');
+        } catch (diagnosticError) {
+          console.error("Firestore Permission Notice / Diagnostic Log:", diagnosticError);
+        }
+      });
+    } catch (e) {
+      console.error("Failed to initialize Firestore listener:", e);
+    }
+  }
+
+  private async seedMockOrders() {
+    this.isLoaded = true;
+    if (!auth.currentUser) {
+      console.log("Seeding mock orders bypassed: User is not authenticated.");
+      // Fallback locally
+      const stored = localStorage.getItem('prod_orders');
+      if (stored) {
+        try {
+          this.orders = JSON.parse(stored);
+        } catch (e) {
+          this.orders = initialMockOrders;
+        }
+      } else {
         this.orders = initialMockOrders;
       }
-    } else {
-      this.orders = initialMockOrders;
+      this.listeners.forEach(l => l());
+      return;
+    }
+
+    try {
+      const batch = writeBatch(db);
+      const isoNow = new Date().toISOString();
+      
+      initialMockOrders.forEach((o) => {
+        const docRef = doc(db, 'orders', o.id);
+        const orderDoc = {
+          id: o.id,
+          sku: o.sku,
+          name: o.name,
+          qty: o.qty || 1,
+          fgKg: o.fgKg || 0,
+          sfgKg: o.sfgKg || 0,
+          batterKg: o.batterKg || 0,
+          deadline: o.deadline || '12:00',
+          status: o.status || 'PLANNED',
+          isReplacement: !!o.isReplacement,
+          shift: o.shift || 'Morning',
+          currentStep: o.currentStep || 'Entry',
+          mixingCount: o.mixingCount !== undefined ? o.mixingCount : 0,
+          formingCount: o.formingCount !== undefined ? o.formingCount : 0,
+          cookingCount: o.cookingCount !== undefined ? o.cookingCount : 0,
+          coolingCount: o.coolingCount !== undefined ? o.coolingCount : 0,
+          cuttingCount: o.cuttingCount !== undefined ? o.cuttingCount : 0,
+          packingCount: o.packingCount !== undefined ? o.packingCount : 0,
+          whCount: o.whCount !== undefined ? o.whCount : 0,
+          createdAt: isoNow,
+          updatedAt: isoNow
+        };
+        batch.set(docRef, orderDoc);
+      });
+      
+      await batch.commit();
+      console.log("Seeded mock orders successfully into Firestore");
+    } catch (err) {
+      console.warn("Failsafe: error seeding mock orders:", err);
     }
   }
 
@@ -32,16 +150,73 @@ class OrdersStore {
     return this.orders;
   }
 
-  setOrders(newOrders: Order[]) {
+  async setOrders(newOrders: Order[]) {
+    // Optimistic UI update
     this.orders = newOrders;
     localStorage.setItem('prod_orders', JSON.stringify(this.orders));
     this.listeners.forEach(l => l());
+
+    try {
+      const batch = writeBatch(db);
+      const isoNow = new Date().toISOString();
+      
+      newOrders.forEach(o => {
+        const docRef = doc(db, 'orders', o.id);
+        const orderDoc = {
+          id: o.id,
+          sku: o.sku,
+          name: o.name,
+          qty: o.qty || 1,
+          fgKg: o.fgKg || 0,
+          sfgKg: o.sfgKg || 0,
+          batterKg: o.batterKg || 0,
+          deadline: o.deadline || '12:00',
+          status: o.status || 'PLANNED',
+          isReplacement: !!o.isReplacement,
+          shift: o.shift || 'Morning',
+          currentStep: o.currentStep || 'Entry',
+          mixingCount: o.mixingCount !== undefined ? o.mixingCount : 0,
+          formingCount: o.formingCount !== undefined ? o.formingCount : 0,
+          cookingCount: o.cookingCount !== undefined ? o.cookingCount : 0,
+          coolingCount: o.coolingCount !== undefined ? o.coolingCount : 0,
+          cuttingCount: o.cuttingCount !== undefined ? o.cuttingCount : 0,
+          packingCount: o.packingCount !== undefined ? o.packingCount : 0,
+          whCount: o.whCount !== undefined ? o.whCount : 0,
+          createdAt: o.createdAt || isoNow,
+          updatedAt: isoNow
+        };
+        batch.set(docRef, orderDoc);
+      });
+      
+      await batch.commit();
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, 'orders');
+    }
   }
 
-  updateOrder(id: string, updates: Partial<Order>) {
+  async updateOrder(id: string, updates: Partial<Order>) {
+    // Optimistic UI update
+    const currentOrder = this.orders.find(o => o.id === id);
+    if (!currentOrder) return;
+
     this.orders = this.orders.map(o => o.id === id ? { ...o, ...updates } : o);
     localStorage.setItem('prod_orders', JSON.stringify(this.orders));
     this.listeners.forEach(l => l());
+
+    try {
+      const docRef = doc(db, 'orders', id);
+      const isoNow = new Date().toISOString();
+      
+      const fullUpdatedOrder = {
+        ...currentOrder,
+        ...updates,
+        updatedAt: isoNow
+      };
+      
+      await setDoc(docRef, fullUpdatedOrder, { merge: true });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `orders/${id}`);
+    }
   }
 }
 

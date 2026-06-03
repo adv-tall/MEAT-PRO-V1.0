@@ -6,6 +6,7 @@ import { UserGuidePanel } from '../../components/shared/UserGuidePanel';
 import UserGuideButton from '../../components/shared/UserGuideButton';
 import Swal from 'sweetalert2';
 import { useSharedOrders } from '@/src/store/ordersStore';
+import { BatchQrScannerModal } from "@/src/pages/ProductionTracking/BatchQrScannerModal";
 
 // --- THEME ---
 const THEME = {
@@ -85,6 +86,53 @@ export default function PackingBoard() {
     const [orders, setOrders, updateOrder] = useSharedOrders();
     const [activeTab, setActiveTab] = useState('execution');
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
+
+    const trackItems = useMemo(() => {
+        return orders.map((o: any) => {
+            const target = o.qty;
+            const progressOverride = o.status === 'COMPLETED' ? 100 : (o.status === 'PLANNED' ? 0 : null);
+            
+            const mixVal = o.mixingCount !== undefined ? o.mixingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.9)));
+            const formVal = o.formingCount !== undefined ? o.formingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.7)));
+            const cookVal = o.cookingCount !== undefined ? o.cookingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.5)));
+            const coolVal = o.coolingCount !== undefined ? o.coolingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.4)));
+            const cutVal = o.cuttingCount !== undefined ? o.cuttingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.3)));
+            const packVal = o.packingCount !== undefined ? o.packingCount : (o.status === 'COMPLETED' ? target : 0);
+            const whVal = o.whCount !== undefined ? o.whCount : 0;
+
+            const sumVal = mixVal + formVal + cookVal + coolVal + cutVal + packVal + whVal;
+            const calculatedProgress = target > 0 ? Math.round((sumVal / (target * 7)) * 100) : 0;
+            const progress = progressOverride !== null ? progressOverride : Math.min(99, calculatedProgress);
+
+            return {
+                id: o.id,
+                sku: o.sku || o.id,
+                customer: o.shift ? `${o.shift} Shift` : "Standard",
+                name: o.name,
+                target: target,
+                time: o.deadline,
+                progress: progress,
+                status: o.status,
+                stages: [
+                    { step: "mixing", count: mixVal, color: "#537E72" },
+                    { step: "forming", count: formVal, color: "#DCBC1B" },
+                    { step: "cooking", count: cookVal, color: "#C22D2E" },
+                    { step: "cooling", count: coolVal, color: "#90B7BF" },
+                    { step: "cutting", count: cutVal, color: "#BB8588" },
+                    { step: "packing", count: packVal, color: "#2E395F" },
+                    { step: "wh", count: whVal, color: "#537E72" }
+                ],
+                mixingCount: mixVal,
+                formingCount: formVal,
+                cookingCount: cookVal,
+                coolingCount: coolVal,
+                cuttingCount: cutVal,
+                packingCount: packVal,
+                whCount: whVal
+            };
+        });
+    }, [orders]);
     
     // Map orders to packing plans
     const dynamicPlans = orders.filter((o: any) => o.currentStep === 'Packing' || o.qty > 0).map((o: any) => ({
@@ -324,6 +372,13 @@ export default function PackingBoard() {
                 </div>
                 
                 <div className="flex items-center gap-3 shrink-0">
+                    <button
+                        onClick={() => setIsScannerOpen(true)}
+                        className="px-5 py-2.5 bg-[#a94228] hover:bg-[#c22d2e] text-white rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 h-10"
+                    >
+                        <Icons.QrCode size={14} />
+                        SCAN BATCH QR
+                    </button>
                     <div className="flex items-center bg-white px-3 py-1.5 rounded-xl border border-[#eaeaec] shadow-sm h-10">
                         <Icons.Calendar size={14} className="text-[#7a8b95] mr-2"/>
                         <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="text-[11px] font-bold font-mono text-[#212c46] outline-none cursor-pointer bg-transparent uppercase" />
@@ -633,6 +688,13 @@ export default function PackingBoard() {
                     </div>
                 )}
             </div>
+
+            <BatchQrScannerModal
+                isOpen={isScannerOpen}
+                onClose={() => setIsScannerOpen(false)}
+                ordersList={trackItems}
+                onUpdateOrder={updateOrder}
+            />
         </div>
     );
 }

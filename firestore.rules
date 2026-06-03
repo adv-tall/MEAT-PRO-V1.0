@@ -1,70 +1,91 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 1. Global Safety Net
+
+    // 1. Global Reset Safety Net
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Primitive Helpers
-    function isValidId(id) { 
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
-    }
-    function incoming() { return request.resource.data; }
-    function existing() { return resource.data; }
-
-    // Validation Blueprint for AccessLog
-    function isValidAccessLog(data) {
-      return data.keys().hasAll(['action', 'employeeId'])
-        && data.action is string && data.action.size() <= 200
-        && data.employeeId is string && data.employeeId.size() <= 128
-        && (!('name' in data) || (data.name is string && data.name.size() <= 256))
-        && (!('role' in data) || (data.role is string && data.role.size() <= 128))
-        && (!('userAgent' in data) || (data.userAgent is string && data.userAgent.size() <= 1024))
-        && (!('timestamp' in data) || data.timestamp is timestamp || (data.timestamp is string && data.timestamp.size() <= 100))
-        && data.keys().size() <= 10;
+    // 2. Auth & Admin Helper Primities
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    match /accessLogs/{logId} {
+    function isEmailVerified() {
+      return isSignedIn() && (
+        request.auth.token.email_verified == true || 
+        request.auth.token.firebase.sign_in_provider == 'google.com'
+      );
+    }
+
+    function isAdmin() {
+      return isEmailVerified() && (
+        request.auth.token.email == 'advancegroup.dcc@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // 3. Entity Schemas & Validation Blueprints
+    function isValidOrder(data) {
+      return data != null
+        && data.keys().hasAll(['id', 'sku', 'name', 'qty', 'status', 'deadline', 'shift', 'isReplacement', 'currentStep', 'fgKg', 'sfgKg', 'batterKg'])
+        && data.id is string && data.id.size() == 10 && data.id.matches('^[0-9]{6}-[0-9]{3}$')
+        && data.sku is string && data.sku.size() <= 128
+        && data.name is string && data.name.size() <= 200
+        && data.qty is number && data.qty >= 0
+        && data.status is string && (data.status == 'DRAFT' || data.status == 'APPROVED' || data.status == 'PLANNED' || data.status == 'IN PROGRESS' || data.status == 'COMPLETED')
+        && data.deadline is string && data.deadline.size() <= 20
+        && data.shift is string && (data.shift == 'Morning' || data.shift == 'Afternoon' || data.shift == 'Night')
+        && data.isReplacement is bool
+        && data.currentStep is string && data.currentStep.size() <= 128
+        && data.fgKg is number && data.fgKg >= 0
+        && data.sfgKg is number && data.sfgKg >= 0
+        && data.batterKg is number && data.batterKg >= 0
+        // Optional steps integers check if present
+        && (!('mixingCount' in data) || data.mixingCount is int)
+        && (!('formingCount' in data) || data.formingCount is int)
+        && (!('cookingCount' in data) || data.cookingCount is int)
+        && (!('coolingCount' in data) || data.coolingCount is int)
+        && (!('cuttingCount' in data) || data.cuttingCount is int)
+        && (!('packingCount' in data) || data.packingCount is int)
+        && (!('whCount' in data) || data.whCount is int);
+    }
+
+    function isValidAdmin(data) {
+      return data != null
+        && data.keys().hasAll(['email'])
+        && data.email is string && data.email.size() <= 256;
+    }
+
+    // 4. Collection Matches & Operation Rules
+    match /orders/{orderId} {
       allow read: if true;
-      allow create: if true;
-      // Logs are immutable, no update or delete
+      
+      allow create: if isEmailVerified()
+        && isValidId(orderId)
+        && orderId == request.resource.data.id
+        && isValidOrder(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+        
+      allow update: if isEmailVerified()
+        && isValidId(orderId)
+        && orderId == resource.data.id
+        && isValidOrder(request.resource.data)
+        && request.resource.data.id == resource.data.id
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+        
+      allow delete: if isAdmin();
     }
 
-    match /users/{userId} {
-      allow read, write: if true;
-    }
-
-    match /downtime_tracking/{id} {
-      allow read, write: if true;
-    }
-
-    match /quality_metrics/{id} {
-      allow read, write: if true;
-    }
-
-    match /reject_logs_database/{id} {
-      allow read, write: if true;
-    }
-
-    match /daily_production_reports/{id} {
-      allow read, write: if true;
-    }
-
-    match /efficiency_summary_ledger/{id} {
-      allow read, write: if true;
-    }
-
-    match /cost_analysis_ledger/{id} {
-      allow read, write: if true;
-    }
-
-    match /cost_analysis_monthly/{id} {
-      allow read, write: if true;
-    }
-
-    match /system/connection {
-      allow read: if true;
+    match /admins/{adminId} {
+      allow read: if isEmailVerified() && (adminId == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
     }
   }
 }

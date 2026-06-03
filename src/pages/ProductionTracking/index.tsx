@@ -5,6 +5,8 @@ import { UserGuidePanel } from "@/src/components/shared/UserGuidePanel";
 import UserGuideButton from "@/src/components/shared/UserGuideButton";
 import KpiCard from "../../components/shared/KpiCard";
 import { useSharedOrders } from "@/src/store/ordersStore";
+import { BatchQrTagModal } from "./BatchQrTagModal";
+import Swal from "sweetalert2";
 
 // --- Global Styles ---
 const globalStyles = `
@@ -372,33 +374,83 @@ export default function ProductionTracking() {
   const [activeTab, setActiveTab] = useState("daily");
   const [showGuide, setShowGuide] = useState(false);
 
+  // QR Scanner / Tag Modal States
+  const [selectedTagOrder, setSelectedTagOrder] = useState<any | null>(null);
+
   // Daily Monitor Filter & Search States
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [searchDaily, setSearchDaily] = useState("");
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
 
   // Derived filtered data for Daily Monitor
-  const [orders] = useSharedOrders();
+  const [orders, , updateOrder] = useSharedOrders();
   const trackItems = useMemo(() => {
-    return orders.map((o: any) => ({
-      id: o.id,
-      customer: "Standard",
-      name: o.name,
-      target: o.qty,
-      time: o.deadline,
-      progress: o.status === 'COMPLETED' ? 100 : (o.status === 'IN PROGRESS' ? 50 : 0),
-      status: o.status,
-      stages: [
-        { step: "mixing", count: Math.floor(o.qty * 0.9), color: "#537E72" },
-        { step: "forming", count: Math.floor(o.qty * 0.7), color: "#DCBC1B" },
-        { step: "cooking", count: Math.floor(o.qty * 0.5), color: "#C22D2E" },
-        { step: "cooling", count: Math.floor(o.qty * 0.4), color: "#E6E1DB" },
-        { step: "cutting", count: Math.floor(o.qty * 0.3), color: "#E6E1DB" },
-        { step: "packing", count: o.status === 'COMPLETED' ? o.qty : 0, color: "#E6E1DB" },
-        { step: "wh", count: 0, color: "#E6E1DB" }
-      ]
-    }));
+    return orders.map((o: any) => {
+      const target = o.qty;
+      const progressOverride = o.status === 'COMPLETED' ? 100 : (o.status === 'PLANNED' ? 0 : null);
+      
+      const mixVal = o.mixingCount !== undefined ? o.mixingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.9)));
+      const formVal = o.formingCount !== undefined ? o.formingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.7)));
+      const cookVal = o.cookingCount !== undefined ? o.cookingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.5)));
+      const coolVal = o.coolingCount !== undefined ? o.coolingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.4)));
+      const cutVal = o.cuttingCount !== undefined ? o.cuttingCount : (o.status === 'COMPLETED' ? target : (o.status === 'PLANNED' ? 0 : Math.floor(target * 0.3)));
+      const packVal = o.packingCount !== undefined ? o.packingCount : (o.status === 'COMPLETED' ? target : 0);
+      const whVal = o.whCount !== undefined ? o.whCount : 0;
+
+      const sumVal = mixVal + formVal + cookVal + coolVal + cutVal + packVal + whVal;
+      const calculatedProgress = target > 0 ? Math.round((sumVal / (target * 7)) * 100) : 0;
+      const progress = progressOverride !== null ? progressOverride : Math.min(99, calculatedProgress);
+
+      return {
+        id: o.id,
+        sku: o.sku || o.id,
+        customer: o.shift ? `${o.shift} Shift` : "Standard",
+        name: o.name,
+        target: target,
+        time: o.deadline,
+        progress: progress,
+        status: o.status,
+        stages: [
+          { step: "mixing", count: mixVal, color: "#537E72" },
+          { step: "forming", count: formVal, color: "#DCBC1B" },
+          { step: "cooking", count: cookVal, color: "#C22D2E" },
+          { step: "cooling", count: coolVal, color: "#90B7BF" },
+          { step: "cutting", count: cutVal, color: "#BB8588" },
+          { step: "packing", count: packVal, color: "#2E395F" },
+          { step: "wh", count: whVal, color: "#537E72" }
+        ],
+        // Save current counts for label print visualization
+        mixingCount: mixVal,
+        formingCount: formVal,
+        cookingCount: cookVal,
+        coolingCount: coolVal,
+        cuttingCount: cutVal,
+        packingCount: packVal,
+        whCount: whVal
+      };
+    });
   }, [orders]);
+
+  const handleSimulateScan = (id: string) => {
+    setSelectedTagOrder(null); // Close traveler tag sticker
+    Swal.fire({
+      title: 'ต้องการเข้าหัวสแกนด่านผลิต!',
+      html: `
+        <div class="text-left text-xs space-y-2 p-1">
+          <p class="font-bold text-[#a94228]">⚠️ หน้าสแกนย้ายไปสถานีด่านจริงแล้ว!</p>
+          <p class="text-slate-600 leading-normal">
+            หน้าบอร์ดนี้เป็นแดชบอร์ดสรุปผลกรุ๊ปรวม <strong>(Production Tracking Room)</strong> เท่านั้น 
+            การสแกนความคืบหน้าของสินค้าล็อต <strong>${id}</strong> กรุณาใช้ปุ่ม <strong>"SCAN BATCH QR"</strong> บนหน้า 
+            <span class="text-[#212c46] font-bold">MIXING BOARD (จุดสแกนส่วนผสม)</span> หรือ 
+            <span class="text-[#212c46] font-bold">PACKING BOARD (จุดสแกนบรรจุห่อสำเร็จ)</span>
+          </p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'ตกลง (รับทราบ)',
+      confirmButtonColor: '#212c46'
+    });
+  };
 
   const filteredDailyMonitor = useMemo(() => {
     return trackItems.filter((item: any) => {
@@ -734,13 +786,22 @@ export default function ProductionTracking() {
                           >
                             {/* Order Info */}
                             <td className="px-4 pl-8 border-r border-[#eaeaec]/40 h-[70px] py-2.5">
-                              <div className="flex justify-between items-start mb-1.5">
+                               <div className="flex justify-between items-center mb-1.5 gap-2">
                                 <span className="bg-white border border-[#eaeaec] text-[#4d87a8] font-mono font-black text-[10px] px-2 py-0.5 rounded-md shadow-sm leading-none">
                                   {item.id}
                                 </span>
-                                <span className="text-[#a94228] bg-[#a94228]/5 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest flex items-center gap-[1px] border border-[#a94228]/10">
-                                  <Icons.User size={10} /> {item.customer}
-                                </span>
+                                <div className="flex items-center gap-1.5 select-none text-[9px]">
+                                  <button
+                                    onClick={() => setSelectedTagOrder(item)}
+                                    className="text-[#2c6e49] bg-[#d8f3dc] hover:bg-[#b7e4c7] border border-[#2c6e49]/20 px-1.5 py-0.5 rounded-lg flex items-center gap-0.5 cursor-pointer font-black uppercase transition-all shadow-sm active:scale-95"
+                                    title="เปิดดูและพิมพ์บัตรคิวอาร์บาร์โค้ดประจำรุ่น (Print/Visualize QR Tag)"
+                                  >
+                                    <Icons.QrCode size={10} /> QR LABEL
+                                  </button>
+                                  <span className="text-[#a94228] bg-[#a94228]/5 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest flex items-center gap-[1px] border border-[#a94228]/10">
+                                    <Icons.User size={10} /> {item.customer}
+                                  </span>
+                                </div>
                               </div>
                               <h4 className="font-bold text-[#212c46] text-[12px] mb-1.5 truncate max-w-[220px] leading-tight mt-1">
                                 {item.name}
@@ -1017,6 +1078,14 @@ export default function ProductionTracking() {
           </main>
         </div>
       </div>
+
+      {/* Modals for QR Tag card and Live Cam Scanner */}
+      <BatchQrTagModal
+        isOpen={selectedTagOrder !== null}
+        onClose={() => setSelectedTagOrder(null)}
+        order={selectedTagOrder}
+        onSimulateScan={handleSimulateScan}
+      />
     </>
   );
 }

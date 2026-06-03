@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { DraggableModal } from '../../components/shared/DraggableModal';
+import { OeeAiRecommendations } from './OeeAiRecommendations';
 
 const THEME = {
   primary: '#212c46',
@@ -116,7 +117,7 @@ const Volume90DaysChart = () => {
         { month: 'Apr', actual: 52000, plan: 50000 },
     ];
     return (
-        <GlassCard className="lg:col-span-3 bg-white border-[#eaeaec]">
+        <GlassCard className="lg:col-span-2 bg-white border-[#eaeaec]">
             <div className="flex justify-between items-center mb-4 relative z-10">
                 <h2 className="text-sm font-black text-[#212c46] flex items-center gap-2 uppercase tracking-wide">
                     <BarChart2 size={16} className="text-[#b58c4f]" /> 90 DAYS VOLUME TREND
@@ -162,6 +163,7 @@ export default function PerformanceDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <Volume90DaysChart />
+          <OeeAiRecommendations />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">

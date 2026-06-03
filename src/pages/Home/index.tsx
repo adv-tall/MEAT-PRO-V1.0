@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Users, Briefcase, UserCheck, CalendarDays, TrendingUp, BrainCircuit, ShieldCheck, Factory,
-  ChevronRight, ChevronLeft, Bell, UserPlus, PartyPopper, Send, Globe, Plus, CalendarClock, Info, AlertCircle, Newspaper, Box, Archive
+  ChevronRight, ChevronLeft, Bell, UserPlus, PartyPopper, Send, Globe, Plus, CalendarClock, Info, AlertCircle, Newspaper, Box, Archive,
+  Zap, X, Clock, Sparkles, Activity
 } from 'lucide-react';
 import { DraggableModal } from '../../components/shared/DraggableModal';
 
@@ -309,6 +312,8 @@ const NewsCard = ({ tag, title, description, date, isNew, onClick }: any) => (
 
 export default function Home() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
   const [feedIndex, setFeedIndex] = useState(0);
   const [modalState, setModalState] = useState<{isOpen: boolean, title: string, content: any, modalClass?: string, headerClass?: string, hideHeader?: boolean}>({isOpen: false, title: '', content: null});
 
@@ -591,6 +596,151 @@ export default function Home() {
       >
         {renderModalContent()}
       </DraggableModal>
+
+      {/* Quick Actions Floating Menu */}
+      <div id="quick-actions-fab-container" className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        {/* Menu Card */}
+        <AnimatePresence>
+          {isQuickActionsOpen && (
+            <motion.div
+              id="quick-actions-menu-card"
+              initial={{ opacity: 0, scale: 0.9, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 15 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              className="bg-white/95 backdrop-blur-md rounded-2xl border border-[#eaeaec] shadow-[0_10px_35px_rgba(33,44,70,0.15)] p-5 w-80 flex flex-col gap-4 overflow-hidden"
+            >
+              <div id="quick-actions-header" className="flex justify-between items-center pb-2 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 px-1.5 rounded-md bg-[#a94228]/10 text-[#a94228]">
+                    <Zap size={14} className="animate-pulse" />
+                  </div>
+                  <span className="text-[11px] font-black text-[#212c46] tracking-widest uppercase">QUICK ACTIONS</span>
+                </div>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Meat Pro Hub</span>
+              </div>
+
+              {/* Dynamic Grid */}
+              <div id="quick-actions-grid" className="grid grid-cols-2 gap-2.5">
+                {/* Action 1: AI Planner Assistant */}
+                <button 
+                  id="action-btn-ai-planner"
+                  onClick={() => {
+                    setIsQuickActionsOpen(false);
+                    navigate('/planning/ai');
+                  }}
+                  className="flex flex-col items-start gap-1 p-3 rounded-xl border border-gray-100 hover:border-[#a94228]/40 hover:bg-[#a94228]/5 transition-all group text-left cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-[#a94228]/10 text-[#a94228] group-hover:scale-110 transition-transform">
+                    <BrainCircuit size={16} />
+                  </div>
+                  <span className="text-[11px] font-black tracking-tight text-[#212c46] mt-2 group-hover:text-[#a94228] transition-colors leading-tight">AI PLANNER</span>
+                  <span className="text-[9px] text-[#7a8b95] font-medium leading-none">Intelligent Schedule</span>
+                </button>
+
+                {/* Action 2: Planning Workspace */}
+                <button 
+                  id="action-btn-planning-pl"
+                  onClick={() => {
+                    setIsQuickActionsOpen(false);
+                    navigate('/planning/pl');
+                  }}
+                  className="flex flex-col items-start gap-1 p-3 rounded-xl border border-gray-100 hover:border-amber-400 hover:bg-amber-50/50 transition-all group text-left cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
+                    <CalendarClock size={16} />
+                  </div>
+                  <span className="text-[11px] font-black tracking-tight text-[#212c46] mt-2 group-hover:text-amber-600 transition-colors leading-tight">PLANNING WORKSPACE</span>
+                  <span className="text-[9px] text-[#7a8b95] font-medium leading-none">Edit Production Order</span>
+                </button>
+
+                {/* Action 3: Mixing Board */}
+                <button 
+                  id="action-btn-mixing"
+                  onClick={() => {
+                    setIsQuickActionsOpen(false);
+                    navigate('/board/mixing');
+                  }}
+                  className="flex flex-col items-start gap-1 p-3 rounded-xl border border-gray-100 hover:border-sky-400 hover:bg-sky-50/50 transition-all group text-left cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-sky-50 text-[#3f809e] group-hover:scale-110 transition-transform">
+                    <Factory size={16} />
+                  </div>
+                  <span className="text-[11px] font-black tracking-tight text-[#212c46] mt-2 group-hover:text-[#316982] transition-colors leading-tight">MIXING BOARD</span>
+                  <span className="text-[9px] text-[#7a8b95] font-medium leading-none">Formula & Mixing Status</span>
+                </button>
+
+                {/* Action 4: Packing Board */}
+                <button 
+                  id="action-btn-packing"
+                  onClick={() => {
+                    setIsQuickActionsOpen(false);
+                    navigate('/board/packing');
+                  }}
+                  className="flex flex-col items-start gap-1 p-3 rounded-xl border border-gray-100 hover:border-emerald-400 hover:bg-emerald-50/50 transition-all group text-left cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+                    <Box size={16} />
+                  </div>
+                  <span className="text-[11px] font-black tracking-tight text-[#212c46] mt-2 group-hover:text-emerald-600 transition-colors leading-tight">PACKING BOARD</span>
+                  <span className="text-[9px] text-[#7a8b95] font-medium leading-none">Review Wrapping Line</span>
+                </button>
+
+                {/* Action 5: Live Line Tracking */}
+                <button 
+                  id="action-btn-tracking"
+                  onClick={() => {
+                    setIsQuickActionsOpen(false);
+                    navigate('/board/tracking');
+                  }}
+                  className="flex flex-col items-start gap-1 p-3 rounded-xl border border-gray-100 hover:border-pink-400 hover:bg-pink-50/50 transition-all group text-left cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-pink-50 text-pink-600 group-hover:scale-110 transition-transform">
+                    <Activity size={16} />
+                  </div>
+                  <span className="text-[11px] font-black tracking-tight text-[#212c46] mt-2 group-hover:text-pink-600 transition-colors leading-tight">LINE TRACKING</span>
+                  <span className="text-[9px] text-[#7a8b95] font-medium leading-none">Live Output Overview</span>
+                </button>
+
+                {/* Action 6: Shift Calendar */}
+                <button 
+                  id="action-btn-calendar"
+                  onClick={() => {
+                    setIsQuickActionsOpen(false);
+                    navigate('/production-calendar');
+                  }}
+                  className="flex flex-col items-start gap-1 p-3 rounded-xl border border-gray-100 hover:border-indigo-400 hover:bg-indigo-50/50 transition-all group text-left cursor-pointer"
+                >
+                  <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
+                    <CalendarDays size={16} />
+                  </div>
+                  <span className="text-[11px] font-black tracking-tight text-[#212c46] mt-2 group-hover:text-indigo-600 transition-colors leading-tight">PROD CALENDAR</span>
+                  <span className="text-[9px] text-[#7a8b95] font-medium leading-none">Shift Schedules</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* FAB Trigger Button */}
+        <button
+          id="quick-actions-fab-trigger"
+          onClick={() => setIsQuickActionsOpen(!isQuickActionsOpen)}
+          className="bg-[#212c46] border border-[#a94228]/30 hover:bg-[#1a2338] text-white flex items-center justify-center gap-2 px-4.5 py-3.5 rounded-full shadow-[0_8px_30px_rgba(33,44,70,0.3)] hover:shadow-[0_8px_35px_rgba(169,66,40,0.3)] transition-all shrink-0 active:scale-95 group relative overflow-hidden cursor-pointer"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[#a94228]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <motion.div
+            animate={{ rotate: isQuickActionsOpen ? 135 : 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="flex items-center justify-center shrink-0"
+          >
+            {isQuickActionsOpen ? <X size={16} strokeWidth={2.5} /> : <Zap size={16} strokeWidth={2.5} className="text-[#a94228]" />}
+          </motion.div>
+          <span className="text-[11px] font-black tracking-[0.12em] uppercase shrink-0">
+            {isQuickActionsOpen ? 'CLOSE' : 'QUICK ACTIONS'}
+          </span>
+        </button>
+      </div>
 
     </div>
   );

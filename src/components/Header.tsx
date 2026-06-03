@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Calendar, Box, Target, Bell } from 'lucide-react';
+import { useNotifications } from '../context/NotificationContext';
+import NotificationCenter from './NotificationCenter';
 
 export default function Header() {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const { unreadCount } = useNotifications();
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -67,10 +71,20 @@ export default function Header() {
                   </span>
               </div>
           </div>
-          <button className="relative w-11 h-11 rounded-full bg-white shadow-sm flex items-center justify-center text-[#3f809e] hover:bg-[#f8f9fa] transition-all group border border-[#cdd0db]/50 hover:scale-105 shrink-0 hidden md:flex">
-              <Bell size={18} className="group-hover:rotate-12 transition-transform" strokeWidth={2} />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-[#932c2e] rounded-full shadow-[0_0_0_2px_#ffffff]"></span>
-          </button>
+          <div className="relative">
+              <button 
+                  onClick={() => setIsNotifOpen(!isNotifOpen)}
+                  className="relative w-11 h-11 rounded-full bg-white shadow-sm flex items-center justify-center text-[#3f809e] hover:bg-[#f8f9fa] transition-all group border border-[#cdd0db]/50 hover:scale-105 shrink-0 hidden md:flex cursor-pointer"
+              >
+                  <Bell size={18} className="group-hover:rotate-12 transition-transform" strokeWidth={2} />
+                  {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 bg-[#932c2e] rounded-full text-white text-[9px] font-black flex items-center justify-center px-1 border-2 border-white shadow-sm">
+                          {unreadCount}
+                      </span>
+                  )}
+              </button>
+              <NotificationCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
+          </div>
       </div>
     </header>
   );

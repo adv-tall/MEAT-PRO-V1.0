@@ -496,7 +496,7 @@ export default function ProductionPlanning() {
                         {/* TABLE */}
                         <div className="flex-1 overflow-auto custom-scrollbar bg-slate-50/50">
                             <table className="w-full text-left min-w-[1100px] border-collapse bg-white table-font">
-                                <thead className="sys-table-header" className={`sticky top-0 z-10 font-bold uppercase tracking-widest ${activeShift !== 'All Day' ? (SHIFTS.find(s => s.id === activeShift)?.activeColor.split(' ')[0] + ' text-white') : 'bg-[#f8f9fa] text-[#7a8b95]'} border-b border-[#eaeaec]`}>
+                                <thead className={`sys-table-header sticky top-0 z-10 font-bold uppercase tracking-widest ${activeShift !== 'All Day' ? (SHIFTS.find(s => s.id === activeShift)?.activeColor.split(' ')[0] + ' text-white') : 'bg-[#f8f9fa] text-[#7a8b95]'} border-b border-[#eaeaec]`}>
                                     <tr>
                                         <th className="pl-8 w-[12%] align-middle font-black shadow-sm whitespace-nowrap ">Plan ID / Ref PL</th>
                                         <th className="text-center w-[12%] align-middle font-black shadow-sm whitespace-nowrap ">Shift</th>

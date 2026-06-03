@@ -7,6 +7,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { VisibilityProvider } from "./context/ModuleVisibilityContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -48,12 +49,13 @@ export default function App() {
   return (
     <AuthProvider>
       <VisibilityProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
+        <NotificationProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
 
-            {/* Protected Routes */}
-            <Route element={<Layout />}>
+              {/* Protected Routes */}
+              <Route element={<Layout />}>
               <Route
                 path="/"
                 element={
@@ -356,6 +358,7 @@ export default function App() {
             </Route>
           </Routes>
         </BrowserRouter>
+        </NotificationProvider>
       </VisibilityProvider>
     </AuthProvider>
   );

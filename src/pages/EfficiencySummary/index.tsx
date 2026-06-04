@@ -214,19 +214,10 @@ export default function EfficiencySummary() {
   const [formRemarks, setFormRemarks] = useState('');
 
   // Firestore standard database integration
-  const { data: dbRecords, add: addRecord, update: updateRecord } = useCollection<any>('efficiency_summary_ledger');
-  const [localRecords, setLocalRecords] = useState<any[]>(INITIAL_EFFICIENCY_LEDGER);
-
-  // Merge database logs with initial state cleanly
-  const records = useMemo(() => {
-    const merged = [...dbRecords];
-    localRecords.forEach(loc => {
-      if (!merged.find(m => m.id === loc.id)) {
-        merged.push(loc);
-      }
-    });
-    return merged.sort((a, b) => b.date.localeCompare(a.date));
-  }, [dbRecords, localRecords]);
+  const { data: dbRecords, add: addRecord, update: updateRecord } = useCollection<any>('efficiency_summary_ledger', INITIAL_EFFICIENCY_LEDGER);
+  
+  // Use DB records if available, otherwise local records
+  const records = dbRecords && dbRecords.length > 0 ? dbRecords.sort((a, b) => b.date.localeCompare(a.date)) : INITIAL_EFFICIENCY_LEDGER.sort((a, b) => b.date.localeCompare(a.date));
 
   // Handle Search Filtering
   const filteredRecords = useMemo(() => {
@@ -406,18 +397,10 @@ export default function EfficiencySummary() {
     };
 
     if (editingEntry) {
-      if (typeof editingEntry.id === 'string' && editingEntry.id.length > 10) {
-        await updateRecord(editingEntry.id, dataObj);
-      } else {
-        setLocalRecords(prev => prev.map(item => item.id === editingEntry.id ? { ...item, ...dataObj } : item));
-      }
+      await updateRecord(editingEntry.id, dataObj);
     } else {
       const generatedId = `EFF-${formDate.replace(/-/g, '').slice(2)}-${formShift === 'Shift A (Day)' ? 'D' : 'N'}-${formLineId.match(/\d+/) ? formLineId.match(/\d+/)![0] : '1'}`;
-      try {
-        await addRecord({ id: generatedId, ...dataObj });
-      } catch (e) {
-        setLocalRecords(prev => [{ id: generatedId, ...dataObj }, ...prev]);
-      }
+      await addRecord({ id: generatedId, ...dataObj });
     }
 
     setShowEntryModal(false);

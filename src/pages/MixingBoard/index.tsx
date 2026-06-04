@@ -329,33 +329,39 @@ function PlannerModal({ isOpen, onClose, onStart }: any) {
   const MIXING_MACHINES = React.useMemo(() => getDynamicMixingMachines(), []);
 
   const [orders] = useSharedOrders();
-  const BATTER_OPTIONS = Array.from(new Set(orders.map((o: any) => o.sku))).map(
-    (sku) => {
-      const order = orders.find((o: any) => o.sku === sku);
-      const code = (sku as string).replace("FG-", "SFG-");
-      const totalWeight = orders.filter((o: any) => o.sku === sku).reduce(
-        (sum: number, o: any) => sum + o.batterKg,
-        0,
-      );
-      const totalBatches = Math.ceil(totalWeight / 150);
-      const remaining = Math.max(
-        0,
-        Math.ceil(totalBatches * (0.3 + Math.random() * 0.4)),
-      );
-      return {
-        code,
-        name: `SFG ${order?.name.replace(" 1kg", "").replace(" 500g", "")}`,
-        totalBatches,
-        totalWeight,
-        remaining,
-      };
-    },
-  );
+  const BATTER_OPTIONS = React.useMemo(() => {
+    return Array.from(new Set(orders.map((o: any) => o.sku || o.id || ''))).filter(Boolean).map(
+      (sku) => {
+        const order = orders.find((o: any) => o.sku === sku || o.id === sku);
+        const code = (sku as string).replace("FG-", "SFG-");
+        const totalWeight = orders.filter((o: any) => o.sku === sku || o.id === sku).reduce(
+          (sum: number, o: any) => sum + (o.batterKg || 0),
+          0,
+        );
+        const totalBatches = Math.ceil(totalWeight / 150);
+        const remaining = Math.max(
+          0,
+          Math.ceil(totalBatches * (0.3 + Math.random() * 0.4)),
+        );
+        return {
+          code,
+          name: `SFG ${order?.name?.replace(" 1kg", "").replace(" 500g", "") || "Unknown"}`,
+          totalBatches,
+          totalWeight,
+          remaining,
+        };
+      },
+    );
+  }, [orders]);
 
   const [selectedBatter, setSelectedBatter] = useState<any>(BATTER_OPTIONS[0]);
-  const [selectedMachine, setSelectedMachine] = useState<any>(
-    MIXING_MACHINES[0],
-  );
+  const [selectedMachine, setSelectedMachine] = useState<any>(MIXING_MACHINES[0]);
+
+  useEffect(() => {
+    if (BATTER_OPTIONS.length > 0 && (!selectedBatter || !BATTER_OPTIONS.find(b => b.code === selectedBatter.code))) {
+      setSelectedBatter(BATTER_OPTIONS[0]);
+    }
+  }, [BATTER_OPTIONS, selectedBatter]);
   const [orderSets, setOrderSets] = useState(1);
   const remainingPercent =
     selectedBatter?.totalBatches > 0

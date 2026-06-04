@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useCollection } from '../../services/useFirestore';
 import { createPortal } from 'react-dom';
 import * as Icons from 'lucide-react';
 import { UserGuidePanel } from '@/src/components/shared/UserGuidePanel';
@@ -442,8 +443,14 @@ function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
 }
 
 export default function STDProcess() {
+    const { data: dbData, loading: dbLoading, add: addDb, update: updateDb, remove: removeDb } = useCollection('Std_Process_Time', MOCK_STANDARDS);
+    const masterData = dbData && dbData.length > 0 ? dbData : MOCK_STANDARDS;
+    
+    // We can keep loading for the initial load if we want
+    // But we'll rely on dbLoading
+    // Remove the useEffect that sets dummy data!
+    
     const [searchTerm, setSearchQuery] = useState('');
-    const [masterData, setMasterData] = useState<any[]>([]);
     const [filterCategory, setFilterCategory] = useState('All');
     const [categories, setCategories] = useState(INITIAL_CATEGORIES);
     const [modalConfig, setModalConfig] = useState<any>({ isOpen: false, mode: 'view', data: null });
@@ -453,23 +460,11 @@ export default function STDProcess() {
         const stored = localStorage.getItem('mes_batch_config');
         return stored ? JSON.parse(stored) : { kgPerBatch: 80, mixingBatchSet: 2 };
     });
-    const [loading, setLoading] = useState(true);
     const [showGuide, setShowGuide] = useState(false);
     const [activeMainTab, setActiveMainTab] = useState('Batter');
 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-
-    useEffect(() => {
-        const load = () => {
-            setLoading(true);
-            setTimeout(() => {
-                setMasterData(MOCK_STANDARDS);
-                setLoading(false);
-            }, 600);
-        };
-        load();
-    }, []);
 
     const filteredData = useMemo(() => {
         return masterData.filter(item => {
@@ -486,7 +481,7 @@ export default function STDProcess() {
         if(Swal) {
             Swal.fire({ title: 'Are you sure?', text: "You won't be able to revert this!", icon: 'warning', showCancelButton: true, confirmButtonColor: THEME.accent, confirmButtonText: 'Yes, delete it!' }).then((result: any) => { 
                 if (result.isConfirmed) { 
-                    setMasterData(masterData.filter(item => item.id !== id)); 
+                    removeDb(id); 
                     Swal.fire({icon: 'success', title: 'Deleted!', text: 'Record deleted.', timer: 1500, showConfirmButton: false}); 
                 } 
             });
@@ -494,20 +489,31 @@ export default function STDProcess() {
     };
 
     const handleSave = (newItem: any) => {
-        if (modalConfig.data) {
-             setMasterData(masterData.map(i => i.id === newItem.id ? { ...newItem, updateDate: new Date().toLocaleDateString('en-GB') } : i));
+        if (modalConfig.data && modalConfig.data.id) {
+             updateDb(modalConfig.data.id, { ...newItem, updateDate: new Date().toLocaleDateString('en-GB') });
         } else {
              const newId = `STD-${Date.now().toString().slice(-6)}`;
-             setMasterData([{ ...newItem, id: newId, updateDate: new Date().toLocaleDateString('en-GB') }, ...masterData]);
+             addDb({ ...newItem, id: newId, updateDate: new Date().toLocaleDateString('en-GB') });
         }
     };
+
+    const handleCsvUpload = (newItems: any[]) => {
+        newItems.forEach((ni: any) => {
+             const existing = masterData.find(i => i.id === ni.id);
+             if (existing && existing.id) {
+                  updateDb(existing.id, ni);
+             } else {
+                  addDb(ni);
+             }
+        });
+    }
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-    if(loading) return (
+    if(dbLoading) return (
         <div className="flex h-screen w-full items-center justify-center bg-transparent">
             <div className="flex flex-col items-center gap-4">
                 <Icons.Loader2 size={48} className="animate-spin text-[#212c46]" />
@@ -584,7 +590,7 @@ export default function STDProcess() {
                     </div>
                 </div>
             </UserGuidePanel>
-            <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={(d: any) => setMasterData([...d, ...masterData])} />
+            <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={handleCsvUpload} />
             <ConfigModal isOpen={modalConfig.isOpen} onClose={() => setModalConfig({ ...modalConfig, isOpen: false, data: null })} data={modalConfig.data} mode={modalConfig.mode} onSave={handleSave} categories={categories} />
 
             {batchConfigOpen && (

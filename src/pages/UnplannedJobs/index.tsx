@@ -65,7 +65,7 @@ const INITIAL_PROBLEMS = [
 ];
 
 export default function UnplannedJobs() {
-  const { data: dbProblems, add, update, remove, loading } = useCollection('Unplanned_Jobs', INITIAL_PROBLEMS);
+  const { data: dbProblems, add, update, remove } = useCollection('Unplanned_Jobs', INITIAL_PROBLEMS);
   const problems = dbProblems && dbProblems.length > 0 ? dbProblems : INITIAL_PROBLEMS;
   const [searchTerm, setSearchTerm] = useState('');
   const [isReportOpen, setIsReportOpen] = useState(false);

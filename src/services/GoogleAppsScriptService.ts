@@ -5,6 +5,29 @@ export const GAS_API_KEY = "your_secret_key_here";
  * Service for communicating with Google Apps Script Backend
  */
 export class GASService {
+  // Helper to deserialize nested objects/arrays from strings
+  private static deserializeData(data: any) {
+    if (!data) return data;
+    const processItem = (item: any) => {
+      const deserialized = { ...item };
+      for (const key in deserialized) {
+        if (typeof deserialized[key] === 'string') {
+          const str = deserialized[key].trim();
+          if ((str.startsWith('{') && str.endsWith('}')) || (str.startsWith('[') && str.endsWith(']'))) {
+             try {
+               deserialized[key] = JSON.parse(str);
+             } catch(e) {}
+          }
+        }
+      }
+      return deserialized;
+    };
+    if (Array.isArray(data)) {
+      return data.map(processItem);
+    }
+    return processItem(data);
+  }
+
   /**
    * Generic request function to call Google Apps Script
    */
@@ -50,6 +73,11 @@ export class GASService {
       if (result.status === "error") {
         throw new Error(result.message);
       }
+      
+      if (action === "read" && result.data && result.data.items) {
+          result.data.items = this.deserializeData(result.data.items);
+      }
+
       return result;
     } catch (error) {
       console.error(`GAS API Error [${action}]:`, error);
@@ -64,11 +92,36 @@ export class GASService {
     return this.request("read", sheet, { limit, offset });
   }
 
+  // Helper to serialize nested objects/arrays
+  private static serializeData(data: any) {
+    if (!data) return data;
+    const processItem = (item: any) => {
+      const serialized = { ...item };
+      for (const key in serialized) {
+        if (serialized[key] !== null && typeof serialized[key] === 'object') {
+          serialized[key] = JSON.stringify(serialized[key]);
+        }
+      }
+      return serialized;
+    };
+    if (Array.isArray(data)) {
+      return data.map(processItem);
+    }
+    return processItem(data);
+  }
+
+  /**
+   * Overwrite the entire sheet with the provided data
+   */
+  static async sync(sheet: string, data: any | any[]) {
+    return this.request("sync", sheet, this.serializeData(data));
+  }
+
   /**
    * Write one or multiple rows to a specific sheet
    */
   static async write(sheet: string, data: any | any[]) {
-    return this.request("write", sheet, data);
+    return this.request("write", sheet, this.serializeData(data));
   }
 
   /**
@@ -76,7 +129,7 @@ export class GASService {
    * Note: Data objects MUST include the 'id' field
    */
   static async update(sheet: string, data: any | any[]) {
-    return this.request("update", sheet, data);
+    return this.request("update", sheet, this.serializeData(data));
   }
 
   /**

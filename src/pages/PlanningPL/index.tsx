@@ -139,9 +139,9 @@ export default function PlanningPL() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [dateFilter, setDateFilter] = useState(() => new Date().toISOString().split("T")[0]);
+  const todayStr = new Date().toISOString().split("T")[0];
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
-  const [loading, setLoading] = useState(true);
   const [activeMainTab, setActiveMainTab] = useState("PLANNING (PL)");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isActionOpen, setIsActionOpen] = useState(false);
@@ -176,12 +176,6 @@ export default function PlanningPL() {
   const { data: dailyReports } = useCollection<any>('Daily_Reports');
   const { data: plDataList, loading: plLoading, add, update, remove } = useCollection<any>('Orders_PL', MOCK_PL_DATA);
 
-  useEffect(() => {
-     if (!plLoading) {
-         setLoading(false);
-     }
-  }, [plLoading]);
-
   const [mockPlData, setMockPlData] = useState(() => MOCK_PL_DATA);
 
   // Sync GAS data
@@ -190,6 +184,18 @@ export default function PlanningPL() {
           setMockPlData(plDataList);
       }
   }, [plDataList]);
+
+  useEffect(() => {
+    if (mockPlData.length > 0) {
+        const todayItems = mockPlData.filter(d => (d.date || todayStr) === todayStr);
+        if (todayItems.length === 0) {
+            const dates = mockPlData.map(d => d.date).filter(Boolean).sort().reverse();
+            if (dates.length > 0 && dateFilter === todayStr) {
+                setDateFilter(dates[0]);
+            }
+        }
+    }
+  }, [mockPlData]);
 
   const syncedData = useMemo(() => {
     return mockPlData.map(pl => {
@@ -261,19 +267,6 @@ export default function PlanningPL() {
   const delayedCount = filteredData.filter((i) => i.delayDetected).length;
 
   const [showAlarm, setShowAlarm] = useState(delayedCount > 0);
-
-  if (loading) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-transparent">
-        <div className="flex flex-col items-center gap-4">
-          <Icons.Loader2 size={48} className="animate-spin text-[#212c46]" />
-          <span className="text-[#212c46] font-black uppercase tracking-widest text-sm animate-pulse">
-            Loading Planning Data...
-          </span>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-1 w-full flex-col animate-fadeIn bg-transparent space-y-4">
@@ -686,7 +679,7 @@ export default function PlanningPL() {
           />
           <KpiCard
             label="Target Volume (Batches)"
-            value={totalBatches.toLocaleString()}
+            value={(totalBatches || 0).toLocaleString()}
             icon="layers"
             colorAccent="#b7a159"
             colorValue={THEME.primary}
@@ -694,7 +687,7 @@ export default function PlanningPL() {
           />
           <KpiCard
             label="Target Volume (Packs)"
-            value={totalPacks.toLocaleString()}
+            value={(totalPacks || 0).toLocaleString()}
             icon="package"
             colorAccent="#f59e0b"
             colorValue={THEME.primary}
@@ -702,7 +695,7 @@ export default function PlanningPL() {
           />
           <KpiCard
             label="Completed"
-            value={completedCount.toLocaleString()}
+            value={(completedCount || 0).toLocaleString()}
             icon="check-circle"
             colorAccent="#2e7d32"
             colorValue={THEME.primary}
@@ -710,7 +703,7 @@ export default function PlanningPL() {
           />
           <KpiCard
             label="Delayed"
-            value={delayedCount.toLocaleString()}
+            value={(delayedCount || 0).toLocaleString()}
             icon="alert-circle"
             colorAccent="#932c2e"
             colorValue={THEME.primary}
@@ -919,14 +912,14 @@ export default function PlanningPL() {
                           <span className="font-mono font-black text-[#212c46] text-[12px] flex items-center justify-end gap-1.5">
                             {item.status === "IN_PROCESS" && !item.delayDetected && <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>}
                             {item.actualKg > 0 ? (
-                                <span><span className="text-[#3f809e]">{item.actualKg.toLocaleString()}</span> / {item.totalKg.toLocaleString()}</span>
+                                <span><span className="text-[#3f809e]">{(item.actualKg || 0).toLocaleString()}</span> / {(item.totalKg || 0).toLocaleString()}</span>
                             ) : (
-                                <span>{item.totalKg.toLocaleString()}</span>
+                                <span>{(item.totalKg || 0).toLocaleString()}</span>
                             )}
                             <span className="text-[9px] text-[#7a8b95] ml-0.5">KG</span>
                           </span>
                           <span className="text-[10px] text-[#7a8b95] font-bold font-mono">
-                            {item.totalPacks.toLocaleString()} <span className="text-[8px]">PACK</span>
+                            {(item.totalPacks || 0).toLocaleString()} <span className="text-[8px]">PACK</span>
                           </span>
                         </div>
                       </td>

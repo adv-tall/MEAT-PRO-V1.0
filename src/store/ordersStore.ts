@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { GASService } from '../services/GoogleAppsScriptService';
 import { MOCK_ORDERS as initialMockOrders } from '../data/mockOrders';
+import { db } from '../services/firebaseConfig';
+import { collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 type Order = any;
 
 class OrdersStore {
-  private orders: Order[] = [];
+  private orders: Order[] = initialMockOrders;
   private listeners: Set<() => void> = new Set();
   private isLoaded: boolean = false;
   private isLoading: boolean = false;
@@ -19,21 +21,47 @@ class OrdersStore {
     this.isLoading = true;
 
     try {
+      const fbSnapshot = await getDocs(collection(db, 'Orders_Production'));
+      let fbData: any[] = [];
+      if (!fbSnapshot.empty) {
+        fbData = fbSnapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+      }
+
+      let gasOrders: any[] = [];
       const response = await GASService.read('Orders_Production');
       if (response && response.status === 'success') {
-        const gasOrders = response.data?.items || [];
+         gasOrders = response.data?.items || [];
+      }
+
+      let mergedData = [...fbData];
+      let needsFbSync = false;
+      let needsGasSync = false;
+
+      // Add missing from GAS to mergedData
+      gasOrders.forEach((item: any) => {
+         if (!mergedData.find(m => m.id === item.id)) {
+            mergedData.push(item);
+            needsFbSync = true;
+         }
+      });
+
+      if (mergedData.length === 0 && !this.isLoaded) {
+        await this.seedMockOrders();
+      } else {
+        this.orders = mergedData.sort((a: any, b: any) => String(a.id).localeCompare(String(b.id)));
+        this.isLoaded = true;
         
-        if (gasOrders.length === 0 && !this.isLoaded) {
-          // If no data, try to fetch from Orders_PL as fallback, or seed it
-          await this.seedMockOrders();
-        } else {
-          this.orders = gasOrders.sort((a: any, b: any) => String(a.id).localeCompare(String(b.id)));
-          this.isLoaded = true;
-          this.listeners.forEach(l => l());
+        // Sync missing
+        if (needsFbSync) {
+           for(const item of this.orders) {
+               if(item.id) setDoc(doc(db, 'Orders_Production', item.id), item).catch(console.error);
+           }
         }
+        
+        this.listeners.forEach(l => l());
       }
     } catch (error) {
-      console.warn("GAS Read Error, fallback to local:", error);
+      console.warn("Read Error, fallback to local:", error);
       const stored = localStorage.getItem('prod_orders');
       if (stored) {
         try {
@@ -66,6 +94,10 @@ class OrdersStore {
       // For speed, just take the first 100 to avoid GAS timeout
       const chunk = itemsToSeed.slice(0, 100);
       
+      for(const item of chunk) {
+         if (item.id) setDoc(doc(db, 'Orders_Production', item.id), item).catch(console.error);
+      }
+
       await GASService.write('Orders_Production', chunk);
       console.log(`Seeded ${chunk.length} mock orders to Sheets`);
       this.orders = chunk;
@@ -122,12 +154,15 @@ class OrdersStore {
     }
 
     try {
-      // Find the difference/new ones theoretically, or just overwrite/update
-      // For now we'll do an update operation on GAS for all resolved orders
       const updates = resolvedOrders.map(o => ({...o}));
+      for(const update of updates) {
+          if(update.id) {
+              setDoc(doc(db, 'Orders_Production', update.id), update).catch(console.error);
+          }
+      }
       await GASService.update('Orders_Production', updates);
     } catch (error) {
-       console.error("GAS Update Error:", error);
+       console.error("Update Error:", error);
     }
   }
 
@@ -152,9 +187,12 @@ class OrdersStore {
         ...updates,
         updatedAt: isoNow
       };
+      if (updatedItem.id) {
+          updateDoc(doc(db, 'Orders_Production', updatedItem.id), updatedItem).catch(console.error);
+      }
       await GASService.update('Orders_Production', [updatedItem]);
     } catch (error) {
-       console.error("GAS Single Update Error:", error);
+       console.error("Single Update Error:", error);
     }
   }
 }

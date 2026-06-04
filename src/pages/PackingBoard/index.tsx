@@ -440,9 +440,9 @@ export default function PackingBoard() {
                                                     <div className="font-extrabold text-[#212c46] text-[12.5px] uppercase tracking-tight">{p.fgName}</div>
                                                     <div className="text-[10px] text-slate-400 font-mono font-bold mt-1 tracking-widest">{p.sku}</div>
                                                 </td>
-                                                <td className="px-4 text-center font-mono font-black text-[#212c46] text-[12px] py-2.5">{p.targetPacks.toLocaleString()}</td>
-                                                <td className="px-4 text-center font-mono font-black text-emerald-600 text-[12px] py-2.5">{p.packedPacks.toLocaleString()}</td>
-                                                <td className="px-4 text-center font-mono font-black text-slate-500 text-[12px] py-2.5">{p.wipPacks.toLocaleString()}</td>
+                                                <td className="px-4 text-center font-mono font-black text-[#212c46] text-[12px] py-2.5">{(p.targetPacks || 0).toLocaleString()}</td>
+                                                <td className="px-4 text-center font-mono font-black text-emerald-600 text-[12px] py-2.5">{(p.packedPacks || 0).toLocaleString()}</td>
+                                                <td className="px-4 text-center font-mono font-black text-slate-500 text-[12px] py-2.5">{(p.wipPacks || 0).toLocaleString()}</td>
                                                 <td className="px-4 text-center w-48 py-2.5">
                                                     <div className="flex items-center gap-[1px] justify-center">
                                                         <div className="flex-1 bg-slate-100 border border-[#eaeaec] h-3.5 rounded-full overflow-hidden shadow-inner max-w-[120px]">
@@ -514,14 +514,14 @@ export default function PackingBoard() {
                                     <div className="flex flex-col">
                                         <p className="text-[9px] font-black text-[#7a8b95] uppercase tracking-widest leading-none mb-1">Available Sfg Stock</p>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-[20px] font-black text-[#212c46] font-mono leading-none">{availSfgQty.toLocaleString()}</span>
+                                            <span className="text-[20px] font-black text-[#212c46] font-mono leading-none">{(availSfgQty || 0).toLocaleString()}</span>
                                             <span className="text-[10px] font-extrabold text-slate-400 uppercase">kg</span>
                                         </div>
                                     </div>
                                     <div className="flex flex-col">
                                         <p className="text-[9px] font-black text-[#7a8b95] uppercase tracking-widest leading-none mb-1">Max Packable Packs</p>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-[20px] font-black text-emerald-600 font-mono leading-none">{maxByStock.toLocaleString()}</span>
+                                            <span className="text-[20px] font-black text-emerald-600 font-mono leading-none">{(maxByStock || 0).toLocaleString()}</span>
                                             <span className="text-[10px] font-extrabold text-[#7a8b95] uppercase">Packs</span>
                                         </div>
                                     </div>
@@ -537,7 +537,7 @@ export default function PackingBoard() {
                                 <div className="space-y-1.5">
                                     <div className="flex justify-between items-center sm:px-1">
                                         <label className="text-[11px] font-black text-[#212c46] uppercase tracking-widest font-mono">Qty to Release (Packs)</label>
-                                        <span className="text-[10px] font-bold text-[#7a8b95] font-mono">Plan Limits Remaining: {planRemaining.toLocaleString()} Packs</span>
+                                        <span className="text-[10px] font-bold text-[#7a8b95] font-mono">Plan Limits Remaining: {(planRemaining || 0).toLocaleString()} Packs</span>
                                     </div>
                                     <div className="relative w-full">
                                         <input 
@@ -652,7 +652,7 @@ export default function PackingBoard() {
                                                                 <div className={`h-full transition-all duration-1000 ease-linear rounded-full ${lot.status === 'Completed' ? 'bg-[#657f4d]' : 'bg-[#3f809e]'}`} style={{ width: `${progress}%` }}></div>
                                                             </div>
                                                             <div className="flex justify-between text-[11.5px] font-mono font-black text-slate-500">
-                                                                <span>{lot.qty.toLocaleString()} Packs</span>
+                                                                <span>{(lot.qty || 0).toLocaleString()} Packs</span>
                                                                 <span>{Math.ceil(lot.timeLeft)} min left</span>
                                                             </div>
                                                         </div>

@@ -343,7 +343,7 @@ export default function YieldAnalysis() {
           />
           <KpiCard 
             label="Total Raw Materials In" 
-            value={`${overallMetrics.totalInput.toLocaleString()} Kg`} 
+            value={`${(overallMetrics?.totalInput || 0).toLocaleString()} Kg`} 
             icon="truck" 
             colorAccent={THEME.skyBlue} 
             colorValue={THEME.primary} 
@@ -351,7 +351,7 @@ export default function YieldAnalysis() {
           />
           <KpiCard 
             label="Packed Yield Weight out" 
-            value={`${overallMetrics.totalOutput.toLocaleString()} Kg`} 
+            value={`${(overallMetrics?.totalOutput || 0).toLocaleString()} Kg`} 
             icon="package" 
             colorAccent={THEME.gold} 
             colorValue={THEME.primary} 
@@ -359,7 +359,7 @@ export default function YieldAnalysis() {
           />
           <KpiCard 
             label="Operational shrink Loss" 
-            value={`${overallMetrics.totalLoss.toLocaleString()} Kg`} 
+            value={`${(overallMetrics?.totalLoss || 0).toLocaleString()} Kg`} 
             icon="trending-down" 
             colorAccent="#ec4899" 
             colorValue="#db2777" 
@@ -462,7 +462,7 @@ export default function YieldAnalysis() {
                         </td>
                         <td className="px-4 text-center text-xs font-black text-slate-600 uppercase tracking-tight py-2.5">{b.line}</td>
                         <td className="px-4 text-right font-mono text-xs font-black text-[#212c46] py-2.5">
-                          {b.rawInputKg.toLocaleString()} <span className="text-[9px] text-slate-400">Kg</span>
+                          {(b.rawInputKg || 0).toLocaleString()} <span className="text-[9px] text-slate-400">Kg</span>
                         </td>
                         <td className="px-4 text-right font-mono text-xs font-black text-[#212c46] py-2.5">
                           <span className="font-bold text-slate-500 mr-2">({b.cookedOutputKg} Kg)</span>

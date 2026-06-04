@@ -618,7 +618,7 @@ export default function DailyProdReport() {
                           <td className="px-4 whitespace-nowrap text-center w-[130px] py-2.5">
                             <div className="flex flex-col items-center">
                               <span className="text-[12px] font-black text-[#212c46]">
-                                {rep.actualQty.toLocaleString()} / <span className="text-[#7a8b95] font-semibold">{rep.targetQty.toLocaleString()}</span> Packs
+                                {(rep.actualQty || 0).toLocaleString()} / <span className="text-[#7a8b95] font-semibold">{(rep.targetQty || 0).toLocaleString()}</span> Packs
                               </span>
                               <div className="w-24 bg-[#eaeaec] h-1.5 rounded-full overflow-hidden mt-1 flex">
                                 <div
@@ -776,7 +776,7 @@ export default function DailyProdReport() {
                         <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colors[idx % colors.length] }} />
                         <span className="truncate max-w-[180px]">{item.name}</span>
                       </span>
-                      <span className="font-black text-[#212c46]">{item.value.toLocaleString()} Pcs ({((item.value / (totalDefectQty || 1)) * 100).toFixed(1)}%)</span>
+                      <span className="font-black text-[#212c46]">{(item.value || 0).toLocaleString()} Pcs ({((item.value / (totalDefectQty || 1)) * 100).toFixed(1)}%)</span>
                     </div>
                   );
                 })}

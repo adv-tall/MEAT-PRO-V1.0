@@ -95,16 +95,9 @@ export default function QualityMetrics() {
   const [formRemarks, setFormRemarks] = useState('');
 
   // Firestore & local fallback integration
-  const { data: fbQualityLogs, add: addQualityLog, update: updateQualityLog } = useCollection<any>('quality_metrics');
-  const [localQualityLogs, setLocalQualityLogs] = useState(INITIAL_QUALITY_LOGS);
-
-  const qualityLogs = useMemo(() => {
-    const merged = [...fbQualityLogs];
-    localQualityLogs.forEach(lq => {
-      if (!merged.find(m => m.id === lq.id)) merged.push(lq);
-    });
-    return merged;
-  }, [fbQualityLogs, localQualityLogs]);
+  const { data: fbQualityLogs, add: addQualityLog, update: updateQualityLog } = useCollection<any>('quality_metrics', INITIAL_QUALITY_LOGS);
+  
+  const qualityLogs = fbQualityLogs && fbQualityLogs.length > 0 ? fbQualityLogs : INITIAL_QUALITY_LOGS;
 
   const filteredLogs = useMemo(() => {
     return qualityLogs.filter(qLog => {
@@ -192,18 +185,10 @@ export default function QualityMetrics() {
     };
 
     if (editingEntry) {
-      if (typeof editingEntry.id === 'string' && editingEntry.id.length > 10) {
-        await updateQualityLog(editingEntry.id, dataObj);
-      } else {
-        setLocalQualityLogs(prev => prev.map(item => item.id === editingEntry.id ? { ...item, ...dataObj } : item));
-      }
+      await updateQualityLog(editingEntry.id, dataObj);
     } else {
       const newId = `QA-${Date.now().toString().slice(-6)}`;
-      try {
-        await addQualityLog({ id: newId, ...dataObj });
-      } catch (e) {
-        setLocalQualityLogs(prev => [{ id: newId, ...dataObj }, ...prev]);
-      }
+      await addQualityLog({ id: newId, ...dataObj });
     }
     setShowEntryModal(false);
     setEditingEntry(null);

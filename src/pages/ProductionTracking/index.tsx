@@ -832,7 +832,9 @@ export default function ProductionTracking() {
 
                             {/* Stages */}
                             {item.stages.map((stage, sIdx) => (
-                              <td className="px-3 align-middle border-r border-[#eaeaec]/40 py-2.5 px-4"
+                              <td 
+                                key={sIdx}
+                                className="px-3 align-middle border-r border-[#eaeaec]/40 py-2.5 px-4"
                               >
                                 <div className="flex flex-col items-center justify-center gap-[1px] w-full mx-auto">
                                   <span

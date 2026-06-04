@@ -171,6 +171,7 @@ function doPost(e) {
       case 'write':
       case 'update':
       case 'delete':
+      case 'sync':
         const lock = LockService.getScriptLock();
         if (!lock.tryLock(30000)) {
           return createResponse("error", "Lock timeout: Server is busy, please try again.", null, headers);
@@ -179,6 +180,7 @@ function doPost(e) {
           if (action === 'write') result = writeData(sheet, data, headers);
           else if (action === 'update') result = updateData(sheet, data, headers);
           else if (action === 'delete') result = deleteData(sheet, data, headers);
+          else if (action === 'sync') result = syncData(sheet, data, headers);
         } finally {
           lock.releaseLock();
         }
@@ -198,7 +200,7 @@ function doGet(e) {
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   };
-  return createResponse("success", "HR Master API is active. Please use POST for data operations.", null, headers);
+  return createResponse("success", "API is active. Please use POST for data operations.", null, headers);
 }
 
 // --- Action Handlers ---
@@ -268,6 +270,52 @@ function readData(sheet, params, headersObj) {
   }, headersObj);
 }
 
+function syncData(sheet, data, headersObj) {
+  if (!Array.isArray(data)) data = [data];
+
+  var sheetName = sheet.getName();
+  var sheetHeaders = GLOBAL_SHEETS_CONFIG[sheetName];
+  
+  // Clear existing contents
+  sheet.clearContents();
+  
+  if (!sheetHeaders || sheetHeaders.length === 0) {
+    if (data.length > 0) sheetHeaders = Object.keys(data[0]);
+    else return createResponse("success", "Cleared sheet (no config)", null, headersObj);
+  }
+
+  // Restore Headers
+  sheet.getRange(1, 1, 1, sheetHeaders.length).setValues([sheetHeaders])
+    .setFontWeight("bold")
+    .setBackground("#e8ecef")
+    .setFontColor("black");
+
+  if (data.length === 0) {
+    return createResponse("success", "Synced successfully (0 rows)", null, headersObj);
+  }
+
+  // Map Data to rows
+  const rows = data.map(item => {
+    return sheetHeaders.map(h => {
+      var val = item[h];
+      if (Array.isArray(val) || (typeof val === 'object' && val !== null)) return JSON.stringify(val);
+      return val != null ? val : "";
+    });
+  });
+  
+  // Write all rows at once
+  sheet.getRange(2, 1, rows.length, sheetHeaders.length).setValues(rows);
+  
+  // Cleanup extra empty rows to speed up future syncs
+  const maxRows = sheet.getMaxRows();
+  const currentTotalRows = rows.length + 1;
+  if (maxRows > currentTotalRows + 10) {
+    sheet.deleteRows(currentTotalRows + 1, maxRows - currentTotalRows - 10);
+  }
+  
+  return createResponse("success", "Data synced successfully (" + rows.length + " rows)", null, headersObj);
+}
+
 function writeData(sheet, data, headersObj) {
   if (!Array.isArray(data)) data = [data];
   if (data.length === 0) return createResponse("success", "No data to write", null, headersObj);
@@ -289,7 +337,7 @@ function writeData(sheet, data, headersObj) {
     });
   });
   
-  const lastRow = sheet.getLastRow();
+  const lastRow = Math.max(sheet.getLastRow(), 1);
   sheet.getRange(lastRow + 1, 1, rows.length, sheetHeaders.length).setValues(rows);
   
   const maxRows = sheet.getMaxRows();

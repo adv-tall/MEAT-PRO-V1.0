@@ -1,36 +1,106 @@
 import { useState, useEffect } from 'react';
 import { GASService } from './GoogleAppsScriptService';
+import { db } from './firebaseConfig';
+import { collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 export function useCollection<T = any>(collectionName: string, initialSeedData?: T[]) {
-  const [data, setData] = useState<T[]>([]);
+  const [data, setData] = useState<T[]>(() => {
+     try {
+       const cached = localStorage.getItem(`gas_cache_${collectionName}`);
+       if (cached && cached !== "[]") return JSON.parse(cached);
+     } catch(e) {}
+     return initialSeedData || [];
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchData = async () => {
     try {
       setLoading(true);
+      
+      // 1. Fetch from Firebase first
+      const fbSnapshot = await getDocs(collection(db, collectionName));
+      let fbData: any[] = [];
+      if (!fbSnapshot.empty) {
+        fbData = fbSnapshot.docs.map(d => ({ ...d.data(), id: d.id }));
+      }
+
+      // 2. Fetch from GAS
+      let gasData: any[] = [];
       const response = await GASService.read(collectionName);
       if (response && response.status === 'success') {
-        const fetchedData: T[] = response.data?.items || [];
-        
-        if (fetchedData.length === 0 && initialSeedData && initialSeedData.length > 0) {
-            console.log(`Seeding ${collectionName} with ${initialSeedData.length} items`);
-            const chunk = initialSeedData.slice(0, 50).map(item => ({...item, createdAt: new Date().toISOString()}));
-            try {
-               await GASService.write(collectionName, chunk);
-            } catch(e) {
-               console.warn("GAS write failed, using local seed only");
-            }
-            setData(chunk as unknown as T[]);
-        } else if (fetchedData.length > 0) {
-            setData(fetchedData);
-        } else {
-            setData(initialSeedData || []);
-        }
+         gasData = response.data?.items || [];
       }
+
+      // 3. Merge data (prefer Firebase, then GAS, then seed)
+      let mergedData = [...fbData];
+      let needsFbSync = false;
+      let itemsToSyncToGas: any[] = [];
+      let itemsToSyncToFb: any[] = [];
+
+      // Find items in Firebase that are missing in GAS
+      fbData.forEach(fbItem => {
+         if (!gasData.find(g => g.id === fbItem.id)) {
+             itemsToSyncToGas.push(fbItem);
+         }
+      });
+
+      // Find items in GAS that are missing in Firebase
+      gasData.forEach(gasItem => {
+         if (!fbData.find(m => m.id === gasItem.id)) {
+            mergedData.push(gasItem);
+            itemsToSyncToFb.push(gasItem);
+         }
+      });
+
+      // If still empty, use either cached data or initial seed data
+      if (mergedData.length === 0) {
+         try {
+           const cached = localStorage.getItem(`gas_cache_${collectionName}`);
+           if (cached && cached !== "[]") {
+               mergedData = JSON.parse(cached);
+               itemsToSyncToFb = [...mergedData];
+               itemsToSyncToGas = [...mergedData];
+           }
+         } catch(e) {}
+         
+         if (mergedData.length === 0 && initialSeedData && initialSeedData.length > 0) {
+             const chunk = initialSeedData.slice(0, 50).map(item => ({...item, createdAt: new Date().toISOString()}));
+             mergedData = chunk;
+             itemsToSyncToFb = [...chunk];
+             itemsToSyncToGas = [...chunk];
+         }
+      }
+
+      setData(mergedData);
+      localStorage.setItem(`gas_cache_${collectionName}`, JSON.stringify(mergedData));
+
+      // Sync missing data back to Firebase
+      if (itemsToSyncToFb.length > 0) {
+         console.log(`Syncing ${itemsToSyncToFb.length} items to Firebase for ${collectionName}`);
+         for (const item of itemsToSyncToFb) {
+            try {
+              if (item.id) {
+                await setDoc(doc(db, collectionName, item.id), item);
+              }
+            } catch(e) {
+               console.error("Firebase sync error", e);
+            }
+         }
+      }
+
+      // Sync missing data back to GAS
+      if (itemsToSyncToGas.length > 0) {
+         console.log(`Syncing ${itemsToSyncToGas.length} items to GAS for ${collectionName}`);
+         try {
+            await GASService.write(collectionName, itemsToSyncToGas);
+         } catch(e) {
+            console.error("GAS sync error", e);
+         }
+      }
+
     } catch (err: any) {
-      console.error(`Error fetching ${collectionName} from GAS:`, err);
-      setData(initialSeedData || []);
+      console.error(`Error fetching ${collectionName}:`, err);
       setError(err);
     } finally {
       setLoading(false);
@@ -58,18 +128,23 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
       return { id: 'demo-' + Date.now() }; // mock ref
     }
     
-    // Generate a temporary ID for optimistic UI
     const tempId = `temp-${Date.now()}`;
     const newItem = { id: tempId, ...item, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as T;
     
-    setData(prev => [...prev, newItem]);
+    setData(prev => {
+        const next = [...prev, newItem];
+        localStorage.setItem(`gas_cache_${collectionName}`, JSON.stringify(next));
+        return next;
+    });
     
     try {
+      // Create in Firebase
+      await setDoc(doc(db, collectionName, tempId), newItem);
+      // Create in GAS
       await GASService.write(collectionName, [newItem]);
       return { id: tempId };
     } catch(e) {
       console.error(`Failed to add item to ${collectionName}`, e);
-      // Revert optimistic update ideally, but skipping for brevity
       throw e;
     }
   };
@@ -80,13 +155,25 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
       return;
     }
 
-    setData(prev => prev.map(d => (d as any).id === id ? { ...d, ...item, updatedAt: new Date().toISOString() } : d));
+    const updatedItem = { ...item, updatedAt: new Date().toISOString() };
+    setData(prev => {
+        const next = prev.map(d => (d as any).id === id ? { ...d, ...updatedItem } : d);
+        localStorage.setItem(`gas_cache_${collectionName}`, JSON.stringify(next));
+        return next;
+    });
 
     try {
-      await GASService.update(collectionName, [{ id, ...item, updatedAt: new Date().toISOString() }]);
+      // Update in Firebase
+      await updateDoc(doc(db, collectionName, id), updatedItem);
     } catch(e) {
-      console.error(`Failed to update item ${id} in ${collectionName}`, e);
-      throw e;
+      console.error(`Firebase update failed for ${id} in ${collectionName}`, e);
+    }
+
+    try {
+      // Update in GAS
+      await GASService.update(collectionName, [{ id, ...updatedItem }]);
+    } catch(e) {
+      console.error(`GAS update failed for ${id} in ${collectionName}`, e);
     }
   };
 
@@ -96,13 +183,24 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
       return;
     }
 
-    setData(prev => prev.filter(d => (d as any).id !== id));
+    setData(prev => {
+        const next = prev.filter(d => (d as any).id !== id);
+        localStorage.setItem(`gas_cache_${collectionName}`, JSON.stringify(next));
+        return next;
+    });
 
     try {
+      // Delete in Firebase
+      await deleteDoc(doc(db, collectionName, id));
+    } catch(e) {
+      console.error(`Firebase delete failed for ${id} in ${collectionName}`, e);
+    }
+    
+    try {
+      // Delete in GAS
       await GASService.delete(collectionName, [{ id }]);
     } catch(e) {
-      console.error(`Failed to delete item ${id} from ${collectionName}`, e);
-      throw e;
+      console.error(`GAS delete failed for ${id} in ${collectionName}`, e);
     }
   };
 

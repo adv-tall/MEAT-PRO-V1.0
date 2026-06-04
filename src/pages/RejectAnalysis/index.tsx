@@ -94,18 +94,9 @@ export default function RejectAnalysis() {
   const [formCause, setFormCause] = useState('');
 
   // UseCollection firebase database integration or local system mock fallback
-  const { data: fbRejectLogs, add: addRejectLog, update: updateRejectLog } = useCollection<any>('reject_logs_database');
-  const [localLogs, setLocalLogs] = useState(INITIAL_REJECT_LOGS);
-
-  const logs = useMemo(() => {
-    const merged = [...fbRejectLogs];
-    localLogs.forEach(loc => {
-      if (!merged.find(m => m.id === loc.id)) {
-        merged.push(loc);
-      }
-    });
-    return merged.sort((a, b) => b.date.localeCompare(a.date));
-  }, [fbRejectLogs, localLogs]);
+  const { data: fbRejectLogs, add: addRejectLog, update: updateRejectLog } = useCollection<any>('reject_logs_database', INITIAL_REJECT_LOGS);
+  
+  const logs = fbRejectLogs && fbRejectLogs.length > 0 ? fbRejectLogs.sort((a, b) => b.date.localeCompare(a.date)) : INITIAL_REJECT_LOGS.sort((a, b) => b.date.localeCompare(a.date));
 
   const filteredLogs = useMemo(() => {
     return logs.filter(log => {
@@ -220,18 +211,10 @@ export default function RejectAnalysis() {
     };
 
     if (editingEntry) {
-      if (typeof editingEntry.id === 'string' && editingEntry.id.length > 10) {
-        await updateRejectLog(editingEntry.id, dataObj);
-      } else {
-        setLocalLogs(prev => prev.map(item => item.id === editingEntry.id ? { ...item, ...dataObj } : item));
-      }
+      await updateRejectLog(editingEntry.id, dataObj);
     } else {
       const newId = `REJ-${Date.now().toString().slice(-6)}`;
-      try {
-        await addRejectLog({ id: newId, ...dataObj });
-      } catch (e) {
-        setLocalLogs(prev => [{ id: newId, ...dataObj }, ...prev]);
-      }
+      await addRejectLog({ id: newId, ...dataObj });
     }
     setShowEntryModal(false);
     setEditingEntry(null);

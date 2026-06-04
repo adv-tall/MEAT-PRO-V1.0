@@ -421,7 +421,7 @@ export default function CostAnalysis() {
             <div className="grid gap-4 md:grid-cols-5 mb-3">
           <KpiCard
             title="TOTAL VOLUME (MONTH)"
-            value={`${monthlyVolumeData.totalVolume.toLocaleString()}`}
+            value={`${(monthlyVolumeData?.totalVolume || 0).toLocaleString()}`}
             unit="Kg"
             icon={Icons.Box}
             trend={{ value: 0, isPositive: true }}
@@ -443,7 +443,7 @@ export default function CostAnalysis() {
             unit="THB"
             icon={Icons.Zap}
             trend={{ value: 0, isPositive: false }}
-            subtitle={`EXPENSE: ฿${currentMonthCosts.energy.toLocaleString()}`}
+            subtitle={`EXPENSE: ฿${(currentMonthCosts?.energy || 0).toLocaleString()}`}
             className="border-t-4 border-t-[#b58c4f]"
           />
           <KpiCard
@@ -452,7 +452,7 @@ export default function CostAnalysis() {
             unit="THB"
             icon={Icons.Users}
             trend={{ value: 0, isPositive: true }}
-            subtitle={`EXPENSE: ฿${currentMonthCosts.labor.toLocaleString()}`}
+            subtitle={`EXPENSE: ฿${(currentMonthCosts?.labor || 0).toLocaleString()}`}
             className="border-t-4 border-t-[#3f809e]"
           />
           <KpiCard
@@ -461,7 +461,7 @@ export default function CostAnalysis() {
             unit="THB"
             icon={Icons.Droplets}
             trend={{ value: 0, isPositive: true }}
-            subtitle={`EXPENSE: ฿${currentMonthCosts.water.toLocaleString()}`}
+            subtitle={`EXPENSE: ฿${(currentMonthCosts?.water || 0).toLocaleString()}`}
             className="border-t-4 border-t-[#3f809e]"
           />
         </div>
@@ -510,16 +510,16 @@ export default function CostAnalysis() {
                           <span className="font-black text-[#212c46] text-[12px] uppercase">{item.category}</span>
                         </td>
                         <td className="px-4 whitespace-nowrap text-right py-2.5">
-                          <span className="text-[12px] font-bold text-[#414757]">{item.volume.toLocaleString()} Kg</span>
+                          <span className="text-[12px] font-bold text-[#414757]">{(item.volume || 0).toLocaleString()} Kg</span>
                         </td>
                         <td className="px-4 whitespace-nowrap text-right py-2.5">
-                          <span className="text-[12px] font-bold text-[#b58c4f]">฿{item.energyCost.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                          <span className="text-[12px] font-bold text-[#b58c4f]">฿{(item.energyCost || 0).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
                         </td>
                         <td className="px-4 whitespace-nowrap text-right py-2.5">
-                          <span className="text-[12px] font-bold text-[#3f809e]">฿{item.laborCost.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                          <span className="text-[12px] font-bold text-[#3f809e]">฿{(item.laborCost || 0).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
                         </td>
                         <td className="px-4 whitespace-nowrap text-right py-2.5">
-                          <span className="text-[13px] font-black text-[#a94228] bg-[#a94228]/10 px-3 py-1 rounded-lg">฿{item.totalCategoryCost.toLocaleString(undefined, {maximumFractionDigits:0})}</span>
+                          <span className="text-[13px] font-black text-[#a94228] bg-[#a94228]/10 px-3 py-1 rounded-lg">฿{(item.totalCategoryCost || 0).toLocaleString(undefined, {maximumFractionDigits:0})}</span>
                         </td>
                       </tr>
                     )) : (
@@ -534,10 +534,10 @@ export default function CostAnalysis() {
                     <tfoot className="bg-[#f8f9fa] border-t-2 border-[#eaeaec]">
                       <tr>
                         <td className="px-4 whitespace-nowrap font-black text-[#212c46] text-[12px] uppercase text-right py-2.5">MONTHLY TOTAL</td>
-                        <td className="px-4 whitespace-nowrap text-right font-black text-[#212c46] text-[12px] py-2.5">{monthlyVolumeData.totalVolume.toLocaleString()} Kg</td>
-                        <td className="px-4 whitespace-nowrap text-right font-black text-[#b58c4f] text-[12px] py-2.5">฿{currentMonthCosts.energy.toLocaleString()}</td>
-                        <td className="px-4 whitespace-nowrap text-right font-black text-[#3f809e] text-[12px] py-2.5">฿{currentMonthCosts.labor.toLocaleString()}</td>
-                        <td className="px-4 whitespace-nowrap text-right font-black text-[#a94228] text-[13px] py-2.5">฿{totalMonthlyCost.toLocaleString()}</td>
+                        <td className="px-4 whitespace-nowrap text-right font-black text-[#212c46] text-[12px] py-2.5">{(monthlyVolumeData?.totalVolume || 0).toLocaleString()} Kg</td>
+                        <td className="px-4 whitespace-nowrap text-right font-black text-[#b58c4f] text-[12px] py-2.5">฿{(currentMonthCosts?.energy || 0).toLocaleString()}</td>
+                        <td className="px-4 whitespace-nowrap text-right font-black text-[#3f809e] text-[12px] py-2.5">฿{(currentMonthCosts?.labor || 0).toLocaleString()}</td>
+                        <td className="px-4 whitespace-nowrap text-right font-black text-[#a94228] text-[13px] py-2.5">฿{(totalMonthlyCost || 0).toLocaleString()}</td>
                       </tr>
                     </tfoot>
                   )}
@@ -600,7 +600,7 @@ export default function CostAnalysis() {
                           {cat.category}
                         </div>
                         <div>
-                          <span>{cat.volumeKg.toLocaleString()} Kg</span>
+                          <span>{(cat.volumeKg || 0).toLocaleString()} Kg</span>
                           <span className="text-[#7a8b95] ml-2 w-10 inline-block text-right">({cat.sharePct.toFixed(1)}%)</span>
                         </div>
                       </div>
@@ -639,7 +639,7 @@ export default function CostAnalysis() {
         <div className="p-6 bg-white space-y-5 font-sans">
           <div className="bg-[#f8f9fa] border border-[#eaeaec] p-4 rounded-xl flex justify-between items-center">
             <span className="text-[11px] font-black uppercase text-[#414757] tracking-widest">Total Produced Volume:</span>
-            <span className="text-[14px] font-black text-[#212c46]">{monthlyVolumeData.totalVolume.toLocaleString()} Kg</span>
+            <span className="text-[14px] font-black text-[#212c46]">{(monthlyVolumeData?.totalVolume || 0).toLocaleString()} Kg</span>
           </div>
           
           <div className="space-y-4">

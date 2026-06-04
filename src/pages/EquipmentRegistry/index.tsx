@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useCollection } from '../../services/useFirestore';
 import { createPortal } from 'react-dom';
 import * as Icons from 'lucide-react';
 import { UserGuidePanel } from '@/src/components/shared/UserGuidePanel';
@@ -354,10 +355,12 @@ function BreakdownModal({ isOpen, onClose, data, onSave, equipment }: any) {
 // --- MAIN APPLICATION ---
 export default function EquipmentRegistry() {
     const [activeTab, setActiveTab] = useState('equipment');
-    const [equipment, setEquipment] = useState(INITIAL_EQUIPMENT);
-    const [breakdowns, setBreakdowns] = useState<any[]>([]);
+    const { data: dbEq, add: addEqDb, update: updateEqDb, remove: removeEqDb } = useCollection('Equipment_Registry', INITIAL_EQUIPMENT);
+    const { data: dbBd, add: addBdDb, update: updateBdDb, remove: removeBdDb } = useCollection('Equipment_Breakdowns', []);
+    const equipment = dbEq && dbEq.length > 0 ? dbEq : INITIAL_EQUIPMENT;
+    const breakdowns = dbBd && dbBd.length > 0 ? dbBd : [];
     
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStep, setFilterStep] = useState('All');
@@ -370,18 +373,6 @@ export default function EquipmentRegistry() {
     const [eqModal, setEqModal] = useState<any>({ isOpen: false, data: null });
     const [bdModal, setBdModal] = useState<any>({ isOpen: false, data: null });
     const [csvModalOpen, setCsvModalOpen] = useState(false);
-
-    useEffect(() => {
-        const loadData = () => {
-            setLoading(true);
-            setTimeout(() => {
-                setEquipment(INITIAL_EQUIPMENT);
-                setBreakdowns(generateMockBreakdowns());
-                setLoading(false);
-            }, 600);
-        };
-        loadData();
-    }, []);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -422,11 +413,11 @@ export default function EquipmentRegistry() {
 
     // Handlers
     const handleSaveEquipment = (newItem: any) => {
-        if (eqModal.data) {
-            setEquipment(equipment.map(i => i.id === newItem.id ? newItem : i));
+        if (eqModal.data && eqModal.data.id) {
+            updateEqDb(eqModal.data.id, newItem);
         } else {
             const newId = `EQ-${newItem.step.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-3)}`;
-            setEquipment([{ ...newItem, id: newId }, ...equipment]);
+            addEqDb({ ...newItem, id: newId });
         }
         if(Swal) Swal.fire({ icon: 'success', title: 'Saved Successfully', showConfirmButton: false, timer: 1000 });
     };
@@ -435,7 +426,7 @@ export default function EquipmentRegistry() {
         if(Swal) {
             Swal.fire({ title: 'Are you sure?', text: `Delete machine ${id}?`, icon: 'warning', showCancelButton: true, confirmButtonColor: THEME.accent, confirmButtonText: 'Yes, delete it!' }).then((result: any) => { 
                 if (result.isConfirmed) { 
-                    setEquipment(equipment.filter(item => item.id !== id)); 
+                    removeEqDb(id); 
                     Swal.fire({icon: 'success', title: 'Deleted!', text: 'Machine deleted.', timer: 1500, showConfirmButton: false}); 
                 } 
             });
@@ -458,10 +449,10 @@ export default function EquipmentRegistry() {
             reportedBy: bdModal.data ? bdModal.data.reportedBy : 'Current User'
         };
 
-        if (bdModal.data) {
-            setBreakdowns(breakdowns.map(b => b.id === record.id ? record : b));
+        if (bdModal.data && bdModal.data.id) {
+            updateBdDb(bdModal.data.id, record);
         } else {
-            setBreakdowns([record, ...breakdowns]);
+            addBdDb(record);
         }
         
         setBdModal({ isOpen: false, data: null });
@@ -472,7 +463,7 @@ export default function EquipmentRegistry() {
         if(Swal) {
             Swal.fire({ title: 'Are you sure?', text: `Delete record ${id}?`, icon: 'warning', showCancelButton: true, confirmButtonColor: THEME.accent, confirmButtonText: 'Yes, delete it!' }).then((result: any) => { 
                 if (result.isConfirmed) { 
-                    setBreakdowns(breakdowns.filter(item => item.id !== id)); 
+                    removeBdDb(id); 
                     Swal.fire({icon: 'success', title: 'Deleted!', text: 'Record deleted.', timer: 1500, showConfirmButton: false}); 
                 } 
             });
@@ -480,12 +471,14 @@ export default function EquipmentRegistry() {
     };
 
     const handleCsvUpload = (newItems: any) => {
-        const updated = [...equipment];
         newItems.forEach((ni: any) => {
-            const idx = updated.findIndex(u => u.id === ni.id);
-            if (idx >= 0) updated[idx] = ni; else updated.unshift(ni);
+            const existing = equipment.find(u => u.id === ni.id);
+            if (existing && existing.id) {
+                updateEqDb(existing.id, ni);
+            } else {
+                addEqDb(ni);
+            }
         });
-        setEquipment(updated);
     };
 
     if (loading) return (

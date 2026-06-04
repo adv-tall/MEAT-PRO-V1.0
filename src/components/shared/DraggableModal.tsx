@@ -11,6 +11,8 @@ interface DraggableModalProps {
   className?: string;
   headerClassName?: string;
   hideHeader?: boolean;
+  hideDefaultHeader?: boolean;
+  width?: string;
 }
 
 export const DraggableModal: React.FC<DraggableModalProps> = ({ 
@@ -20,9 +22,14 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
   children, 
   className = '', 
   headerClassName = '',
-  hideHeader = false
+  hideHeader = false,
+  hideDefaultHeader = false,
+  width
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
+  
+  const shouldHideHeader = hideHeader || hideDefaultHeader;
+  const containerClass = width || 'max-w-lg';
 
   // In iframes, a dragged item can get "stuck" to the cursor if the mouse is released outside the frame.
   // react-draggable usually handles this with window mouseup listeners, but sometimes bounds="parent" breaks it.
@@ -36,8 +43,8 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
                  if (e.target === e.currentTarget) onClose(); 
              }}>
           {/* @ts-ignore */}
-          <Draggable nodeRef={nodeRef} handle=".drag-handle">
-            <div ref={nodeRef} className="absolute w-full max-w-lg pointer-events-auto" style={{ zIndex: 101 }}>
+          <Draggable nodeRef={nodeRef} handle=".drag-handle" cancel="button, input, select, textarea, .no-drag">
+            <div ref={nodeRef} className={`absolute w-full ${containerClass} pointer-events-auto`} style={{ zIndex: 101 }}>
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -45,7 +52,7 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className={`bg-white rounded-[24px] w-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh] relative ${className}`}
               >
-                {!hideHeader && (
+                {!shouldHideHeader && (
                   <div className={`drag-handle cursor-move flex justify-between items-center p-4 md:p-6 pb-4 ${headerClassName}`}>
                     <div className="text-[#212c46] font-black uppercase tracking-widest text-sm md:text-[13px] flex-1 pointer-events-none flex items-center gap-2">{title}</div>
                     <button onPointerDown={(e) => e.stopPropagation()} onClick={onClose} className="text-[#7a8b95] hover:text-[#a94228] transition-colors rounded-full hover:bg-gray-100 p-1 shrink-0 z-10 cursor-pointer">
@@ -53,7 +60,7 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
                     </button>
                   </div>
                 )}
-                {hideHeader && (
+                {shouldHideHeader && (
                   <div className="drag-handle absolute top-0 left-0 right-0 h-16 z-10 cursor-move flex justify-end items-start pt-4 px-4">
                     <button onPointerDown={(e) => e.stopPropagation()} onClick={onClose} className="text-[#7a8b95] hover:text-[#a94228] transition-colors rounded-full hover:bg-gray-100/50 p-1 z-10 cursor-pointer backdrop-blur-md">
                       <X size={20} />

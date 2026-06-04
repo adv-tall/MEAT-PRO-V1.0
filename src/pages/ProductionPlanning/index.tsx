@@ -129,7 +129,7 @@ export default function ProductionPlanning() {
     const [activeMainTab, setActiveMainTab] = useState('Entry');
     const [activeShift, setActiveShift] = useState('All Day');
     const [orders, setOrders] = useSharedOrders();
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isGuideOpen, setIsGuideOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -138,6 +138,20 @@ export default function ProductionPlanning() {
     const [isTabDropdownOpen, setIsTabDropdownOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // Auto-select latest date if today is empty
+    useEffect(() => {
+        if (orders.length > 0) {
+            const todayOrders = orders.filter(o => (o.date || todayStr) === todayStr);
+            if (todayOrders.length === 0) {
+                const dates = orders.map(o => o.date).filter(Boolean).sort().reverse();
+                if (dates.length > 0 && selectedDate === todayStr) {
+                    setSelectedDate(dates[0]);
+                }
+            }
+        }
+    }, [orders]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(15);
     const [activeModuleTab, setActiveModuleTab] = useState('PRODUCTION PLANNING');

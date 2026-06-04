@@ -418,7 +418,7 @@ export default function ProductMatrix() {
     const [modal, setModal] = useState<{isOpen: boolean, data: any}>({ isOpen: false, data: null });
     const [csvModalOpen, setCsvModalOpen] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
-    const loading = bLoad || mLoad || msLoad;
+    const loading = false; // Always render with data available locally or from cache
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [activeMainTab, setActiveMainTab] = useState('Batter');

@@ -148,8 +148,8 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
       return { id: 'demo-' + Date.now() }; // mock ref
     }
     
-    const tempId = `temp-${Date.now()}`;
-    const newItem = { id: tempId, ...item, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as T;
+    const itemId = (item as any).id || `temp-${Date.now()}`;
+    const newItem = { ...item, id: itemId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as T;
     
     setData(prev => {
         const next = [...prev, newItem];
@@ -159,10 +159,10 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
     
     try {
       // Create in Firebase
-      await setDoc(doc(db, collectionName, tempId), newItem);
+      await setDoc(doc(db, collectionName, itemId), newItem);
       // Create in GAS
       await GASService.write(collectionName, [newItem]);
-      return { id: tempId };
+      return { id: itemId };
     } catch(e) {
       console.error(`Failed to add item to ${collectionName}`, e);
       throw e;

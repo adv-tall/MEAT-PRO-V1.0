@@ -276,15 +276,15 @@ function MatrixConfigModal({ isOpen, onClose, sfgData, onSave, batters, fgDataba
                             </div>
                             <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2">
                                 {formData.batterConfig.map((b: any, idx: number) => (
-                                    <div key={idx} className="flex justify-between items-center p-3 border border-slate-200 rounded-xl bg-slate-50 text-[12px]">
-                                        <div className="flex-1 font-bold text-[#212c46] truncate pr-2">
-                                            <span className="text-red-700 font-mono mr-2">{b.id}</span>
-                                            {batters.find((x: any) => x.id === b.id)?.name || b.id}
+                                    <div key={idx} className="flex justify-between items-center p-2 border border-slate-200 rounded-xl bg-slate-50 text-[12px] shadow-sm">
+                                        <div className="flex items-center gap-2 flex-1 min-w-0 pr-2">
+                                            <span className="text-[#a94228] font-black font-mono whitespace-nowrap">{b.id}</span>
+                                            <span className="text-[#212c46] font-bold truncate">{batters.find((x: any) => x.id === b.id)?.name || b.id}</span>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <input type="number" value={b.ratio} onChange={e => {const newC = [...formData.batterConfig]; newC[idx].ratio = parseFloat(e.target.value)||0; setFormData({...formData, batterConfig: newC})}} className="sys-input w-16 text-right font-black text-slate-500 focus:bg-white font-mono p-1.5" />
-                                            <span className="text-slate-400 font-bold font-mono">%</span>
-                                            <button onClick={() => setFormData({...formData, batterConfig: formData.batterConfig.filter((x: any)=>x.id!==b.id)})} className="text-red-400 hover:text-red-700 bg-white p-1.5 rounded-md border border-slate-200 hover:border-red-200 transition-all shadow-sm"><LucideIcon name="trash-2" size={14}/></button>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <input type="number" value={b.ratio} onChange={e => {const newC = [...formData.batterConfig]; newC[idx].ratio = parseFloat(e.target.value)||0; setFormData({...formData, batterConfig: newC})}} className="sys-input w-14 text-center font-black text-[#4d87a8] focus:bg-white font-mono p-1" />
+                                            <span className="text-slate-400 font-bold font-mono text-[10px]">%</span>
+                                            <button onClick={() => setFormData({...formData, batterConfig: formData.batterConfig.filter((x: any)=>x.id!==b.id)})} className="text-[#7a8b95] hover:text-[#a94228] bg-white p-1.5 rounded-md border border-slate-200 hover:border-red-200 transition-all shadow-sm"><LucideIcon name="trash-2" size={14}/></button>
                                         </div>
                                     </div>
                                 ))}
@@ -304,12 +304,14 @@ function MatrixConfigModal({ isOpen, onClose, sfgData, onSave, batters, fgDataba
                             </div>
                             <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2">
                                 {formData.fgs.map((fg: any, idx: number) => (
-                                    <div key={idx} className="p-3 border border-slate-200 rounded-xl bg-slate-50 text-[12px] relative group flex flex-col gap-1">
-                                        <div className="flex justify-between items-start">
-                                            <span className="font-black font-mono text-slate-500">{fg.sku}</span>
-                                            <button onClick={() => setFormData({...formData, fgs: formData.fgs.filter((_: any, i: number) => i !== idx)})} className="text-slate-400 hover:text-red-700 bg-white p-1 rounded-md transition-colors border border-slate-200 shadow-sm"><LucideIcon name="trash-2" size={14}/></button>
+                                    <div key={idx} className="flex justify-between items-center p-2 border border-slate-200 rounded-xl bg-slate-50 text-[12px] shadow-sm">
+                                        <div className="flex items-center gap-2 flex-1 min-w-0 pr-2">
+                                            <span className="text-[#a94228] font-black font-mono whitespace-nowrap">{fg.sku}</span>
+                                            <span className="text-[#212c46] font-bold truncate">{fg.name}</span>
                                         </div>
-                                        <div className="text-[#212c46] font-bold truncate pr-6">{fg.name}</div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <button onClick={() => setFormData({...formData, fgs: formData.fgs.filter((_: any, i: number) => i !== idx)})} className="text-[#7a8b95] hover:text-[#a94228] bg-white p-1.5 rounded-md border border-slate-200 hover:border-red-200 transition-all shadow-sm"><LucideIcon name="trash-2" size={14}/></button>
+                                        </div>
                                     </div>
                                 ))}
                                 {formData.fgs.length === 0 && <div className="text-center text-slate-400 text-[10px] uppercase tracking-widest font-bold pt-10 opacity-60">No Finished Goods Mapped</div>}
@@ -334,7 +336,18 @@ export default function ProductMatrix() {
     const { data: dbMaster, loading: msLoad } = useCollection('Master_Item', MOCK_MASTER);
 
     const batters = dbBatters && dbBatters.length > 0 ? dbBatters : MOCK_STANDARDS;
-    const matrixData = dbMatrix && dbMatrix.length > 0 ? dbMatrix : MOCK_MATRIX;
+    const rawMatrixData = dbMatrix && dbMatrix.length > 0 ? dbMatrix : MOCK_MATRIX;
+    const matrixData = rawMatrixData.map(item => {
+        let bConf = item.batterConfig;
+        let fgsConf = item.fgs;
+        if (typeof bConf === 'string') {
+            try { bConf = JSON.parse(bConf); } catch(e) { bConf = []; }
+        }
+        if (typeof fgsConf === 'string') {
+            try { fgsConf = JSON.parse(fgsConf); } catch(e) { fgsConf = []; }
+        }
+        return { ...item, batterConfig: bConf || [], fgs: fgsConf || [] };
+    });
     const masterItems = dbMaster && dbMaster.length > 0 ? dbMaster : MOCK_MASTER;
 
     const [modal, setModal] = useState<{isOpen: boolean, data: any}>({ isOpen: false, data: null });
@@ -353,10 +366,15 @@ export default function ProductMatrix() {
 
     const handleSave = async (item: any) => { 
         try {
+            const payload = {
+                ...item,
+                batterConfig: JSON.stringify(item.batterConfig),
+                fgs: JSON.stringify(item.fgs)
+            };
             if(modal.data) {
-                await updateMatrix(item.id, item);
+                await updateMatrix(item.id, payload);
             } else {
-                await addMatrix(item);
+                await addMatrix(payload);
             }
             if(Swal) Swal.fire({ icon: 'success', title: 'Saved!', timer: 1500, showConfirmButton: false });
         } catch(e) {

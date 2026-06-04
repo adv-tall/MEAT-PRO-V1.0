@@ -14,6 +14,21 @@ export class GASService {
       return { status: "success", data: { items: [] } };
     }
 
+    // Intercept DEMO user
+    const savedUserStr = localStorage.getItem('user');
+    let isDemo = false;
+    if (savedUserStr) {
+      try {
+        const u = JSON.parse(savedUserStr);
+        if (u.employeeId === 'DEMO') isDemo = true;
+      } catch(e) {}
+    }
+
+    if (isDemo && ['write', 'update', 'delete'].includes(action)) {
+      console.log(`GASService DEMO user action '${action}' intercepted:`, sheet, data);
+      return { status: "success", message: "Mocked for DEMO", data: { items: [] } };
+    }
+
     const payload = {
       action,
       sheet,

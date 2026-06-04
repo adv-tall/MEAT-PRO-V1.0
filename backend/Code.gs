@@ -19,36 +19,36 @@
  */
 
 const GLOBAL_SHEETS_CONFIG = {
-    // ผู้ใช้งานระบบ (ADMINISTRATION)
+    // ผู้ใช้งานระบบ & การตั้งค่าระบบ
     'Users': ['id', 'employeeId', 'name', 'role', 'permissions', 'email', 'avatar', 'isDev', 'status', 'createdAt', 'updatedAt'],
-    
-    // PRODUCTION CONFIG
-    'Production_Batches': ['id', 'batchNo', 'productCode', 'productName', 'quantity', 'unit', 'status', 'startDate', 'endDate', 'supervisor', 'createdAt', 'updatedAt'],
-    'Production_Yield': ['id', 'batchNo', 'inputWeight', 'outputWeight', 'yieldPercent', 'wasteWeight', 'recordedBy', 'createdAt', 'updatedAt'],
-    
-    // QUALITY CONTROL
-    'QC_Inspections': ['id', 'batchNo', 'inspectionType', 'result', 'defects', 'inspector', 'inspectionDate', 'notes', 'createdAt', 'updatedAt'],
-    'QC_Documents': ['id', 'documentNo', 'title', 'type', 'status', 'fileUrl', 'addedBy', 'createdAt', 'updatedAt'],
-    
-    // INVENTORY & WAREHOUSE
-    'Inventory_RawMaterials': ['id', 'itemCode', 'itemName', 'category', 'stockLevel', 'unit', 'minStock', 'location', 'lastRestock', 'createdAt', 'updatedAt'],
-    'Inventory_FinishedGoods': ['id', 'productCode', 'productName', 'stockLevel', 'unit', 'location', 'prodDate', 'expDate', 'createdAt', 'updatedAt'],
-    
-    // MAINTENANCE
-    'Maintenance_Logs': ['id', 'machineId', 'machineName', 'issue', 'status', 'maintenanceType', 'technician', 'reportedDate', 'resolvedDate', 'createdAt', 'updatedAt'],
-
-    // DISPUTES & COMPLAINTS
-    'Complaints': ['id', 'caseNo', 'title', 'type', 'description', 'status', 'reporter', 'assignedTo', 'resolution', 'createdAt', 'updatedAt'],
-    
-    // ADMINISTRATION (System)
     'SystemLogs': ['id', 'userId', 'action', 'details', 'ipAddress', 'createdAt'],
     'SystemConfig': ['id', 'category', 'key', 'value', 'description', 'updatedAt'],
-    'CalendarEvents': ['id', 'date', 'title', 'time', 'type', 'priority', 'status', 'createdAt', 'updatedAt']
+    
+    // PLANNING MODULE
+    'Orders_PL': ['id', 'date', 'shift', 'sku', 'name', 'qty', 'fgKg', 'sfgKg', 'batterKg', 'batches', 'batchSize', 'deadline', 'status', 'currentStep', 'customer', 'isReplacement', 'createdAt', 'updatedAt'],
+    'Orders_Production': ['id', 'date', 'shift', 'sku', 'name', 'qty', 'fgKg', 'sfgKg', 'batterKg', 'batches', 'batchSize', 'deadline', 'status', 'currentStep', 'customer', 'isReplacement', 'createdAt', 'updatedAt'],
+    
+    // PROD CONFIG MODULE
+    'Master_Item': ['id', 'sku', 'name', 'category', 'weight', 'createdAt', 'updatedAt'],
+    'Product_Matrix': ['id', 'sku', 'machineId', 'outputPerHour', 'crewSize', 'parameterSetting', 'createdAt', 'updatedAt'],
+    'Meat_Formula': ['id', 'formulaId', 'sku', 'recipeData', 'standardYield', 'createdAt', 'updatedAt'],
+    'Equipment_Registry': ['id', 'machineId', 'name', 'type', 'status', 'line', 'createdAt', 'updatedAt'],
+    
+    // DAILY BOARD & PROCESS LOGS
+    'Process_Logs': ['id', 'orderId', 'step', 'status', 'operatorId', 'startTime', 'endTime', 'inputKg', 'outputKg', 'rejectKg', 'createdAt', 'updatedAt'],
+    
+    // DAILY PROBLEM
+    'Machine_Downtime': ['id', 'machineId', 'orderId', 'downtimeReason', 'startTime', "durationMinutes", 'endTime', 'reporterId', 'createdAt', 'updatedAt'],
+    'Unplanned_Jobs': ['id', 'reason', 'sku', 'qty', 'requesterId', 'status', 'createdAt', 'updatedAt'],
+    
+    // ANALYTICS & REPORTS
+    'Daily_Reports': ['id', 'date', 'totalYield', 'totalOEE', 'totalDowntime', 'createdAt']
 };
 
 function setupDatabase() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheetsConfig = GLOBAL_SHEETS_CONFIG;
+  const configSheetNames = Object.keys(sheetsConfig);
 
   for (let name in sheetsConfig) {
     let sheet = ss.getSheetByName(name);
@@ -57,6 +57,7 @@ function setupDatabase() {
     }
     // ตั้งค่าหัวตาราง (Headers)
     const headers = sheetsConfig[name];
+    sheet.getRange(1, 1, 1, sheet.getMaxColumns()).clearContent(); // Clear old headers just in case
     sheet.getRange(1, 1, 1, headers.length).setValues([headers])
       .setFontWeight("bold")
       .setBackground("#e8ecef")
@@ -69,13 +70,27 @@ function setupDatabase() {
     sheet.autoResizeColumns(1, headers.length);
   }
 
+  // >>> DELETE UNUSED SHEETS <<<
+  const existingSheets = ss.getSheets();
+  existingSheets.forEach(sheet => {
+    const sheetName = sheet.getName();
+    // ถ้าชีทนี้ไม่มีใน config และชีทยังเหลือมากกว่า 1 ชีท (ต้องเหลืออย่างน้อย 1 ชีทเสมอใน Google Sheets)
+    if (!configSheetNames.includes(sheetName) && ss.getSheets().length > 1) {
+      Logger.log("Deleting unused sheet: " + sheetName);
+      ss.deleteSheet(sheet);
+    }
+  });
+
   // สร้าง User ตัวอย่างสำหรับ Admin (ถ้ายังไม่มี)
   const userSheet = ss.getSheetByName("Users");
-  if (userSheet.getLastRow() === 1) {
-    userSheet.appendRow(['1', 'ADMIN001', '1234', 'System Admin', 'Admin', '{"canCreate":true,"canEdit":true,"canApprove":true,"canVerify":true}', 'Director', 'admin@hrsystem.com', '', 'true', 'Active']);
+  if (userSheet && userSheet.getLastRow() === 1) {
+    // ['id', 'employeeId', 'name', 'role', 'permissions', 'email', 'avatar', 'isDev', 'status', 'createdAt', 'updatedAt']
+    const adminPermissions = JSON.stringify({"canCreate":true,"canEdit":true,"canApprove":true,"canVerify":true});
+    const isoNow = new Date().toISOString();
+    userSheet.appendRow(['1', 'ADMIN001', 'System Admin', 'Admin', adminPermissions, 'admin@meatpro.com', '', 'true', 'Active', isoNow, isoNow]);
   }
 
-  Logger.log("Database Setup Complete!");
+  Logger.log("Database Setup Complete & Cleaned up unused sheets!");
 }
 
 function doOptions(e) {

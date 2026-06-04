@@ -147,6 +147,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
         {/* Categories Level */}
         {CATEGORIES.map(catName => {
+          if (catName === 'ADMINISTRATION' && user?.employeeId === 'DEMO') {
+            return null;
+          }
+
           const catItems = MENU_ITEMS.filter(item => item.category === catName && visibility[item.id] !== false);
           if (catItems.length === 0) return null;
 

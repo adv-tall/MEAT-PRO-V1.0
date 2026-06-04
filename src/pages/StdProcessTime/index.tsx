@@ -448,6 +448,11 @@ export default function STDProcess() {
     const [categories, setCategories] = useState(INITIAL_CATEGORIES);
     const [modalConfig, setModalConfig] = useState<any>({ isOpen: false, mode: 'view', data: null });
     const [csvModalOpen, setCsvModalOpen] = useState(false);
+    const [batchConfigOpen, setBatchConfigOpen] = useState(false);
+    const [batchConfig, setBatchConfig] = useState(() => {
+        const stored = localStorage.getItem('mes_batch_config');
+        return stored ? JSON.parse(stored) : { kgPerBatch: 80, mixingBatchSet: 2 };
+    });
     const [loading, setLoading] = useState(true);
     const [showGuide, setShowGuide] = useState(false);
     const [activeMainTab, setActiveMainTab] = useState('Batter');
@@ -582,6 +587,91 @@ export default function STDProcess() {
             <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={(d: any) => setMasterData([...d, ...masterData])} />
             <ConfigModal isOpen={modalConfig.isOpen} onClose={() => setModalConfig({ ...modalConfig, isOpen: false, data: null })} data={modalConfig.data} mode={modalConfig.mode} onSave={handleSave} categories={categories} />
 
+            {batchConfigOpen && (
+                <DraggableModal
+                    isOpen={batchConfigOpen}
+                    onClose={() => setBatchConfigOpen(false)}
+                    width="max-w-[450px]"
+                    title="Batch Core Configuration"
+                >
+                    <div className="p-6 bg-[#f8f9fa] space-y-6 select-none font-sans">
+                        <div className="space-y-4">
+                            <h4 className="text-[12px] font-black text-[#212c46] uppercase border-b-2 border-[#eaeaec] pb-2 tracking-widest flex items-center gap-2">
+                                <Icons.Settings size={14} className="text-[#b7a159]" /> System-Wide Settings
+                            </h4>
+                            <div>
+                                <label className="block text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1.5 flex items-center justify-between">
+                                    <span>Standard Batch Weight (Kg)</span>
+                                    <span className="text-[#b7a159] bg-[#b7a159]/10 px-2 py-0.5 rounded text-[9px]">Global</span>
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={batchConfig.kgPerBatch}
+                                        onChange={e => setBatchConfig({ ...batchConfig, kgPerBatch: Number(e.target.value) })}
+                                        className="w-full bg-white border border-[#eaeaec] rounded-xl pl-4 pr-12 py-3 text-[14px] font-mono font-black text-[#212c46] outline-none focus:border-[#4d87a8] transition-colors shadow-sm"
+                                    />
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#7a8b95] uppercase">Kg</span>
+                                </div>
+                                <p className="text-[10px] text-[#7a8b95] font-bold mt-1.5 leading-tight">ระบบจะใช้ค่านี้แปลงหน่วยระหว่าง Kg กับ Batch อัตโนมัติใน Daily Board</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h4 className="text-[12px] font-black text-[#212c46] uppercase border-b-2 border-[#eaeaec] pb-2 tracking-widest flex items-center gap-2 mt-2">
+                                <Icons.Layers size={14} className="text-[#3f809e]" /> Batter Mixing Routing
+                            </h4>
+                            <div>
+                                <label className="block text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1.5 flex items-center justify-between">
+                                    <span>Mixing Lot Size (Batches/Set)</span>
+                                    <span className="text-[#3f809e] bg-[#3f809e]/10 px-2 py-0.5 rounded text-[9px]">Process</span>
+                                </label>
+                                <div className="flex bg-white rounded-xl border border-[#eaeaec] overflow-hidden shadow-sm">
+                                    <button 
+                                        onClick={() => setBatchConfig({ ...batchConfig, mixingBatchSet: Math.max(1, batchConfig.mixingBatchSet - 1) })}
+                                        className="px-4 bg-[#f8f9fa] hover:bg-[#eaeaec] transition-colors border-r border-[#eaeaec] flex items-center justify-center text-[#212c46]"
+                                    >
+                                        <Icons.Minus size={14} />
+                                    </button>
+                                    <input
+                                        type="number"
+                                        value={batchConfig.mixingBatchSet}
+                                        onChange={e => setBatchConfig({ ...batchConfig, mixingBatchSet: Math.max(1, Number(e.target.value)) })}
+                                        className="w-full bg-transparent text-center py-3 text-[14px] font-mono font-black text-[#212c46] outline-none"
+                                    />
+                                    <button 
+                                        onClick={() => setBatchConfig({ ...batchConfig, mixingBatchSet: batchConfig.mixingBatchSet + 1 })}
+                                        className="px-4 bg-[#f8f9fa] hover:bg-[#eaeaec] transition-colors border-l border-[#eaeaec] flex items-center justify-center text-[#212c46]"
+                                    >
+                                        <Icons.Plus size={14} />
+                                    </button>
+                                </div>
+                                <p className="text-[10px] text-[#7a8b95] font-bold mt-1.5 leading-tight">สามารถสั่ง Mix Batter เป็น Batch ที่ผลิต 1 Set ตามเครื่องจักรได้เลย (เช่น 2 Batch, 9 Batch ฯลฯ)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="p-4 bg-white border-t border-[#eaeaec] flex justify-end gap-3 shrink-0 rounded-b-2xl">
+                        <button
+                            onClick={() => setBatchConfigOpen(false)}
+                            className="px-6 py-2.5 text-[#7a8b95] hover:text-[#212c46] font-bold text-[10px] uppercase tracking-widest transition-colors"
+                        >
+                            Close
+                        </button>
+                        <button
+                            onClick={() => {
+                                localStorage.setItem('mes_batch_config', JSON.stringify(batchConfig));
+                                setBatchConfigOpen(false);
+                                if (Swal) Swal.fire({ icon: 'success', title: 'Config Updated', text: 'Batch configurations applied globally.', timer: 1500, showConfirmButton: false });
+                            }}
+                            className="bg-[#212c46] text-white px-8 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest tracking-[0.05em] hover:bg-[#4d87a8] transition-all flex items-center gap-1.5 shadow-md active:scale-95"
+                        >
+                            <Icons.Save justify-end size={14} /> Apply Settings
+                        </button>
+                    </div>
+                </DraggableModal>
+            )}
+
             {/* Header Bar synced with other modules */}
             <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
                 <div className="flex items-center gap-5">
@@ -654,6 +744,9 @@ export default function STDProcess() {
                                     <Icons.Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a8b95]"/>
                                     <input type="text" placeholder="Search Standards..." value={searchTerm} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-[#eaeaec] rounded-xl text-[12px] font-bold focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#212c46] h-10 transition-all" />
                                 </div>
+                                <button onClick={() => setBatchConfigOpen(true)} className="bg-white border border-[#b7a159] text-[#b7a159] hover:bg-[#b7a159] hover:text-white px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors md:flex h-10">
+                                    <Icons.Settings size={14} /> Batch Config
+                                </button>
                                 <button onClick={() => setCsvModalOpen(true)} className="bg-white border border-[#eaeaec] hover:border-[#4d87a8] hover:text-[#4d87a8] text-[#7a8b95] px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors hidden md:flex h-10"><Icons.Upload size={14} /> Import</button>
                                 <button onClick={() => setModalConfig({ isOpen: true, mode: 'edit', data: null })} className="bg-[#212c46] hover:bg-[#414757] text-white px-5 py-2 rounded-xl font-black text-[12px] uppercase tracking-widest shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shrink-0 h-10 border border-[#212c46]">
                                     <Icons.Plus size={14} /> New Standard

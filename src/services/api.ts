@@ -44,19 +44,25 @@ export const api = {
       } catch(e) {}
     }
 
-    if (isDemo && action === 'write') {
-      console.log('DEMO user write intercepted to localStorage:', sheet, data);
+    if (isDemo && ['write', 'update', 'delete'].includes(action)) {
+      console.log(`DEMO user action '${action}' intercepted to localStorage:`, sheet, data);
       const cacheKey = `demo_db_${sheet}`;
       const existingStr = localStorage.getItem(cacheKey) || '[]';
       let existing = [];
       try { existing = JSON.parse(existingStr); } catch(e){}
-      if (Array.isArray(data)) {
-          existing.push(...data);
-      } else {
-          if (data) existing.push(data);
+      
+      if (action === 'write') {
+        if (Array.isArray(data)) {
+            existing.push(...data);
+        } else {
+            if (data) existing.push(data);
+        }
+      } else if (action === 'update' || action === 'delete') {
+         // for simplicity, demo user update/delete is mocked success without actual local logic
+         console.log(`DEMO action ${action} mocked success.`);
       }
       localStorage.setItem(cacheKey, JSON.stringify(existing));
-      return { status: 'success', message: 'Saved locally for DEMO user', data: existing } as any;
+      return { status: 'success', message: `Saved locally for DEMO user (${action})`, data: existing } as any;
     }
 
     if (!SCRIPT_URL) {

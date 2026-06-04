@@ -83,6 +83,15 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    match /accessLogs/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /daily_production_reports/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /reject_logs_database/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /quality_metrics/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /users/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /efficiency_summary_ledger/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /cost_analysis_monthly/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /downtime_tracking/{id} { allow read: if true; allow write: if isSignedIn(); }
+
     match /admins/{adminId} {
       allow read: if isEmailVerified() && (adminId == request.auth.uid || isAdmin());
       allow write: if isAdmin();

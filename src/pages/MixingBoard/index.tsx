@@ -178,11 +178,19 @@ const INITIAL_SETS = [
   },
 ];
 
-const MIXING_MACHINES = [
-  { name: "Emulsion System", batches: 9 },
-  { name: "Bowl Cutter", batches: 2 },
-  { name: "Vacuum Mixer", batches: 1 },
-];
+const getDynamicMixingMachines = () => {
+  let customBatches = 9;
+  try {
+    const stored = localStorage.getItem('mes_batch_config');
+    if (stored) customBatches = JSON.parse(stored).mixingBatchSet || 2;
+  } catch(e) {}
+  return [
+    { name: "Configured Machine (Dynamic)", batches: customBatches },
+    { name: "Emulsion System", batches: 9 },
+    { name: "Bowl Cutter", batches: 2 },
+    { name: "Vacuum Mixer", batches: 1 },
+  ];
+};
 
 const WAITING_SFG_DATA = [
   {
@@ -318,6 +326,8 @@ const GuideContent = () => (
 );
 
 function PlannerModal({ isOpen, onClose, onStart }: any) {
+  const MIXING_MACHINES = React.useMemo(() => getDynamicMixingMachines(), []);
+
   const [orders] = useSharedOrders();
   const BATTER_OPTIONS = Array.from(new Set(orders.map((o: any) => o.sku))).map(
     (sku) => {

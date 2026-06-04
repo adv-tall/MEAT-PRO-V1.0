@@ -761,30 +761,28 @@ export default function AiPlannerAsst() {
       </div>
 
       {/* DRAGGABLE CONFIG MODAL (Exact Standard of UserPermissions Settings wizard!) */}
-      {isConfigOpen && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/60 backdrop-blur-sm p-4 animate-fadeIn font-sans">
-          <DraggableModal
-            isOpen={isConfigOpen}
-            onClose={() => setIsConfigOpen(false)}
-            width="max-w-[850px]"
-            customHeader={
-              <div className="bg-[#212c46] px-6 py-4 flex justify-between items-center shrink-0 border-b-2 border-[#b7a159] modal-handle cursor-move w-full">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20 shadow-sm shrink-0">
-                    <Settings size={20} className="text-[#b7a159]" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-black text-[#d7d7d7] uppercase tracking-widest leading-none">Configure AI Planner Parameters</h3>
-                    <p className="text-[10px] font-bold text-[#b7a159] uppercase tracking-widest mt-1.5">Set goals, algorithms, & limit parameters</p>
-                  </div>
-                </div>
-                <button onClick={() => setIsConfigOpen(false)} className="text-white/50 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-1.5 rounded-lg">
-                  <X size={18} />
-                </button>
+      <DraggableModal
+        isOpen={isConfigOpen}
+        onClose={() => setIsConfigOpen(false)}
+        width="max-w-[850px]"
+        customHeader={
+          <div className="bg-[#212c46] px-6 py-4 flex justify-between items-center shrink-0 border-b-2 border-[#b7a159] modal-handle cursor-move w-full">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20 shadow-sm shrink-0">
+                <Settings size={20} className="text-[#b7a159]" />
               </div>
-            }
-          >
-            <div className="flex flex-col md:flex-row overflow-hidden bg-[#f8f9fa] h-[460px]">
+              <div>
+                <h3 className="text-sm font-black text-[#d7d7d7] uppercase tracking-widest leading-none">Configure AI Planner Parameters</h3>
+                <p className="text-[10px] font-bold text-[#b7a159] uppercase tracking-widest mt-1.5">Set goals, algorithms, & limit parameters</p>
+              </div>
+            </div>
+            <button onClick={() => setIsConfigOpen(false)} className="text-white/50 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-1.5 rounded-lg">
+              <X size={18} />
+            </button>
+          </div>
+        }
+      >
+        <div className="flex flex-col md:flex-row overflow-hidden bg-[#f8f9fa] h-[460px]">
               
               {/* Sidebar Configuration Step Selector */}
               <div className="w-full md:w-56 bg-white border-b md:border-b-0 md:border-r border-[#eaeaec] flex flex-row md:flex-col shrink-0 text-left">
@@ -815,10 +813,10 @@ export default function AiPlannerAsst() {
               </div>
 
               {/* Step Content Body Panel */}
-              <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-8 bg-white select-none">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-5 bg-white select-none">
                 
                 {configStep === 0 && (
-                  <div className="space-y-5 animate-fadeIn">
+                  <div className="space-y-4 animate-fadeIn">
                     <h4 className="text-[12px] font-black text-[#212c46] uppercase border-b-2 border-slate-100 pb-2.5 tracking-wider">Step 1: Planning Horizon & Safety Stocks</h4>
                     
                     <div>
@@ -942,65 +940,58 @@ export default function AiPlannerAsst() {
               </div>
             </div>
 
-            {/* Modal Footer Controls */}
-            <div className="p-5 bg-white border-t border-slate-200 flex justify-end gap-3 shrink-0">
+            <div className="p-4 bg-white border-t border-slate-200 flex justify-end gap-3 shrink-0">
               <button
                 type="button"
                 onClick={() => setIsConfigOpen(false)}
-                className="px-6 py-2.5 text-slate-500 hover:text-[#212c46] font-bold text-[10px] uppercase tracking-widest transition-colors shadow-none"
+                className="px-6 py-2 text-slate-500 hover:text-[#212c46] font-bold text-[10px] uppercase tracking-widest transition-colors shadow-none"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSaveConfig}
-                className="bg-[#212c46] text-white px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest tracking-[0.05em] hover:bg-[#3f809e] transition-all flex items-center gap-1.5"
+                className="bg-[#212c46] text-white px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest tracking-[0.05em] hover:bg-[#3f809e] transition-all flex items-center gap-1.5"
               >
                 Save Calculations
               </button>
             </div>
           </DraggableModal>
-        </div>
-      )}
 
       {/* CSV UPLOAD MODAL */}
-      {isUploadModalOpen && (
-          <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/60 backdrop-blur-sm p-4 animate-fadeIn font-sans">
-              <DraggableModal 
-                isOpen={isUploadModalOpen} 
-                onClose={() => setIsUploadModalOpen(false)} 
-                width="max-w-[700px]"
-                customHeader={
-                   <div className="bg-[#212c46] px-6 py-4 flex justify-between items-center shrink-0 border-b-2 border-[#3f809e] modal-handle cursor-move w-full">
-                     <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20 shadow-sm shrink-0">
-                         <Plus size={20} className="text-[#3f809e]" />
-                       </div>
-                       <div>
-                         <h3 className="text-sm font-black text-[#d7d7d7] uppercase tracking-widest leading-none">Import Demand Data</h3>
-                         <p className="text-[10px] font-bold text-[#3f809e] uppercase tracking-widest mt-1.5">Upload CSV to set constraints</p>
-                       </div>
-                     </div>
-                     <button onClick={() => setIsUploadModalOpen(false)} className="text-white/50 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-1.5 rounded-lg">
-                       <X size={18} />
-                     </button>
-                   </div>
-                }
-               >
-                  <div className="p-8 bg-[#f8f9fa] max-h-[500px] overflow-auto select-none">
-                     <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
-                        <CsvUpload 
-                            requiredHeaders={['order_no', 'product', 'quantity', 'deadline']}
-                            onUpload={(data) => {
-                                Swal.fire('สำเร็จ', `อัปโหลดจำนวน ${data.length} รายการแล้ว`, 'success');
-                                setIsUploadModalOpen(false);
-                            }}
-                        />
-                     </div>
-                  </div>
-              </DraggableModal>
+      <DraggableModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)} 
+        width="max-w-[700px]"
+        customHeader={
+           <div className="bg-[#212c46] px-6 py-4 flex justify-between items-center shrink-0 border-b-2 border-[#3f809e] modal-handle cursor-move w-full">
+             <div className="flex items-center gap-3">
+               <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20 shadow-sm shrink-0">
+                 <Plus size={20} className="text-[#3f809e]" />
+               </div>
+               <div>
+                 <h3 className="text-sm font-black text-[#d7d7d7] uppercase tracking-widest leading-none">Import Demand Data</h3>
+                 <p className="text-[10px] font-bold text-[#3f809e] uppercase tracking-widest mt-1.5">Upload CSV to set constraints</p>
+               </div>
+             </div>
+             <button onClick={() => setIsUploadModalOpen(false)} className="text-white/50 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-1.5 rounded-lg">
+               <X size={18} />
+             </button>
+           </div>
+        }
+       >
+          <div className="p-5 bg-[#f8f9fa] max-h-[500px] overflow-auto select-none">
+             <div className="bg-white p-4 rounded-xl border border-[#eaeaec] shadow-sm">
+                <CsvUpload 
+                    requiredHeaders={['order_no', 'product', 'quantity', 'deadline']}
+                    onUpload={(data) => {
+                        Swal.fire('สำเร็จ', `อัปโหลดจำนวน ${data.length} รายการแล้ว`, 'success');
+                        setIsUploadModalOpen(false);
+                    }}
+                />
+             </div>
           </div>
-      )}
+      </DraggableModal>
 
     </div>
   );

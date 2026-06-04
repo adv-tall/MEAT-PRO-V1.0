@@ -7,6 +7,8 @@ import KpiCard from '@/src/components/shared/KpiCard';
 import { createPortal } from 'react-dom';
 import { CsvUpload } from '@/src/components/shared/CsvUpload';
 import { CsvExport } from '@/src/components/shared/CsvExport';
+import { AspectModal } from '@/src/components/shared/AspectModal';
+import { DraggableModal } from '@/src/components/shared/DraggableModal';
 import { useSharedOrders } from '@/src/store/ordersStore';
 import { FG_DATABASE, MOCK_ORDERS } from '@/src/data/mockOrders';
 
@@ -132,8 +134,10 @@ export default function ProductionPlanning() {
     const [isGuideOpen, setIsGuideOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [isAspectModalOpen, setIsAspectModalOpen] = useState(false);
     const [isTabDropdownOpen, setIsTabDropdownOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(15);
     const [activeModuleTab, setActiveModuleTab] = useState('PRODUCTION PLANNING');
@@ -146,15 +150,17 @@ export default function ProductionPlanning() {
         const newOrders = [
             {
                 id: `260416-AI-${String(Math.floor(Math.random()*1000)).padStart(3, '0')}`,
+                date: selectedDate,
                 sku: FG_DATABASE[0].sku, name: FG_DATABASE[0].name, qty: 5000, fgKg: 5000 * FG_DATABASE[0].weight, sfgKg: 5000 * FG_DATABASE[0].weight, batterKg: Number((5000 * FG_DATABASE[0].weight * 1.1).toFixed(2)),
                 deadline: '16:00', startTime: 'TBD', status: 'PLANNED', isReplacement: false,
-                shift: 'Afternoon', currentStep: 'Entry', refPL: 'PL-2605-AUTO'
+                shift: 'Afternoon', currentStep: 'Queue', refPL: 'PL-2605-AUTO'
             },
             {
                 id: `260416-AI-${String(Math.floor(Math.random()*1000)).padStart(3, '0')}`,
+                date: selectedDate,
                 sku: FG_DATABASE[1].sku, name: FG_DATABASE[1].name, qty: 2500, fgKg: 2500 * FG_DATABASE[1].weight, sfgKg: 2500 * FG_DATABASE[1].weight, batterKg: Number((2500 * FG_DATABASE[1].weight * 1.1).toFixed(2)),
                 deadline: '24:00', startTime: 'TBD', status: 'PLANNED', isReplacement: false,
-                shift: 'Night', currentStep: 'Entry', refPL: 'PL-2605-AUTO'
+                shift: 'Night', currentStep: 'Queue', refPL: 'PL-2605-AUTO'
             }
         ];
         setOrders(prev => [...newOrders, ...prev]);
@@ -164,6 +170,7 @@ export default function ProductionPlanning() {
         const fg = FG_DATABASE.find(f => f.name === replan.product) || FG_DATABASE[0];
         const newOrder = {
             id: replan.id, // e.g. 260416-N123.rep.1
+            date: selectedDate,
             sku: fg.sku, name: fg.name, qty: Math.ceil(replan.lossKg / fg.weight), fgKg: replan.lossKg, sfgKg: replan.lossKg, batterKg: Number((replan.lossKg * 1.1).toFixed(2)),
             deadline: 'TBD', startTime: 'TBD', status: 'DRAFT', isReplacement: true,
             shift: 'All Day', currentStep: 'Entry',
@@ -189,13 +196,34 @@ export default function ProductionPlanning() {
       .font-exception-header { font-family: 'JetBrains Mono', 'Noto Sans Thai', sans-serif; }
     `;
 
-    const [newItem, setNewItem] = useState({ date: new Date().toISOString().split('T')[0], time: '12:00', jobType: 'Normal', sku: '', quantity: '' });
+    const [newItem, setNewItem] = useState({ date: new Date().toISOString().split('T')[0], time: '12:00', jobType: 'Normal', sku: '', quantity: '', batchSize: 80, batches: 1 });
 
     useEffect(() => {
         setTimeout(() => setLoading(false), 600);
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+        
+        // Auto-seed data for DEV001 if empty
+        if (orders.length === 0) {
+            import('@/src/store/ordersStore').then(module => {
+                module.ordersStore.triggerForceSeed();
+            });
+        }
+        
         return () => clearInterval(timer);
-    }, []);
+    }, [orders.length]);
+
+    const handleBatchChange = (batches: number, batchSize: number, sku: string) => {
+        if (!sku) {
+            setNewItem(prev => ({...prev, batches, batchSize}));
+            return;
+        }
+        const fg = FG_DATABASE.find(f => f.sku === sku);
+        if(!fg) return;
+        const totalBatter = batches * batchSize;
+        const totalFgKg = totalBatter / 1.1; 
+        const packs = Math.floor(totalFgKg / fg.weight);
+        setNewItem(prev => ({...prev, batches, batchSize, sku, quantity: String(packs)}));
+    };
 
     const handleAddOrder = () => {
         if (!newItem.sku || !newItem.quantity) return;
@@ -206,6 +234,7 @@ export default function ProductionPlanning() {
 
         const newOrder = {
             id: `260416-N${String(Math.floor(Math.random()*1000)).padStart(3, '0')}`,
+            date: newItem.date,
             sku: newItem.sku, name: fg?.name || 'Unknown', qty: qtyNum, fgKg, sfgKg: fgKg, batterKg: Number((fgKg * 1.1).toFixed(2)),
             deadline: newItem.time, startTime: 'TBD', status: 'DRAFT', isReplacement: newItem.jobType === 'Replacement',
             shift, currentStep: 'Entry'
@@ -221,9 +250,44 @@ export default function ProductionPlanning() {
         }
     };
 
+    const handleApproveDraft = (id: string) => {
+        setOrders(orders.map(o => o.id === id ? { ...o, status: 'PLANNED', currentStep: 'Queue' } : o));
+    };
+
+    const handleApproveAll = () => {
+        if (!window.confirm('Are you sure you want to approve all filtered drafts in view?')) return;
+        const currentItemIds = new Set(filteredOrders.filter(o => o.status === 'DRAFT' || o.status === 'CONFIRMED').map(o => o.id));
+        setOrders(orders.map(o => currentItemIds.has(o.id) ? { ...o, status: 'PLANNED', currentStep: 'Queue' } : o));
+    };
+
+    const dateFilteredOrders = useMemo(() => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        return orders.filter(o => (o.date || todayStr) === selectedDate);
+    }, [orders, selectedDate]);
+
     const totalSummary = useMemo(() => {
-        return orders.reduce((acc, curr) => ({ fg: acc.fg + curr.fgKg, sfg: acc.sfg + curr.sfgKg, batter: acc.batter + curr.batterKg }), { fg: 0, sfg: 0, batter: 0 });
-    }, [orders]);
+        let fg = 0;
+        let packs = 0;
+        let batches = 0;
+        let completed = 0;
+        let delayed = 0;
+
+        dateFilteredOrders.forEach(curr => {
+            fg += curr.fgKg;
+            packs += curr.qty;
+            const b = (curr as any).batches || Math.ceil(curr.batterKg / ((curr as any).batchSize || 100));
+            batches += b;
+
+            if (curr.status === 'COMPLETED') {
+                completed++;
+            } else if (curr.status !== 'CANCELLED') {
+                const [dh, dm] = (curr.deadline || '23:59').split(':').map(Number);
+                const deadlineDate = new Date(); deadlineDate.setHours(dh, dm, 0, 0);
+                if (currentTime > deadlineDate) delayed++;
+            }
+        });
+        return { fg, packs, batches, completed, delayed };
+    }, [dateFilteredOrders, currentTime]);
 
     const getAlarmStatus = (deadline: string, status: string) => {
         if (status === 'COMPLETED') return { color: 'bg-stone-50 text-[#2e7d32] border-[#2e7d32]/20', label: 'COMPLETED', blink: false };
@@ -236,9 +300,10 @@ export default function ProductionPlanning() {
     };
 
     const filteredOrders = useMemo(() => {
-        let filtered = orders;
+        let filtered = dateFilteredOrders;
+
         if (activeShift !== 'All Day') filtered = filtered.filter(o => o.shift === activeShift);
-        if (activeMainTab === 'Entry') filtered = filtered.filter(o => ['DRAFT', 'APPROVED', 'PLANNED'].includes(o.status) && o.currentStep === 'Entry');
+        if (activeMainTab === 'Entry') filtered = filtered.filter(o => ['DRAFT', 'CONFIRMED', 'APPROVED', 'PLANNED'].includes(o.status) && o.currentStep === 'Entry');
         else filtered = filtered.filter(o => o.currentStep === activeMainTab);
         
         if (searchTerm) {
@@ -249,7 +314,7 @@ export default function ProductionPlanning() {
             );
         }
         return filtered;
-    }, [orders, activeShift, activeMainTab, searchTerm]);
+    }, [orders, selectedDate, activeShift, activeMainTab, searchTerm]);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -405,11 +470,48 @@ export default function ProductionPlanning() {
                 )}
 
                 {/* KPI STATS */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
-                    <KpiCard title="Total FG Required" val={totalSummary.fg.toLocaleString()} unit="Kg" color={THEME.primary} icon="package-check" desc="Output" />
-                    <KpiCard title="Flagship AFM" val={(50000).toLocaleString()} unit="Kg" color={THEME.accent} icon="award" desc="Target 50T" />
-                    <KpiCard title="SFG Buffer" val={totalSummary.sfg.toLocaleString()} unit="Kg" color={THEME.warning} icon="layers" desc="WIP" />
-                    <KpiCard title="Daily Batter" val={(Math.ceil(totalSummary.batter)).toLocaleString()} unit="Kg" color={THEME.success} icon="chef-hat" desc="Mixing" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4 shrink-0">
+                    <KpiCard
+                        label="Target Volume (Tons)"
+                        value={(totalSummary.fg / 1000).toFixed(1)}
+                        unit="TON"
+                        icon="weight"
+                        colorAccent="#4d87a8"
+                        colorValue={THEME.primary}
+                        desc="Planned Output"
+                    />
+                    <KpiCard
+                        label="Target Volume (Batches)"
+                        value={totalSummary.batches.toLocaleString()}
+                        icon="layers"
+                        colorAccent="#b7a159"
+                        colorValue={THEME.primary}
+                        desc="Batches"
+                    />
+                    <KpiCard
+                        label="Target Volume (Packs)"
+                        value={totalSummary.packs.toLocaleString()}
+                        icon="package"
+                        colorAccent="#f59e0b"
+                        colorValue={THEME.primary}
+                        desc="Packs"
+                    />
+                    <KpiCard
+                        label="Completed"
+                        value={totalSummary.completed.toLocaleString()}
+                        icon="check-circle"
+                        colorAccent="#2e7d32"
+                        colorValue={THEME.primary}
+                        desc="PL COMPLETED"
+                    />
+                    <KpiCard
+                        label="Delayed"
+                        value={totalSummary.delayed.toLocaleString()}
+                        icon="alert-circle"
+                        colorAccent="#932c2e"
+                        colorValue={THEME.primary}
+                        desc="PL DELAYED"
+                    />
                 </div>
 
                 <div className="bg-white border-[#eaeaec] flex flex-col flex-1 shadow-lg rounded-xl border mb-4 p-5 shrink-0">
@@ -417,6 +519,9 @@ export default function ProductionPlanning() {
                          <h3 className="text-sm font-black text-[#212c46] uppercase tracking-widest flex items-center gap-2">
                               <Icons.Activity size={16} className="text-[#4d87a8]" /> Machine Load Allocation
                          </h3>
+                         <button onClick={() => setIsAspectModalOpen(true)} className="text-[10px] font-black uppercase tracking-widest text-[#4d87a8] hover:text-[#212c46] flex items-center gap-1">
+                             <Icons.Zap size={12} /> Energy Aspects
+                         </button>
                      </div>
                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
                         {MACHINE_CAPACITIES.map(mc => (
@@ -457,6 +562,14 @@ export default function ProductionPlanning() {
                              </div>
 
                              <div className="flex flex-wrap gap-3 w-full md:w-auto items-center">
+                                <div className="flex items-center gap-1 bg-[#f8f9fa] border border-[#eaeaec] p-1.5 rounded-xl shadow-sm">
+                                    <input 
+                                       type="date" 
+                                       className="bg-transparent border-none outline-none text-[12px] font-black text-[#212c46] cursor-pointer"
+                                       value={selectedDate}
+                                       onChange={(e) => setSelectedDate(e.target.value || new Date().toISOString().split('T')[0])}
+                                    />
+                                </div>
                                 <div className="flex items-center gap-1.5 bg-[#f8f9fa] border border-[#eaeaec] p-1.5 rounded-xl shadow-sm overflow-x-auto">
                                     {SHIFTS.map(shift => (
                                         <button key={shift.id} onClick={() => setActiveShift(shift.id)} className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all flex items-center gap-2 whitespace-nowrap ${activeShift === shift.id ? shift.activeColor : 'bg-transparent text-[#7a8b95] hover:bg-white'}`}><LucideIcon name={shift.icon} size={14} /> <span className="hidden sm:inline">{shift.id}</span></button>
@@ -482,6 +595,12 @@ export default function ProductionPlanning() {
                                     label="EXPORT"
                                     className="!h-10 !rounded-xl !bg-white !text-[#7a8b95] !border !border-[#eaeaec] hover:!border-[#4d87a8] hover:!text-[#4d87a8] !shadow-sm !font-bold !text-[12px]" 
                                 />
+
+                                {activeMainTab === 'Entry' && filteredOrders.some(o => o.status === 'DRAFT' || o.status === 'CONFIRMED') && (
+                                    <button onClick={handleApproveAll} className="bg-emerald-50 border border-emerald-200 hover:border-emerald-600 hover:bg-emerald-600 text-emerald-700 hover:text-white px-5 py-2 rounded-xl font-black text-[12px] uppercase tracking-widest shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shrink-0 h-10">
+                                        <Icons.ListChecks size={14} /> APPROVE ALL IN VIEW
+                                    </button>
+                                )}
 
                                 <button onClick={handleAIGenerate} className="bg-gradient-to-r from-[#4d87a8] to-[#3f809e] hover:from-[#3f809e] hover:to-[#2b5a7a] text-white px-5 py-2 rounded-xl font-black text-[12px] uppercase tracking-widest shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shrink-0 h-10 border border-[#3f809e]">
                                     <Icons.Sparkles size={14} /> AI GENERATE
@@ -541,10 +660,13 @@ export default function ProductionPlanning() {
                                                     {o.deadline}
                                                 </td>
                                                 <td className="px-4 align-middle text-center py-2.5">
-                                                    <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest border shadow-sm ${o.status === 'PLANNED' || o.status === 'IN PROGRESS' ? 'bg-[#2e7d32]/10 text-[#2e7d32] border-[#2e7d32]/20' : 'bg-[#f8f9fa] text-[#7a8b95] border-[#eaeaec]'}`}>{o.status}</span>
+                                                    <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest border shadow-sm ${['PLANNED', 'IN PROGRESS', 'COMPLETED'].includes(o.status) ? 'bg-[#2e7d32]/10 text-[#2e7d32] border-[#2e7d32]/20' : (['DRAFT', 'CONFIRMED'].includes(o.status) ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-[#f8f9fa] text-[#7a8b95] border-[#eaeaec]')}`}>{['DRAFT', 'CONFIRMED'].includes(o.status) ? 'WAITING' : o.status}</span>
                                                 </td>
                                                 <td className="px-4 text-right pr-8 align-middle py-2.5">
                                                     <div className="flex items-center justify-end gap-[1px] transition-opacity">
+                                                        {(o.status === 'DRAFT' || o.status === 'CONFIRMED') && (
+                                                            <button onClick={() => handleApproveDraft(o.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#2e7d32] hover:border-[#2e7d32] hover:bg-[#2e7d32]/10 transition-all shadow-sm bg-white active:scale-90" title="Confirm/Approve order"><Icons.Check size={20} className="stroke-[3]" /></button>
+                                                        )}
                                                         <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90" title="Edit"><Icons.Pencil size={16} /></button>
                                                         <button onClick={() => handleDelete(o.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#932c2e] hover:border-[#932c2e] hover:bg-[#932c2e]/10 transition-all shadow-sm bg-white active:scale-90" title="Delete"><Icons.Trash2 size={16} /></button>
                                                     </div>
@@ -611,93 +733,105 @@ export default function ProductionPlanning() {
                             </div>
                         </div>
 
-            {isAddModalOpen && (
-                <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/60 backdrop-blur-sm p-4 animate-fadeIn font-sans">
-                    <StandardModalWrapper className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden relative border border-white/40 max-h-[90vh]">
-                        <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#212c46] border-b-2 border-[#b7a159]">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20"><Icons.Plus size={20} className="text-[#b7a159]" /></div>
-                                <div><h3 className="text-sm font-black text-white uppercase tracking-widest leading-none">Add New Production Order</h3><p className="text-[10px] font-bold text-[#d7d7d7] uppercase tracking-widest mt-1.5">Direct Entry to Queue</p></div>
+            <DraggableModal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                title="Add New Production Order"
+            >
+                <div className="p-8 flex flex-col gap-6 bg-[#f8f9fa] custom-scrollbar overflow-y-auto max-h-[80vh]">
+                     <div className="grid grid-cols-2 gap-6">
+                        <div className="col-span-2 md:col-span-1">
+                            <label className="text-[11px] font-black text-[#212c46] uppercase mb-3 block tracking-widest">1. Delivery Deadline <span className="text-[#932c2e]">*</span></label>
+                            <div className="flex gap-2 bg-white p-2 rounded-xl border border-[#eaeaec]">
+                                {['12:00', '16:00', '24:00'].map(t => (
+                                    <button key={t} onClick={()=>setNewItem({...newItem, time: t})} className={"flex-1 py-2.5 rounded-lg text-[11px] font-black transition-all font-mono uppercase " + (newItem.time === t ? 'bg-[#212c46] text-white shadow-md' : 'bg-transparent text-[#7a8b95] hover:text-[#212c46] hover:bg-slate-50')}>{t}</button>
+                                ))}
                             </div>
-                            <button onClick={() => setIsAddModalOpen(false)} className="text-white/50 hover:text-[#932c2e] transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-full"><Icons.X size={20} /></button>
                         </div>
-                        <div className="p-8 flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-8 bg-[#f8f9fa]">
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="col-span-2 md:col-span-1">
-                                    <label className="text-[11px] font-black text-[#212c46] uppercase mb-3 block tracking-widest">1. Delivery Deadline <span className="text-[#932c2e]">*</span></label>
-                                    <div className="flex gap-2 bg-white p-2 rounded-xl border border-[#eaeaec]">
-                                        {['12:00', '16:00', '24:00'].map(t => (
-                                            <button key={t} onClick={()=>setNewItem({...newItem, time: t})} className={"flex-1 py-2.5 rounded-lg text-[11px] font-black transition-all font-mono uppercase " + (newItem.time === t ? 'bg-[#212c46] text-white shadow-md' : 'bg-transparent text-[#7a8b95] hover:text-[#212c46] hover:bg-slate-50')}>{t}</button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="col-span-2 md:col-span-1">
-                                    <label className="text-[11px] font-black text-[#212c46] uppercase mb-3 block tracking-widest">2. Job Type <span className="text-[#932c2e]">*</span></label>
-                                    <div className="flex gap-2 bg-white p-2 rounded-xl border border-[#eaeaec]">
-                                        <button onClick={()=>setNewItem({...newItem, jobType: 'Normal'})} className={"flex-1 py-2.5 rounded-lg text-[11px] font-black uppercase transition-all " + (newItem.jobType === 'Normal' ? 'bg-[#212c46] text-white shadow-md' : 'text-[#7a8b95] hover:text-[#212c46] hover:bg-slate-50')}>Normal</button>
-                                        <button onClick={()=>setNewItem({...newItem, jobType: 'Replacement'})} className={"flex-1 py-2.5 rounded-lg text-[11px] font-black uppercase transition-all " + (newItem.jobType === 'Replacement' ? 'bg-[#932c2e] text-white shadow-md' : 'text-[#7a8b95] hover:text-[#932c2e] hover:bg-rose-50')}>Replacement</button>
-                                    </div>
-                                </div>
+                        <div className="col-span-2 md:col-span-1">
+                            <label className="text-[11px] font-black text-[#212c46] uppercase mb-3 block tracking-widest">2. Job Type <span className="text-[#932c2e]">*</span></label>
+                            <div className="flex gap-2 bg-white p-2 rounded-xl border border-[#eaeaec]">
+                                <button onClick={()=>setNewItem({...newItem, jobType: 'Normal'})} className={"flex-1 py-2.5 rounded-lg text-[11px] font-black uppercase transition-all " + (newItem.jobType === 'Normal' ? 'bg-[#212c46] text-white shadow-md' : 'text-[#7a8b95] hover:text-[#212c46] hover:bg-slate-50')}>Normal</button>
+                                <button onClick={()=>setNewItem({...newItem, jobType: 'Replacement'})} className={"flex-1 py-2.5 rounded-lg text-[11px] font-black uppercase transition-all " + (newItem.jobType === 'Replacement' ? 'bg-[#932c2e] text-white shadow-md' : 'text-[#7a8b95] hover:text-[#932c2e] hover:bg-rose-50')}>Replacement</button>
                             </div>
-                            <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
-                                <label className="text-[11px] font-black text-[#212c46] uppercase mb-4 block tracking-widest">3. Finished Goods (FG) <span className="text-[#932c2e]">*</span></label>
-                                <select value={newItem.sku} onChange={e => setNewItem({...newItem, sku: e.target.value})} className="w-full px-4 py-3 border border-[#eaeaec] rounded-xl text-[12px] font-bold focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#212c46] cursor-pointer">
-                                    <option value="" disabled>-- SELECT PRODUCT --</option>
-                                    {FG_DATABASE.map(f => <option key={f.sku} value={f.sku}>{f.sku} : {f.name}</option>)}
+                        </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
+                        <label className="text-[11px] font-black text-[#212c46] uppercase mb-4 block tracking-widest">3. Finished Goods (FG) <span className="text-[#932c2e]">*</span></label>
+                        <select value={newItem.sku} onChange={e => handleBatchChange(newItem.batches, newItem.batchSize, e.target.value)} className="w-full px-4 py-3 border border-[#eaeaec] rounded-xl text-[12px] font-bold focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#212c46] cursor-pointer">
+                            <option value="" disabled>-- SELECT PRODUCT --</option>
+                            {FG_DATABASE.map(f => <option key={f.sku} value={f.sku}>{f.sku} : {f.name}</option>)}
+                        </select>
+                    </div>
+                    <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
+                        <label className="text-[11px] font-black text-[#212c46] uppercase mb-4 block tracking-widest flex justify-between">
+                            <span>4. Batch & Quantity (Packs) <span className="text-[#932c2e]">*</span></span>
+                            <span className="text-[#4d87a8] font-mono text-[9px] bg-blue-50 px-2 py-1 rounded">1 BATCH = {newItem.batchSize} KGS BATTER</span>
+                        </label>
+                        
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label className="text-[10px] font-bold text-[#7a8b95] uppercase block mb-1">Batch Size (KG)</label>
+                                <select value={newItem.batchSize} onChange={e => handleBatchChange(newItem.batches, Number(e.target.value), newItem.sku)} className="w-full px-4 py-2 border border-[#eaeaec] rounded-lg text-[12px] font-bold focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#212c46] cursor-pointer">
+                                     <option value={50}>50 KGS / Batch</option>
+                                     <option value={80}>80 KGS / Batch</option>
+                                     <option value={100}>100 KGS / Batch</option>
+                                     <option value={120}>120 KGS / Batch</option>
                                 </select>
                             </div>
-                            <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
-                                <label className="text-[11px] font-black text-[#212c46] uppercase mb-4 block tracking-widest">4. Quantity (Packs) <span className="text-[#932c2e]">*</span></label>
-                                <div className="relative">
-                                    <input type="number" value={newItem.quantity} onChange={e => setNewItem({...newItem, quantity: e.target.value})} className="w-full px-4 py-3 border border-[#eaeaec] rounded-xl text-[24px] font-mono font-black focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#4d87a8] pr-16" placeholder="0" />
-                                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[12px] font-black text-[#7a8b95] uppercase tracking-widest font-mono">PCK</span>
-                                </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-[#7a8b95] uppercase block mb-1">Number of Batches</label>
+                                <input type="number" min="1" value={newItem.batches} onChange={e => handleBatchChange(Number(e.target.value), newItem.batchSize, newItem.sku)} className="w-full px-4 py-2 border border-[#eaeaec] rounded-lg text-[12px] font-mono font-bold focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#212c46]" />
                             </div>
                         </div>
-                        <div className="p-5 bg-white border-t border-[#eaeaec] flex justify-end gap-3 shrink-0">
-                            <button onClick={() => setIsAddModalOpen(false)} className="px-6 py-2.5 bg-white border border-[#eaeaec] text-[#414757] rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-[#d7d7d7]/30 transition-all">Cancel</button>
-                            <button onClick={handleAddOrder} className="bg-[#212c46] text-white px-6 py-2.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-md hover:bg-[#414757] hover:text-white transition-all flex items-center gap-2"><Icons.PlusCircle size={16} /> Add to Production Queue</button>
+
+                        <div className="relative">
+                            <input type="number" value={newItem.quantity} onChange={e => setNewItem({...newItem, quantity: e.target.value})} className="w-full px-4 py-3 border border-[#eaeaec] rounded-xl text-[24px] font-mono font-black focus:outline-none focus:border-[#4d87a8] bg-[#f8f9fa] focus:bg-white shadow-sm text-[#4d87a8] pr-16" placeholder="0" />
+                            <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[12px] font-black text-[#7a8b95] uppercase tracking-widest font-mono">PCK</span>
                         </div>
-                    </StandardModalWrapper>
+                    </div>
+                    <div className="flex justify-end gap-3 pt-4 border-t border-[#eaeaec]">
+                         <button onClick={() => setIsAddModalOpen(false)} className="px-6 py-2.5 bg-white border border-[#eaeaec] text-[#414757] rounded-xl font-bold text-[11px] uppercase tracking-widest hover:bg-[#d7d7d7]/30 transition-all">Cancel</button>
+                         <button onClick={handleAddOrder} className="bg-[#212c46] text-white px-6 py-2.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-md hover:bg-[#414757] hover:text-white transition-all flex items-center gap-2"><Icons.PlusCircle size={16} /> Add to Queue</button>
+                    </div>
                 </div>
-            )}
+            </DraggableModal>
             
-            {isUploadModalOpen && (
-                <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#212c46]/60 backdrop-blur-sm p-4 animate-fadeIn font-sans">
-                    <StandardModalWrapper className="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col overflow-hidden relative border border-white/40 max-h-[90vh]">
-                        <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b-2 border-[#4d87a8]">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20"><Icons.Upload size={20} className="text-[#4d87a8]" /></div>
-                                <div><h3 className="text-sm font-black text-white uppercase tracking-widest leading-none">Bulk Upload Plans</h3><p className="text-[10px] font-bold text-[#d7d7d7] uppercase tracking-widest mt-1.5">Import from CSV / Excel</p></div>
-                            </div>
-                            <button onClick={() => setIsUploadModalOpen(false)} className="text-white/50 hover:text-[#932c2e] transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-full"><Icons.X size={20} /></button>
-                        </div>
-                        <div className="p-8 flex-1 overflow-y-auto custom-scrollbar bg-[#f8f9fa]">
-                            <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
-                                <CsvUpload 
-                                    requiredHeaders={['sku', 'name', 'qty', 'deadline', 'shift']}
-                                    onUpload={(data) => {
-                                        const newBatch = data.map(row => {
-                                            const qtyNum = Number(row.qty);
-                                            const fg = FG_DATABASE.find(f => f.sku === row.sku) || FG_DATABASE[0];
-                                            const fgKg = qtyNum * (fg.weight || 1);
-                                            return {
-                                                id: `260416-U${String(Math.floor(Math.random()*1000)).padStart(3, '0')}`,
-                                                sku: row.sku, name: row.name || fg.name, qty: qtyNum, fgKg, sfgKg: fgKg, batterKg: Number((fgKg * 1.1).toFixed(2)),
-                                                deadline: row.deadline, startTime: 'TBD', status: 'DRAFT', isReplacement: false,
-                                                shift: row.shift, currentStep: 'Entry'
-                                            };
-                                        });
-                                        setOrders([...newBatch, ...orders]);
-                                        alert(`Successfully uploaded ${newBatch.length} orders.`);
-                                        setIsUploadModalOpen(false);
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </StandardModalWrapper>
+            <DraggableModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                title="Bulk Upload Plans"
+            >
+                <div className="p-8 bg-[#f8f9fa] custom-scrollbar overflow-y-auto max-h-[80vh]">
+                     <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm">
+                        <CsvUpload 
+                            requiredHeaders={['sku', 'name', 'qty', 'deadline', 'shift']}
+                            onUpload={(data) => {
+                                const newBatch = data.map(row => {
+                                    const qtyNum = Number(row.qty);
+                                    const fg = FG_DATABASE.find(f => f.sku === row.sku) || FG_DATABASE[0];
+                                    const fgKg = qtyNum * (fg.weight || 1);
+                                    return {
+                                        id: `260416-U${String(Math.floor(Math.random()*1000)).padStart(3, '0')}`,
+                                        sku: row.sku, name: row.name || fg.name, qty: qtyNum, fgKg, sfgKg: fgKg, batterKg: Number((fgKg * 1.1).toFixed(2)),
+                                        deadline: row.deadline, startTime: 'TBD', status: 'DRAFT', isReplacement: false,
+                                        shift: row.shift, currentStep: 'Entry'
+                                    };
+                                });
+                                setOrders([...newBatch, ...orders]);
+                                alert(`Successfully uploaded ${newBatch.length} orders.`);
+                                setIsUploadModalOpen(false);
+                            }}
+                        />
+                     </div>
                 </div>
-            )}
+            </DraggableModal>
+
+            <AspectModal 
+               isOpen={isAspectModalOpen} 
+               onClose={() => setIsAspectModalOpen(false)}
+               onSave={() => alert("Energy consumption targets saved.")}
+            />
         </div>
         </div>
     );

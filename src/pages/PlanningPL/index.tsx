@@ -6,8 +6,11 @@ import { UserGuidePanel } from "@/src/components/shared/UserGuidePanel";
 import UserGuideButton from "@/src/components/shared/UserGuideButton";
 import { DraggableModal } from "@/src/components/shared/DraggableModal";
 import { CsvUpload } from "@/src/components/shared/CsvUpload";
+import { CsvExport } from "@/src/components/shared/CsvExport";
+import { PdfPrint } from "@/src/components/shared/PdfPrint";
 import KpiCard from "../../components/shared/KpiCard";
 import { useCollection } from "@/src/services/useFirestore";
+import { FG_DATABASE } from "@/src/data/mockOrders";
 
 const globalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap');
@@ -36,34 +39,53 @@ const THEME = {
 };
 
 // --- MOCK DATABASE ---
-const MOCK_PL_DATA = Array.from({ length: 45 }).map((_, i) => {
-  const status = ["DRAFT", "CONFIRMED", "IN_PROCESS", "COMPLETED", "CANCELLED"][Math.floor(Math.random() * 5)];
-  return {
-    plNo: `PL-${new Date().getFullYear().toString().slice(-2)}${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(i + 1).padStart(4, "0")}`,
-    date: new Date(Date.now() - Math.floor(Math.random() * 10) * 86400000)
-      .toISOString()
-      .split("T")[0],
-    shift: ["Morning", "Afternoon", "Night"][Math.floor(Math.random() * 3)],
-    customer: [
-      "Makro",
-      "Lotus",
-      "CPALL",
-      "BJC",
-      "Export-JP",
-      "General Market",
-      "AFM",
-    ][Math.floor(Math.random() * 7)],
-    skuCount: Math.floor(Math.random() * 15) + 1,
-    totalKg: Math.floor(Math.random() * 15000) + 1000,
-    priority: ["Normal", "High", "Urgent"][Math.floor(Math.random() * 3)],
-    status: status,
-    progress: Math.floor(Math.random() * 100),
-    delayDetected: status === "IN_PROCESS" && Math.random() > 0.7,
-    createdBy: ["Admin", "Planner_JS", "Planner_TK", "System_Auto"][
-      Math.floor(Math.random() * 4)
-    ],
-  };
-});
+const MOCK_PL_DATA: any[] = [];
+let globalPlCounter = 1;
+
+for (let d = -2; d <= 2; d++) {
+  const dateStr = new Date(Date.now() + d * 86400000).toISOString().split("T")[0];
+  let dailyKg = 0;
+  const targetDailyKg = Math.floor(Math.random() * 100000) + 150000; // 150,000 - 250,000 KG (150-250 tons)
+  
+  while (dailyKg < targetDailyKg) {
+      const fg = FG_DATABASE[Math.floor(Math.random() * FG_DATABASE.length)];
+      
+      let itemKg = 0;
+      if (fg.name.includes('AFM') || fg.sku.includes('AFM')) {
+          itemKg = Math.floor(Math.random() * 10000) + 5000; // 5,000 to 15,000 kg (>= 5 tons)
+      } else {
+          itemKg = Math.floor(Math.random() * 4000) + 1000; // 1,000 to 5,000 kg
+      }
+      
+      const packs = Math.ceil(itemKg / fg.weight);
+      const totalKg = packs * fg.weight;
+      dailyKg += totalKg;
+      
+      const targetBatter = totalKg * 1.1;
+      const batchSize = [80, 100, 120][Math.floor(Math.random() * 3)];
+      const batches = Math.ceil(targetBatter / batchSize);
+      
+      const status = ["DRAFT", "CONFIRMED", "IN_PROCESS", "COMPLETED", "CANCELLED"][Math.floor(Math.random() * 5)];
+      
+      MOCK_PL_DATA.push({
+          plNo: `PL-${dateStr.replace(/-/g, '').substring(2, 6)}-${String(globalPlCounter++).padStart(4, "0")}`,
+          date: dateStr,
+          shift: ["Morning", "Afternoon", "Night"][Math.floor(Math.random() * 3)],
+          customer: ["Makro", "Lotus", "CPALL", "BJC", "Export-JP", "General Market", "AFM"][Math.floor(Math.random() * 7)],
+          skuCount: 1,
+          item: fg,
+          totalKg: totalKg,
+          totalPacks: packs,
+          batches: batches,
+          batchSize: batchSize,
+          priority: ["Normal", "High", "Urgent"][Math.floor(Math.random() * 3)],
+          status: status,
+          progress: Math.floor(Math.random() * 100),
+          delayDetected: status === "IN_PROCESS" && Math.random() > 0.7,
+          createdBy: ["Admin", "Planner_JS", "Planner_TK", "System_Auto"][Math.floor(Math.random() * 4)],
+      });
+  }
+}
 
 MOCK_PL_DATA.sort(
   (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
@@ -116,10 +138,41 @@ export default function PlanningPL() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [dateFilter, setDateFilter] = useState(() => new Date().toISOString().split("T")[0]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [loading, setLoading] = useState(true);
   const [activeMainTab, setActiveMainTab] = useState("PLANNING (PL)");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isActionOpen, setIsActionOpen] = useState(false);
+  const [actionItem, setActionItem] = useState<any>(null);
+  const [actionType, setActionType] = useState<"view" | "edit">("view");
+
+  const [newPL, setNewPL] = useState({
+    date: new Date().toISOString().split("T")[0],
+    customer: "",
+    skuCount: 1,
+    itemSku: "",
+    batches: 1,
+    batchSize: 80,
+    totalKg: 72.7,
+    totalPacks: 72,
+    priority: "Normal",
+    shift: "Morning",
+  });
+
+  const handleBatchChangePL = (b: number, bs: number, sku: string) => {
+      const fg = FG_DATABASE.find(f => f.sku === sku);
+      if(!fg) {
+          setNewPL(prev => ({...prev, batches: b, batchSize: bs, itemSku: sku}));
+          return;
+      }
+      const totalBatter = b * bs;
+      const totalFgKg = totalBatter / 1.1;
+      const packs = Math.floor(totalFgKg / fg.weight);
+      setNewPL(prev => ({...prev, batches: b, batchSize: bs, itemSku: sku, totalKg: packs * fg.weight, totalPacks: packs}));
+  };
+
   const { data: dailyReports } = useCollection<any>('daily_production_reports');
 
   useEffect(() => {
@@ -127,8 +180,10 @@ export default function PlanningPL() {
     return () => clearTimeout(t);
   }, []);
 
+  const [mockPlData, setMockPlData] = useState(() => MOCK_PL_DATA);
+
   const syncedData = useMemo(() => {
-    return MOCK_PL_DATA.map(pl => {
+    return mockPlData.map(pl => {
       // Find reports matching the date (and roughly shift if possible, but date is easier)
       const matchingReports = dailyReports.filter(r => r.date === pl.date);
       const shiftPrefix = pl.shift === 'Morning' ? 'Shift A' : pl.shift === 'Afternoon' ? 'Shift B' : 'Shift C';
@@ -173,9 +228,10 @@ export default function PlanningPL() {
         item.customer.toLowerCase().includes(searchTerm.toLowerCase());
       const matchStatus =
         statusFilter === "ALL" || item.status === statusFilter;
-      return matchSearch && matchStatus;
+      const matchDate = !dateFilter || item.date === dateFilter;
+      return matchSearch && matchStatus && matchDate;
     });
-  }, [syncedData, searchTerm, statusFilter]);
+  }, [syncedData, searchTerm, statusFilter, dateFilter]);
 
   // Pagination basics
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -185,19 +241,16 @@ export default function PlanningPL() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, itemsPerPage]);
+  }, [searchTerm, statusFilter, dateFilter, itemsPerPage]);
 
   // KPIs
-  const totalPL = filteredData.length;
   const totalVolume = filteredData.reduce((sum, i) => sum + i.totalKg, 0);
-  const pendingPL = filteredData.filter((i) =>
-    ["DRAFT", "CONFIRMED"].includes(i.status),
-  ).length;
-  const completedPL = filteredData.filter(
-    (i) => i.status === "COMPLETED",
-  ).length;
+  const totalBatches = filteredData.reduce((sum, i) => sum + i.batches, 0);
+  const totalPacks = filteredData.reduce((sum, i) => sum + i.totalPacks, 0);
 
-  const delayedCount = syncedData.filter((i) => i.delayDetected).length;
+  const completedCount = filteredData.filter((i) => i.status === "COMPLETED").length;
+  const delayedCount = filteredData.filter((i) => i.delayDetected).length;
+
   const [showAlarm, setShowAlarm] = useState(delayedCount > 0);
 
   if (loading) {
@@ -266,7 +319,31 @@ export default function PlanningPL() {
 
             <div>
                 <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
-                    <div className="bg-[#3f809e] text-white w-5 h-5 rounded flex items-center justify-center text-[10px] shrink-0">3</div> 
+                    <div className="bg-[#b58c4f] text-white w-5 h-5 rounded flex items-center justify-center text-[10px] shrink-0"><Icons.HeartPulse size={12} /></div> 
+                    PLAN HEALTH
+                </h3>
+                <p className="mb-4 text-[#414757]">ระบบแจ้งเตือนสถานะความเสี่ยงของออเดอร์ คำนวณแบบ Real-time โดยเทียบเวลาปัจจุบันกับกำหนดส่งมอบ:</p>
+                <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                        <div className="bg-[#f0f2f5] text-[#212c46] font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded w-[80px] text-center mt-1 shrink-0">ON PLAN</div>
+                        <div className="text-[#414757]">อยู่ในแผนงานปกติ มีเวลาดำเนินการเพียงพอ (มากกว่า 2 ชั่วโมงก่อนกำหนด)</div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <div className="bg-[#fff9e6] border border-[#ffdb7d] text-[#ce870a] font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded w-[80px] text-center mt-1 shrink-0">URGENT</div>
+                        <div className="text-[#414757]">ออเดอร์เร่งด่วน ใกล้ถึงกำหนดส่งมอบ (เหลือเวลา &le; 2 ชั่วโมง)</div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                        <div className="bg-[#fdf2f2] border border-[#f5c6cb] text-[#d55a6d] font-bold text-[10px] uppercase tracking-widest px-2 py-1 rounded w-[80px] text-center mt-1 shrink-0">DELAYED</div>
+                        <div className="text-[#414757]">ออเดอร์ล่าช้าเกินกำหนดส่งมอบ ต้องเร่งติดตามและจัดการทันที หรือเป็นออเดอร์ฉุกเฉิน</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="h-px bg-[#eaeaec] w-full" />
+
+            <div>
+                <h3 className="text-[13px] font-black uppercase tracking-widest text-[#212c46] flex items-center gap-2 mb-4">
+                    <div className="bg-[#3f809e] text-white w-5 h-5 rounded flex items-center justify-center text-[10px] shrink-0">4</div> 
                     ACTION BUTTONS
                 </h3>
                 <p className="mb-4">การจัดการข้อมูลแผนการผลิตสามารถทำได้ผ่านปุ่มคำสั่งต่อไปนี้ :</p>
@@ -305,6 +382,170 @@ export default function PlanningPL() {
               "All required columns must be filled for successful plan creation"
             ]}
           />
+        </div>
+      </DraggableModal>
+
+      {/* CREATE PL MODAL */}
+      <DraggableModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="CREATE PLANNING (PL)"
+      >
+        <div className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-black uppercase text-[#7a8b95] mb-1">Date</label>
+              <input type="date" className="w-full border border-[#eaeaec] bg-[#f8f9fa] rounded-lg p-2.5 text-[12px] font-mono text-[#212c46] focus:border-[#4d87a8] outline-none" value={newPL.date} onChange={e => setNewPL({...newPL, date: e.target.value})} />
+            </div>
+            <div>
+              <label className="block text-[10px] font-black uppercase text-[#7a8b95] mb-1">Shift</label>
+              <select className="w-full border border-[#eaeaec] bg-[#f8f9fa] rounded-lg p-2.5 text-[12px] font-bold text-[#212c46] focus:border-[#4d87a8] outline-none" value={newPL.shift} onChange={e => setNewPL({...newPL, shift: e.target.value})}>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Night">Night</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-[10px] font-black uppercase text-[#7a8b95] mb-1">Customer / Reference</label>
+            <input type="text" placeholder="e.g. Makro" className="w-full border border-[#eaeaec] bg-[#f8f9fa] rounded-lg p-2.5 text-[12px] font-bold text-[#212c46] focus:border-[#4d87a8] outline-none" value={newPL.customer} onChange={e => setNewPL({...newPL, customer: e.target.value})} />
+          </div>
+          <div>
+            <label className="block text-[10px] font-black uppercase text-[#7a8b95] mb-1">Finished Goods (FG)</label>
+            <select value={newPL.itemSku} onChange={e => handleBatchChangePL(newPL.batches, newPL.batchSize, e.target.value)} className="w-full border border-[#eaeaec] bg-[#f8f9fa] rounded-lg p-2.5 text-[12px] font-bold text-[#212c46] focus:border-[#4d87a8] outline-none">
+              <option value="" disabled>-- SELECT PRODUCT --</option>
+              {FG_DATABASE.map(f => <option key={f.sku} value={f.sku}>{f.sku} : {f.name}</option>)}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+             <div>
+              <label className="block text-[10px] font-black uppercase text-[#7a8b95] mb-1">Batch Size (KG)</label>
+              <select value={newPL.batchSize} onChange={e => handleBatchChangePL(newPL.batches, Number(e.target.value), newPL.itemSku)} className="w-full border border-[#eaeaec] bg-[#f8f9fa] rounded-lg p-2.5 text-[12px] font-bold text-[#212c46] focus:border-[#4d87a8] outline-none">
+                  <option value={50}>50 KGS / Batch</option>
+                  <option value={80}>80 KGS / Batch</option>
+                  <option value={100}>100 KGS / Batch</option>
+                  <option value={120}>120 KGS / Batch</option>
+              </select>
+            </div>
+             <div>
+              <label className="block text-[10px] font-black uppercase text-[#7a8b95] mb-1">Number of Batches</label>
+              <input type="number" min="1" className="w-full border border-[#eaeaec] bg-[#f8f9fa] rounded-lg p-2.5 text-[12px] font-mono text-[#212c46] focus:border-[#4d87a8] outline-none" value={newPL.batches} onChange={e => handleBatchChangePL(Number(e.target.value), newPL.batchSize, newPL.itemSku)} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+             <div>
+              <label className="block text-[10px] font-black uppercase text-[#7a8b95] mb-1">Calculated Packs</label>
+              <input type="number" disabled className="w-full border border-[#eaeaec] bg-gray-200 rounded-lg p-2.5 text-[12px] font-mono text-[#212c46] opacity-70" value={newPL.totalPacks} />
+            </div>
+            <div>
+              <label className="block text-[10px] font-black uppercase text-[#7a8b95] mb-1">Priority</label>
+              <select className="w-full border border-[#eaeaec] bg-[#f8f9fa] rounded-lg p-2.5 text-[12px] font-bold text-[#212c46] focus:border-[#4d87a8] outline-none" value={newPL.priority} onChange={e => setNewPL({...newPL, priority: e.target.value})}>
+                <option value="Normal">Normal</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+          <div className="pt-4 flex justify-end gap-3">
+             <button onClick={() => setIsCreateOpen(false)} className="px-4 py-2 text-[11px] font-black text-[#7a8b95] uppercase tracking-widest hover:text-[#212c46]">Cancel</button>
+             <button onClick={() => { alert('Plan Created!'); setIsCreateOpen(false); }} className="px-6 py-2 bg-[#212c46] text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-sm hover:bg-[#414757]">Save Plan</button>
+          </div>
+        </div>
+      </DraggableModal>
+
+      {/* ACTION MODAL (View/Edit) */}
+      <DraggableModal
+        isOpen={isActionOpen}
+        onClose={() => setIsActionOpen(false)}
+        title={actionType === 'view' ? "VIEW PLAN DETAILS" : "EDIT PLAN"}
+      >
+        <div className="p-6 space-y-4" id="print-pl-details">
+            {actionItem && (
+               <>
+                 <div className="flex justify-between items-center bg-[#f8f9fa] p-4 rounded-xl border border-[#eaeaec]">
+                    <div>
+                       <div className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1">PL Number</div>
+                       <div className="text-[16px] font-mono font-black text-[#932c2e]">{actionItem.plNo}</div>
+                    </div>
+                    <div className="text-right">
+                       <span className={`px-2.5 py-1 text-[9px] font-black uppercase tracking-widest border rounded-md shadow-sm ${getStatusStyle(actionItem.status)}`}>{actionItem.status}</span>
+                    </div>
+                 </div>
+                 <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-[12px]">
+                    <div>
+                        <div className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1">Customer / Reference</div>
+                        {actionType === 'edit' ? (
+                          <input type="text" className="w-full border border-[#eaeaec] p-2 rounded-lg bg-[#f8f9fa] focus:border-[#4d87a8] outline-none" value={actionItem.customer} onChange={e => setActionItem({...actionItem, customer: e.target.value})} />
+                        ) : (
+                          <div className="font-bold text-[#212c46]">{actionItem.customer}</div>
+                        )}
+                    </div>
+                    <div>
+                        <div className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1">Delivery Date</div>
+                        {actionType === 'edit' ? (
+                          <input type="date" className="w-full border border-[#eaeaec] p-2 rounded-lg bg-[#f8f9fa] focus:border-[#4d87a8] outline-none" value={actionItem.date} onChange={e => setActionItem({...actionItem, date: e.target.value})} />
+                        ) : (
+                          <div className="font-mono font-black text-[#212c46]">{new Date(actionItem.date).toLocaleDateString()}</div>
+                        )}
+                    </div>
+                    <div>
+                        <div className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1">Total Target Volume (Packs / KG)</div>
+                        {actionType === 'edit' ? (
+                          <div className="flex gap-2">
+                             <input type="number" className="w-1/2 border border-[#eaeaec] p-2 rounded-lg bg-[#f8f9fa] focus:border-[#4d87a8] outline-none" value={actionItem.totalPacks} placeholder="Packs" onChange={e => {
+                                 const p = Number(e.target.value);
+                                 setActionItem({...actionItem, totalPacks: p, totalKg: p * (actionItem.item?.weight || 1)});
+                             }} />
+                             <span className="w-1/2 p-2 text-[12px] font-mono text-[#7a8b95] bg-gray-100 rounded-lg flex items-center justify-end">{actionItem.totalKg?.toLocaleString()} KG</span>
+                          </div>
+                        ) : (
+                          <div className="font-mono font-black text-[#212c46]">{actionItem.totalPacks?.toLocaleString()} PCK / {actionItem.totalKg?.toLocaleString()} KG</div>
+                        )}
+                    </div>
+                    <div>
+                        <div className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1">Product Code / Name</div>
+                        <div className="font-bold text-[#212c46] truncate" title={actionItem.item?.name}>{actionItem.item?.sku} : {actionItem.item?.name}</div>
+                    </div>
+                    <div>
+                        <div className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1">Actual Volume Yield</div>
+                        <div className="font-mono font-black text-[#3f809e]">{actionItem.actualKg?.toLocaleString() || 0} KG</div>
+                    </div>
+                    <div>
+                        <div className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1">Priority</div>
+                        {actionType === 'edit' ? (
+                          <select className="w-full border border-[#eaeaec] p-2 rounded-lg bg-[#f8f9fa] focus:border-[#4d87a8] outline-none" value={actionItem.priority} onChange={e => setActionItem({...actionItem, priority: e.target.value})}>
+                            <option value="Normal">Normal</option>
+                            <option value="High">High</option>
+                            <option value="Urgent">Urgent</option>
+                          </select>
+                        ) : (
+                          <div className="font-bold">{actionItem.priority}</div>
+                        )}
+                    </div>
+                    <div>
+                        <div className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest mb-1">Creation Info</div>
+                        <div className="font-mono text-[#7a8b95]">{actionItem.createdBy}</div>
+                    </div>
+                 </div>
+
+                 {actionType === 'view' && (
+                   <div className="pt-6 border-t border-[#eaeaec] flex justify-end gap-3 no-print">
+                      <PdfPrint contentId="print-pl-details" title={`PLAN ${actionItem.plNo}`} />
+                      <button onClick={() => setIsActionOpen(false)} className="px-6 py-2 bg-[#212c46] text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-sm hover:bg-[#414757]">Close</button>
+                   </div>
+                 )}
+                 {actionType === 'edit' && (
+                   <div className="pt-6 border-t border-[#eaeaec] flex justify-end gap-3">
+                      <button onClick={() => setIsActionOpen(false)} className="px-4 py-2 text-[11px] font-black text-[#7a8b95] uppercase tracking-widest hover:text-[#212c46]">Cancel</button>
+                      <button onClick={() => { 
+                          setMockPlData(prev => prev.map(p => p.plNo === actionItem.plNo ? actionItem : p));
+                          alert('Plan updated!'); 
+                          setIsActionOpen(false); 
+                      }} className="px-6 py-2 bg-[#212c46] text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-sm hover:bg-[#414757]">Save Changes</button>
+                   </div>
+                 )}
+               </>
+            )}
         </div>
       </DraggableModal>
 
@@ -394,39 +635,47 @@ export default function PlanningPL() {
 
       <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
         {/* KPI STATS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4 shrink-0">
           <KpiCard
-            label="Total Plans"
-            value={totalPL}
-            icon="file-spreadsheet"
-            colorAccent="#4d87a8"
-            colorValue={THEME.primary}
-            desc="Sales Orders"
-          />
-          <KpiCard
-            label="Target Volume"
+            label="Target Volume (Tons)"
             value={(totalVolume / 1000).toFixed(1)}
             unit="TON"
             icon="weight"
-            colorAccent="#932c2e"
+            colorAccent="#4d87a8"
             colorValue={THEME.primary}
-            desc="Total Mass"
+            desc="Planned Output"
           />
           <KpiCard
-            label="Pending"
-            value={pendingPL}
-            icon="clock"
+            label="Target Volume (Batches)"
+            value={totalBatches.toLocaleString()}
+            icon="layers"
+            colorAccent="#b7a159"
+            colorValue={THEME.primary}
+            desc="Batches"
+          />
+          <KpiCard
+            label="Target Volume (Packs)"
+            value={totalPacks.toLocaleString()}
+            icon="package"
             colorAccent="#f59e0b"
             colorValue={THEME.primary}
-            desc="Draft & Confirmed"
+            desc="Packs"
           />
           <KpiCard
             label="Completed"
-            value={completedPL}
+            value={completedCount.toLocaleString()}
             icon="check-circle"
             colorAccent="#2e7d32"
             colorValue={THEME.primary}
-            desc="Finished Plans"
+            desc="PL COMPLETED"
+          />
+          <KpiCard
+            label="Delayed"
+            value={delayedCount.toLocaleString()}
+            icon="alert-circle"
+            colorAccent="#932c2e"
+            colorValue={THEME.primary}
+            desc="PL DELAYED"
           />
         </div>
 
@@ -457,6 +706,19 @@ export default function PlanningPL() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7a8b95] pointer-events-none"
                   />
                 </div>
+
+                <div className="relative group flex items-center">
+                  <Icons.Calendar
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7a8b95] group-hover:text-[#212c46]"
+                  />
+                  <input
+                    type="date"
+                    className="pl-9 pr-4 py-2 border border-[#eaeaec] rounded-xl text-[12px] font-bold bg-[#f8f9fa] focus:border-[#4d87a8] outline-none transition-all text-[#212c46] shadow-sm h-10 w-[150px]"
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value || new Date().toISOString().split("T")[0])}
+                  />
+                </div>
               </div>
 
               <div className="flex gap-3 w-full md:w-auto items-center">
@@ -476,10 +738,15 @@ export default function PlanningPL() {
                 <button onClick={() => setIsUploadOpen(true)} className="bg-white border border-[#eaeaec] hover:border-[#4d87a8] hover:text-[#4d87a8] text-[#7a8b95] px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors hidden md:flex h-10 shrink-0">
                   <Icons.Upload size={14} /> BULK UPLOAD
                 </button>
-                <button className="bg-white border border-[#eaeaec] hover:border-[#4d87a8] hover:text-[#4d87a8] text-[#7a8b95] px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors hidden md:flex h-10 shrink-0">
-                  <Icons.Download size={14} /> Export
-                </button>
-                <button className="bg-[#212c46] hover:bg-[#414757] text-white px-5 py-2 rounded-xl font-black text-[12px] uppercase tracking-widest shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shrink-0 h-10 border border-[#212c46]">
+                <CsvExport 
+                  data={filteredData} 
+                  filename="planning_pl_export.csv"
+                  label="EXPORT" 
+                  className="!h-10 !rounded-xl !bg-white !text-[#7a8b95] !border !border-[#eaeaec] hover:!border-[#4d87a8] hover:!text-[#4d87a8] !shadow-sm !font-bold !text-[12px] hidden md:flex" 
+                />
+                <button 
+                  onClick={() => setIsCreateOpen(true)}
+                  className="bg-[#212c46] hover:bg-[#414757] text-white px-5 py-2 rounded-xl font-black text-[12px] uppercase tracking-widest shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shrink-0 h-10 border border-[#212c46]">
                   <Icons.Plus size={14} /> CREATE PL
                 </button>
               </div>
@@ -508,11 +775,14 @@ export default function PlanningPL() {
                     <th className="align-middle font-black shadow-sm ">
                       Priority
                     </th>
+                    <th className="text-center w-[12%] align-middle font-black shadow-sm ">
+                      Plan Health
+                    </th>
                     <th className="text-center align-middle font-black shadow-sm ">
                       Items
                     </th>
                     <th className="text-right align-middle font-black shadow-sm ">
-                      Volume (KG)
+                      Volume (KG / PACK)
                     </th>
                     <th className="w-[150px] align-middle font-black shadow-sm ">
                       Progress
@@ -571,10 +841,39 @@ export default function PlanningPL() {
                           {item.priority}
                         </span>
                       </td>
+                      <td className="px-4 align-middle text-center py-2.5">
+                          {(() => {
+                            if (item.status === 'COMPLETED' || item.status === 'CANCELLED') {
+                               return <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest border shadow-sm bg-stone-50 text-stone-500 border-stone-200`}>{item.status}</span>;
+                            }
+                            
+                            const pDate = new Date(item.date);
+                            const tDate = new Date();
+                            tDate.setHours(0,0,0,0);
+                            
+                            let hStatus = { label: 'ON PLAN', color: 'bg-[#f8f9fa] text-[#7a8b95] border-[#eaeaec]', blink: false };
+                            if (item.delayDetected || pDate < tDate) {
+                                hStatus = { label: 'DELAYED', color: 'bg-rose-50 border-rose-200 text-[#932c2e] shadow-sm', blink: true };
+                            } else if (pDate.getTime() === tDate.getTime()) {
+                                hStatus = { label: 'URGENT', color: 'bg-amber-50 text-[#f59e0b] border-amber-200', blink: false };
+                            }
+                            return (
+                                <span className={`px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest border shadow-sm transition-all ${hStatus.color} ${hStatus.blink ? 'opacity-80' : ''}`}>{hStatus.label}</span>
+                            );
+                          })()}
+                      </td>
                       <td className="px-4 text-center align-middle py-2.5">
-                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#f8f9fa] border border-[#eaeaec] text-[#212c46] font-black text-[11px] font-mono">
-                          {item.skuCount}
-                        </span>
+                        <div className="flex flex-col gap-1 items-start max-w-[200px] mx-auto">
+                            {item.item ? (
+                                <div className="truncate w-full text-left text-[11px] font-bold text-[#414757] bg-[#f8f9fa] border border-[#eaeaec] px-2 py-1 rounded" title={item.item.name}>
+                                    {item.item.sku} : {item.item.name}
+                                </div>
+                            ) : (
+                                <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#f8f9fa] border border-[#eaeaec] text-[#212c46] font-black text-[11px] font-mono">
+                                  1
+                                </span>
+                            )}
+                        </div>
                       </td>
                       <td className="px-4 text-right align-middle py-2.5">
                         <div className="flex flex-col items-end">
@@ -585,6 +884,10 @@ export default function PlanningPL() {
                             ) : (
                                 <span>{item.totalKg.toLocaleString()}</span>
                             )}
+                            <span className="text-[9px] text-[#7a8b95] ml-0.5">KG</span>
+                          </span>
+                          <span className="text-[10px] text-[#7a8b95] font-bold font-mono">
+                            {item.totalPacks.toLocaleString()} <span className="text-[8px]">PACK</span>
                           </span>
                         </div>
                       </td>
@@ -612,6 +915,7 @@ export default function PlanningPL() {
                       <td className="px-4 text-right pr-8 align-middle py-2.5">
                         <div className="flex items-center justify-end gap-[1px]">
                           <button
+                            onClick={() => { setActionType('view'); setActionItem(item); setIsActionOpen(true); }}
                             className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90"
                             title="View"
                           >
@@ -621,6 +925,7 @@ export default function PlanningPL() {
                             item.status,
                           ) && (
                             <button
+                              onClick={() => { setActionType('edit'); setActionItem(item); setIsActionOpen(true); }}
                               className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#4d87a8] hover:border-[#212c46] hover:text-[#a94228] hover:bg-[#212c46]/5 transition-all shadow-sm bg-white active:scale-90"
                               title="Edit"
                             >

@@ -385,6 +385,14 @@ export default function ProductionTracking() {
   // Derived filtered data for Daily Monitor
   const [orders, , updateOrder] = useSharedOrders();
   const trackItems = useMemo(() => {
+    let kgPerBatch = 80;
+    try {
+      const stored = localStorage.getItem('mes_batch_config');
+      if (stored) {
+        kgPerBatch = JSON.parse(stored).kgPerBatch || 80;
+      }
+    } catch (e) {}
+
     return orders.map((o: any) => {
       const target = o.qty;
       const progressOverride = o.status === 'COMPLETED' ? 100 : (o.status === 'PLANNED' ? 0 : null);
@@ -401,23 +409,25 @@ export default function ProductionTracking() {
       const calculatedProgress = target > 0 ? Math.round((sumVal / (target * 7)) * 100) : 0;
       const progress = progressOverride !== null ? progressOverride : Math.min(99, calculatedProgress);
 
+      const toBatch = (val: number) => Math.ceil(val / kgPerBatch);
+
       return {
         id: o.id,
         sku: o.sku || o.id,
         customer: o.shift ? `${o.shift} Shift` : "Standard",
         name: o.name,
-        target: target,
+        target: toBatch(target),
         time: o.deadline,
         progress: progress,
         status: o.status,
         stages: [
-          { step: "mixing", count: mixVal, color: "#537E72" },
-          { step: "forming", count: formVal, color: "#DCBC1B" },
-          { step: "cooking", count: cookVal, color: "#C22D2E" },
-          { step: "cooling", count: coolVal, color: "#90B7BF" },
-          { step: "cutting", count: cutVal, color: "#BB8588" },
-          { step: "packing", count: packVal, color: "#2E395F" },
-          { step: "wh", count: whVal, color: "#537E72" }
+          { step: "mixing", count: toBatch(mixVal), color: "#537E72" },
+          { step: "forming", count: toBatch(formVal), color: "#DCBC1B" },
+          { step: "cooking", count: toBatch(cookVal), color: "#C22D2E" },
+          { step: "cooling", count: toBatch(coolVal), color: "#90B7BF" },
+          { step: "cutting", count: toBatch(cutVal), color: "#BB8588" },
+          { step: "packing", count: toBatch(packVal), color: "#2E395F" },
+          { step: "wh", count: toBatch(whVal), color: "#537E72" }
         ],
         // Save current counts for label print visualization
         mixingCount: mixVal,

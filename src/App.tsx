@@ -320,7 +320,7 @@ export default function App() {
               <Route
                 path="/dev-permit"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute isConfidential>
                     <DevPermit />
                   </ProtectedRoute>
                 }
@@ -328,7 +328,7 @@ export default function App() {
               <Route
                 path="/dev-logs"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute isConfidential>
                     <SystemLogs />
                   </ProtectedRoute>
                 }

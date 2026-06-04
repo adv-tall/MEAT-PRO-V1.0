@@ -69,13 +69,17 @@ const KpiCard: React.FC<KpiCardProps> = ({
                 </div>
             </div>
             
-            <div className="relative z-10 mt-2 flex items-end justify-between">
-                <div className="text-[28px] font-black leading-none text-[#212c46]" style={{color: valColor}}>
+            <div className="relative z-10 mt-2 flex flex-col items-start w-full">
+                <div className="text-[28px] font-black leading-none text-[#212c46] mb-2" style={{color: valColor}}>
                     {value}
                 </div>
                 {displayDesc && (
-                    <span className="text-[11px] font-bold text-[#4d87a8] uppercase tracking-widest flex items-center gap-1 max-w-[50%] truncate text-right justify-end whitespace-nowrap">
-                        <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-current animate-pulse"></span> {displayDesc}
+                    <span 
+                       className="text-[11px] font-bold text-[#4d87a8] uppercase tracking-wide flex items-center gap-1 self-end text-right"
+                       style={{ fontFamily: "'JetBrains Mono', 'Noto Sans Thai', sans-serif" }}
+                    >
+                        <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-current animate-pulse"></span>
+                        <span className="whitespace-normal overflow-visible text-right">{displayDesc}</span>
                     </span>
                 )}
             </div>

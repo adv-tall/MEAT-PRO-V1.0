@@ -85,28 +85,16 @@ class OrdersStore {
 
   private async seedMockOrders() {
     this.isLoaded = true;
-    if (!auth.currentUser) {
-      console.log("Seeding mock orders bypassed: User is not authenticated.");
-      // Fallback locally
-      const stored = localStorage.getItem('prod_orders');
-      if (stored) {
-        try {
-          this.orders = JSON.parse(stored);
-        } catch (e) {
-          this.orders = initialMockOrders;
-        }
-      } else {
-        this.orders = initialMockOrders;
-      }
-      this.listeners.forEach(l => l());
-      return;
-    }
-
+    
+    // Attempt Firestore persistence first
     try {
       const batch = writeBatch(db);
       const isoNow = new Date().toISOString();
       
-      initialMockOrders.forEach((o) => {
+      // Limit to 450 items to stay safely under Firestore's 500 batch limit
+      const itemsToSeed = initialMockOrders.slice(0, 450);
+      
+      itemsToSeed.forEach((o) => {
         const docRef = doc(db, 'orders', o.id);
         const orderDoc = {
           id: o.id,
@@ -116,6 +104,9 @@ class OrdersStore {
           fgKg: o.fgKg || 0,
           sfgKg: o.sfgKg || 0,
           batterKg: o.batterKg || 0,
+          batches: o.batches || 0,
+          batchSize: o.batchSize || 100,
+          customer: o.customer || '',
           deadline: o.deadline || '12:00',
           status: o.status || 'PLANNED',
           isReplacement: !!o.isReplacement,
@@ -135,10 +126,28 @@ class OrdersStore {
       });
       
       await batch.commit();
-      console.log("Seeded mock orders successfully into Firestore");
+      console.log(`Seeded ${itemsToSeed.length} mock orders successfully into Firestore`);
     } catch (err) {
-      console.warn("Failsafe: error seeding mock orders:", err);
+      console.warn("Failsafe: error seeding mock orders (might be permission issue, using local fallback):", err);
+      // Fallback locally
+      const stored = localStorage.getItem('prod_orders');
+      if (stored) {
+        try {
+          this.orders = JSON.parse(stored);
+        } catch (e) {
+          this.orders = initialMockOrders;
+        }
+      } else {
+        this.orders = initialMockOrders;
+      }
     }
+    
+    this.listeners.forEach(l => l());
+  }
+
+  // Force seed method to expose to UI
+  public triggerForceSeed() {
+    this.seedMockOrders();
   }
 
   subscribe(listener: () => void) {
@@ -150,17 +159,40 @@ class OrdersStore {
     return this.orders;
   }
 
-  async setOrders(newOrders: Order[]) {
+  get isDemo() {
+    try {
+      const savedUserStr = localStorage.getItem('user');
+      if (savedUserStr) {
+        const u = JSON.parse(savedUserStr);
+        return u.employeeId === 'DEMO';
+      }
+    } catch(e) {}
+    return false;
+  }
+
+  async setOrders(newOrdersArg: Order[] | ((prev: Order[]) => Order[])) {
+    let resolvedOrders: Order[];
+    if (typeof newOrdersArg === 'function') {
+      resolvedOrders = newOrdersArg(this.orders);
+    } else {
+      resolvedOrders = newOrdersArg;
+    }
+
     // Optimistic UI update
-    this.orders = newOrders;
+    this.orders = resolvedOrders;
     localStorage.setItem('prod_orders', JSON.stringify(this.orders));
     this.listeners.forEach(l => l());
+
+    if (this.isDemo) {
+      console.log('DEMO user bypassed order write (setOrders)');
+      return;
+    }
 
     try {
       const batch = writeBatch(db);
       const isoNow = new Date().toISOString();
       
-      newOrders.forEach(o => {
+      resolvedOrders.forEach(o => {
         const docRef = doc(db, 'orders', o.id);
         const orderDoc = {
           id: o.id,
@@ -202,6 +234,11 @@ class OrdersStore {
     this.orders = this.orders.map(o => o.id === id ? { ...o, ...updates } : o);
     localStorage.setItem('prod_orders', JSON.stringify(this.orders));
     this.listeners.forEach(l => l());
+
+    if (this.isDemo) {
+      console.log(`DEMO user bypassed order update (orders/${id})`);
+      return;
+    }
 
     try {
       const docRef = doc(db, 'orders', id);

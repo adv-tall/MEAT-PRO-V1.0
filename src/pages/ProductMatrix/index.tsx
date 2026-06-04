@@ -176,7 +176,7 @@ const LucideIcon = ({ name, size = 16, className = "", color, style, strokeWidth
 
 
 
-function MatrixConfigModal({ isOpen, onClose, sfgData, onSave, batters, fgDatabase }: any) {
+function MatrixConfigModal({ isOpen, onClose, sfgData, onSave, batters, fgDatabase, addMasterItem }: any) {
     const [formData, setFormData] = useState<any>(null);
     const [selectedFgSku, setSelectedFgSku] = useState('');
     const [selectedBatterId, setSelectedBatterId] = useState('');
@@ -217,16 +217,28 @@ function MatrixConfigModal({ isOpen, onClose, sfgData, onSave, batters, fgDataba
 
     const handleAddFgFromDb = () => {
         if (!selectedFgSku) return;
+        
+        if (formData.fgs.some((f: any) => f.sku === selectedFgSku)) { 
+            if(Swal) Swal.fire({ icon: 'warning', title: 'Duplicate', text: 'SKU already mapped.', timer: 1000 }); 
+            else alert('SKU already mapped.');
+            return; 
+        }
+
         const fgMaster = fgDatabase.find((f: any) => f.sku === selectedFgSku);
         if (fgMaster) {
-            if (formData.fgs.some((f: any) => f.sku === fgMaster.sku)) { 
-                if(Swal) Swal.fire({ icon: 'warning', title: 'Duplicate', text: 'SKU already mapped.', timer: 1000 }); 
-                else alert('SKU already mapped.');
-                return; 
-            }
             setFormData({ ...formData, fgs: [...formData.fgs, { sku: fgMaster.sku, name: fgMaster.name, brand: fgMaster.brand, weight: fgMaster.weight, pieces: 0 }] });
-            setSelectedFgSku('');
+        } else {
+            const tempName = `N/A - ${selectedFgSku}`;
+            setFormData({ ...formData, fgs: [...formData.fgs, { sku: selectedFgSku, name: tempName, pieces: 0, weight: 1 }] });
+            // Auto add to Master Items
+            if (addMasterItem) {
+                try {
+                    addMasterItem({ sku: selectedFgSku, name: tempName, weight: 1, category: 'FG', type: 'Generated' });
+                    if(Swal) Swal.fire({ icon: 'info', title: 'Auto-Created', text: `Added ${selectedFgSku} to Master Items.`, timer: 1500, showConfirmButton: false });
+                } catch(e) {}
+            }
         }
+        setSelectedFgSku('');
     };
 
     return (
@@ -333,10 +345,14 @@ export default function ProductMatrix() {
     const [searchTerm, setSearchQuery] = useState('');
     const { data: dbBatters, loading: bLoad } = useCollection('Meat_Formula', MOCK_STANDARDS);
     const { data: dbMatrix, loading: mLoad, add: addMatrix, update: updateMatrix, remove: removeMatrix } = useCollection('Product_Matrix', MOCK_MATRIX);
-    const { data: dbMaster, loading: msLoad } = useCollection('Master_Item', MOCK_MASTER);
+    const { data: dbMaster, loading: msLoad, add: addMasterItem } = useCollection('Master_Item', MOCK_MASTER);
 
     const batters = dbBatters && dbBatters.length > 0 ? dbBatters : MOCK_STANDARDS;
     const rawMatrixData = dbMatrix && dbMatrix.length > 0 ? dbMatrix : MOCK_MATRIX;
+    
+    // Check if the database has old invalid schema
+    const isDbInvalid = rawMatrixData.length > 0 && typeof (rawMatrixData[0] as any).crewSize !== 'undefined';
+
     const matrixData = rawMatrixData.map(item => {
         let bConf = item.batterConfig;
         let fgsConf = item.fgs;
@@ -346,7 +362,7 @@ export default function ProductMatrix() {
         if (typeof fgsConf === 'string') {
             try { fgsConf = JSON.parse(fgsConf); } catch(e) { fgsConf = []; }
         }
-        return { ...item, batterConfig: bConf || [], fgs: fgsConf || [] };
+        return { ...item, batterConfig: bConf || [], fgs: fgsConf || [], name: item.name || (item as any).sku || 'Unnamed' };
     });
     const masterItems = dbMaster && dbMaster.length > 0 ? dbMaster : MOCK_MASTER;
 
@@ -478,7 +494,7 @@ export default function ProductMatrix() {
                     templateName="product_matrix_template.xlsx"
                 />
             </DraggableModal>
-            <MatrixConfigModal isOpen={modal.isOpen} onClose={() => setModal({ isOpen: false, data: null })} sfgData={modal.data} onSave={handleSave} batters={batters} fgDatabase={masterItems} />
+            <MatrixConfigModal isOpen={modal.isOpen} onClose={() => setModal({ isOpen: false, data: null })} sfgData={modal.data} onSave={handleSave} batters={batters} fgDatabase={masterItems} addMasterItem={addMasterItem} />
 
             {/* Header Bar */}
             <div className="h-14 px-4 sm:px-8 flex flex-row items-center justify-between gap-4 z-20 shrink-0">
@@ -520,6 +536,24 @@ export default function ProductMatrix() {
             </div>
 
             <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
+                {isDbInvalid && (
+                    <div className="bg-red-50 border-l-4 border-red-700 p-4 mb-4 rounded-r-xl shadow-sm animate-pulse-slow">
+                        <div className="flex gap-4">
+                            <Icons.AlertTriangle className="text-red-700 shrink-0" size={24} />
+                            <div>
+                                <h3 className="text-sm font-black text-red-900 uppercase tracking-widest mb-1">Database Schema Mismatch Detected</h3>
+                                <p className="text-xs text-red-800 font-bold mb-2">
+                                    ดูเหมือนว่า Google Sheets ของคุณในแท็บ <span className="bg-red-200 px-1 py-0.5 rounded font-mono">Product_Matrix</span> ยังใช้หัวคอลัมน์จากเวอร์ชั่นเก่า ทำให้ไม่สามารถอ่านสูตรส่วนผสม (Batter & FGs) ได้ ข้อมูลที่แสดงผลจึงว่างเปล่า
+                                </p>
+                                <p className="text-[11px] text-red-700 bg-red-100 p-2 rounded-md font-mono mb-2">
+                                    [ต้องแก้ไข] ลบชีตเดิมทิ้ง หรือเปลี่ยนหัวคอลัมน์ Row 1 ให้เป็น:<br/>
+                                    <span className="font-bold">id, name, batterConfig, fgs, createdAt, updatedAt</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* KPI STATS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 shrink-0">
                     <KpiCard label="Total Matrices" value={matrixData.length} icon="git-merge" colorAccent="#4d87a8" colorValue="#212c46" desc="Configured Formulations" />

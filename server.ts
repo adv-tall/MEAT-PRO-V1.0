@@ -143,9 +143,10 @@ Each recommendation must contain:
   // Proxy for Google Apps Script to bypass CORS
   app.post("/api/gas", async (req, res) => {
     try {
+      console.log('--- Incoming GAS Request ---', req.body);
       const { url, payload } = req.body;
       if (!url || !url.startsWith("https://script.google.com/")) {
-        return res.status(400).json({ error: "Invalid GAS URL" });
+        return res.status(400).json({ error: "Invalid GAS URL", body: req.body });
       }
 
       const response = await fetch(url, {

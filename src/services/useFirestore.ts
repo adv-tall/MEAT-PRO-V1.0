@@ -34,8 +34,8 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
          gasData = response.data?.items || [];
       }
 
-      // 3. Merge data (prefer Firebase, then GAS, then seed)
-      let mergedData = [...fbData];
+      // 3. Merge data (prefer GAS, then Firebase, then seed)
+      let mergedData = [...gasData];
       let needsFbSync = false;
       let itemsToSyncToGas: any[] = [];
       let itemsToSyncToFb: any[] = [];
@@ -50,6 +50,7 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
          });
          
          if (!existsInGas) {
+             mergedData.push(fbItem);
              itemsToSyncToGas.push(fbItem);
          }
       });
@@ -64,8 +65,9 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
          });
          
          if (!existsInFb) {
-            mergedData.push(gasItem);
             itemsToSyncToFb.push(gasItem);
+         } else {
+             itemsToSyncToFb.push(gasItem); // Sync the gasItem to override FB's stale data
          }
       });
 
@@ -184,7 +186,7 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
 
     try {
       // Update in Firebase
-      await updateDoc(doc(db, collectionName, id), updatedItem);
+      await setDoc(doc(db, collectionName, id), updatedItem, { merge: true });
     } catch(e) {
       console.error(`Firebase update failed for ${id} in ${collectionName}`, e);
     }

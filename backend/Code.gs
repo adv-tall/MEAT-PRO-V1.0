@@ -29,8 +29,8 @@ const GLOBAL_SHEETS_CONFIG = {
     'Orders_Production': ['id', 'date', 'shift', 'sku', 'name', 'qty', 'fgKg', 'sfgKg', 'batterKg', 'batches', 'batchSize', 'deadline', 'status', 'currentStep', 'customer', 'isReplacement', 'createdAt', 'updatedAt'],
     
     // PROD CONFIG MODULE
-    'Master_Item': ['id', 'sku', 'name', 'category', 'weight', 'createdAt', 'updatedAt'],
-    'Product_Matrix': ['id', 'sku', 'machineId', 'outputPerHour', 'crewSize', 'parameterSetting', 'createdAt', 'updatedAt'],
+    'Master_Item': ['id', 'sku', 'name', 'category', 'subCategory', 'type', 'brand', 'weight', 'pieces', 'status', 'createdAt', 'updatedAt'],
+    'Product_Matrix': ['id', 'name', 'batterConfig', 'fgs', 'createdAt', 'updatedAt'],
     'Meat_Formula': ['id', 'formulaId', 'sku', 'recipeData', 'standardYield', 'createdAt', 'updatedAt'],
     'Equipment_Registry': ['id', 'machineId', 'name', 'type', 'status', 'line', 'createdAt', 'updatedAt'],
     

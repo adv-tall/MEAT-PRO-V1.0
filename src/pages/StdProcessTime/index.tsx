@@ -5,6 +5,8 @@ import * as Icons from 'lucide-react';
 import { UserGuidePanel } from '@/src/components/shared/UserGuidePanel';
 import KpiCard from '../../components/shared/KpiCard';
 import { DraggableModal } from '../../components/shared/DraggableModal';
+import { CsvUpload } from '../../components/shared/CsvUpload';
+import { CsvExport } from '../../components/shared/CsvExport';
 
 const globalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap');
@@ -223,104 +225,7 @@ const LucideIcon = ({ name, size = 16, className = "", color, style }: any) => {
 };
 
 
-function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
-    const [dragActive, setDragActive] = useState(false);
-    const [previewData, setPreviewData] = useState<any[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    if (!isOpen) return null;
-
-    const handleDrag = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); if (e.type === "dragenter" || e.type === "dragover") setDragActive(true); else setDragActive(false); };
-    const handleDrop = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setDragActive(false); if (e.dataTransfer.files && e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); };
-    const handleChange = (e: any) => { if (e.target.files && e.target.files[0]) processFile(e.target.files[0]); };
-    
-    const processFile = (file: File) => {
-        setError(null);
-        if(!Papa) { setError("CSV Parser (PapaParse) ไม่ได้โหลดในระบบ แนะนำให้ป้อนข้อมูลแบบแมนนวล"); return; }
-        Papa.parse(file, { header: true, skipEmptyLines: true, complete: function (results: any) {
-            if (results.errors.length > 0) { setError("Error parsing CSV: " + results.errors[0].message); return; }
-            setPreviewData(results.data);
-        }});
-    };
-
-    const confirmUpload = () => {
-        const newData = previewData.map(row => ({
-            id: row.ID,
-            name: row.Name,
-            category: row.Category,
-            rawWeightPerBatch: parseFloat(row.Raw_Batch) || 100,
-            yieldPercent: parseFloat(row.Yield) || 100,
-            status: row.Status || 'Active',
-            updateDate: new Date().toLocaleDateString('en-GB'),
-            mixingStandards: [], formingStandards: [], cookingStandards: [],
-            coolingStandards: [], peelingStandards: [], cuttingStandards: [], packingStandards: [],
-            packVariants: []
-        }));
-        onUpload(newData);
-        onClose();
-        setPreviewData([]);
-        setError(null);
-        if(Swal) Swal.fire({ icon: 'success', title: 'Imported!', text: 'Data has been successfully imported.', timer: 1500, showConfirmButton: false });
-    };
-
-    return (
-        <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-3xl" hideDefaultHeader>
-            <div className="bg-white rounded-xl w-full overflow-hidden flex flex-col max-h-[90vh]">
-                <div className="p-5 border-b border-[#eaeaec] flex justify-between items-center bg-[#212c46] text-white">
-                    <h3 className="font-black flex items-center gap-2 uppercase tracking-widest text-sm"><LucideIcon name="upload-cloud" /> Import CSV</h3>
-                    <button onClick={onClose} className="hover:bg-white/20 p-1.5 rounded-lg transition-colors"><LucideIcon name="x" /></button>
-                </div>
-                <div className="p-8 flex-1 overflow-y-auto">
-                    {!previewData.length ? (
-                        <div className={`border-2 border-dashed rounded-xl p-10 text-center transition-all bg-[#f8f9fa] ${dragActive ? 'border-[#932c2e] bg-[#932c2e]/5' : 'border-[#eaeaec]'}`} onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
-                             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-[#7a8b95]"><LucideIcon name="file-spreadsheet" size={32} /></div>
-                            <p className="text-[#212c46] font-black mb-2 uppercase tracking-widest text-[12px]">Drag & Drop CSV file here</p>
-                            <button onClick={() => fileInputRef.current?.click()} className="bg-[#212c46] hover:bg-[#4d87a8] text-white px-6 py-2.5 rounded-lg text-[12px] uppercase tracking-widest font-black transition-colors shadow-md mt-4">Browse File</button>
-                            <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleChange} />
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto border border-[#eaeaec] rounded-lg max-h-[300px] custom-scrollbar shadow-inner text-[12px]">
-                            <h4 className="font-bold text-[#212c46] mb-3 px-4 pt-4 flex justify-between items-center">
-                                <span>Preview Data ({previewData.length} rows)</span>
-                                <button onClick={() => setPreviewData([])} className="text-[10px] text-[#932c2e] uppercase tracking-widest bg-red-50 px-2 py-1 rounded">Clear</button>
-                            </h4>
-                            <table className="w-full text-left whitespace-nowrap table-font">
-                                <thead className="sys-table-header sticky top-0 ">
-                    <tr>
-                                        <th className="p-3 font-black uppercase  align-middle   ">ID</th>
-                                        <th className="p-3 font-black uppercase  align-middle   ">Name</th>
-                                        <th className="p-3 font-black uppercase  align-middle   ">Category</th>
-                                        <th className="p-3 font-black uppercase text-right  align-middle   ">Raw Batch</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {previewData.slice(0, 10).map((row, i) => (
-                                        <tr key={i} className="hover:bg-slate-50 border-b">
-                                            <td className="p-3 font-mono font-bold text-[#932c2e] py-2.5 px-4">{row.ID || '-'}</td>
-                                            <td className="p-3 text-[#212c46] font-bold py-2.5 px-4">{row.Name || '-'}</td>
-                                            <td className="p-3 text-[#4d87a8] py-2.5 px-4">{row.Category || '-'}</td>
-                                            <td className="p-3 font-mono text-right py-2.5 px-4">{row.Raw_Batch || '-'}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                    {error && <div className="mt-4 p-3 bg-red-50 text-[#932c2e] text-[12px] rounded-lg border border-red-100 flex items-center gap-2 font-bold"><LucideIcon name="alert-circle" size={16}/> {error}</div>}
-                </div>
-                {previewData.length > 0 && (
-                    <div className="p-4 border-t border-[#eaeaec] flex justify-end gap-3 bg-[#f8f9fa]">
-                        <button onClick={onClose} className="px-6 py-2.5 text-[#7a8b95] hover:text-[#212c46] font-bold text-[10px] uppercase tracking-widest transition-colors">Cancel</button>
-                        <button onClick={confirmUpload} className="px-8 py-2.5 bg-[#212c46] hover:bg-[#4d87a8] text-white font-black text-[11px] uppercase tracking-widest rounded-lg shadow-md transition-colors flex items-center gap-2">
-                            <LucideIcon name="check" size={14}/> Confirm Upload
-                        </button>
-                    </div>
-                )}
-            </div>
-        </DraggableModal>
-    );
-}
 
 function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
     const [topTab, setTopTab] = useState('info');
@@ -590,7 +495,28 @@ export default function STDProcess() {
                     </div>
                 </div>
             </UserGuidePanel>
-            <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={handleCsvUpload} />
+            <DraggableModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} title="Bulk Upload Process Standards" width="max-w-2xl">
+                <CsvUpload 
+                    onUpload={(data) => {
+                        const newData = data.map(row => ({
+                            id: row.ID,
+                            name: row.Name,
+                            category: row.Category,
+                            rawWeightPerBatch: parseFloat(row.Raw_Batch) || 100,
+                            yieldPercent: parseFloat(row.Yield) || 100,
+                            status: row.Status || 'Active',
+                            updateDate: new Date().toLocaleDateString('en-GB'),
+                            mixingStandards: [], formingStandards: [], cookingStandards: [],
+                            coolingStandards: [], peelingStandards: [], cuttingStandards: [], packingStandards: [],
+                            packVariants: []
+                        }));
+                        handleCsvUpload(newData);
+                        setCsvModalOpen(false);
+                    }} 
+                    requiredHeaders={['ID', 'Name', 'Category']}
+                    templateName="process_standards_template.xlsx"
+                />
+            </DraggableModal>
             <ConfigModal isOpen={modalConfig.isOpen} onClose={() => setModalConfig({ ...modalConfig, isOpen: false, data: null })} data={modalConfig.data} mode={modalConfig.mode} onSave={handleSave} categories={categories} />
 
             {batchConfigOpen && (
@@ -754,6 +680,7 @@ export default function STDProcess() {
                                     <Icons.Settings size={14} /> Batch Config
                                 </button>
                                 <button onClick={() => setCsvModalOpen(true)} className="bg-white border border-[#eaeaec] hover:border-[#4d87a8] hover:text-[#4d87a8] text-[#7a8b95] px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors hidden md:flex h-10"><Icons.Upload size={14} /> Import</button>
+                                <CsvExport data={masterData} filename="process_standards_export.csv" label="Export" className="bg-white border border-[#eaeaec] hover:border-[#4d87a8] hover:text-[#4d87a8] text-[#7a8b95] px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors hidden md:flex h-10" />
                                 <button onClick={() => setModalConfig({ isOpen: true, mode: 'edit', data: null })} className="bg-[#212c46] hover:bg-[#414757] text-white px-5 py-2 rounded-xl font-black text-[12px] uppercase tracking-widest shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 whitespace-nowrap shrink-0 h-10 border border-[#212c46]">
                                     <Icons.Plus size={14} /> New Standard
                                 </button>

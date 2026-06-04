@@ -3,6 +3,8 @@ import { GASService } from './GoogleAppsScriptService';
 import { db } from './firebaseConfig';
 import { collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 
+const pendingSyncs = new Set<string>();
+
 export function useCollection<T = any>(collectionName: string, initialSeedData?: T[]) {
   const [data, setData] = useState<T[]>(() => {
      try {
@@ -40,14 +42,28 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
 
       // Find items in Firebase that are missing in GAS
       fbData.forEach(fbItem => {
-         if (!gasData.find(g => g.id === fbItem.id)) {
+         const existsInGas = gasData.some(g => {
+            if (g.id && String(g.id).trim() === String(fbItem.id).trim()) return true;
+            if (g.sku && fbItem.sku && String(g.sku).trim() === String(fbItem.sku).trim()) return true;
+            if (g.employeeId && fbItem.employeeId && String(g.employeeId).trim() === String(fbItem.employeeId).trim()) return true;
+            return false;
+         });
+         
+         if (!existsInGas) {
              itemsToSyncToGas.push(fbItem);
          }
       });
 
       // Find items in GAS that are missing in Firebase
       gasData.forEach(gasItem => {
-         if (!fbData.find(m => m.id === gasItem.id)) {
+         const existsInFb = fbData.some(m => {
+            if (m.id && gasItem.id && String(m.id).trim() === String(gasItem.id).trim()) return true;
+            if (m.sku && gasItem.sku && String(m.sku).trim() === String(gasItem.sku).trim()) return true;
+            if (m.employeeId && gasItem.employeeId && String(m.employeeId).trim() === String(gasItem.employeeId).trim()) return true;
+            return false;
+         });
+         
+         if (!existsInFb) {
             mergedData.push(gasItem);
             itemsToSyncToFb.push(gasItem);
          }
@@ -59,16 +75,18 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
            const cached = localStorage.getItem(`gas_cache_${collectionName}`);
            if (cached && cached !== "[]") {
                mergedData = JSON.parse(cached);
-               itemsToSyncToFb = [...mergedData];
-               itemsToSyncToGas = [...mergedData];
            }
          } catch(e) {}
          
          if (mergedData.length === 0 && initialSeedData && initialSeedData.length > 0) {
              const chunk = initialSeedData.slice(0, 50).map(item => ({...item, createdAt: new Date().toISOString()}));
              mergedData = chunk;
-             itemsToSyncToFb = [...chunk];
-             itemsToSyncToGas = [...chunk];
+             
+             if (!pendingSyncs.has(collectionName)) {
+                 pendingSyncs.add(collectionName);
+                 itemsToSyncToFb = [...chunk];
+                 itemsToSyncToGas = [...chunk];
+             }
          }
       }
 
@@ -77,25 +95,27 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
 
       // Sync missing data back to Firebase
       if (itemsToSyncToFb.length > 0) {
-         console.log(`Syncing ${itemsToSyncToFb.length} items to Firebase for ${collectionName}`);
-         for (const item of itemsToSyncToFb) {
-            try {
-              if (item.id) {
-                await setDoc(doc(db, collectionName, item.id), item);
-              }
-            } catch(e) {
-               console.error("Firebase sync error", e);
-            }
+         const syncKey = `sync_fb_${collectionName}`;
+         if (!pendingSyncs.has(syncKey)) {
+             pendingSyncs.add(syncKey);
+             console.log(`Syncing ${itemsToSyncToFb.length} items to Firebase for ${collectionName}`);
+             Promise.all(itemsToSyncToFb.map(async (item) => {
+                try {
+                  if (item.id) await setDoc(doc(db, collectionName, String(item.id)), item);
+                } catch(e) { console.error("Firebase sync error", e); }
+             })).finally(() => pendingSyncs.delete(syncKey));
          }
       }
 
       // Sync missing data back to GAS
       if (itemsToSyncToGas.length > 0) {
-         console.log(`Syncing ${itemsToSyncToGas.length} items to GAS for ${collectionName}`);
-         try {
-            await GASService.write(collectionName, itemsToSyncToGas);
-         } catch(e) {
-            console.error("GAS sync error", e);
+         const syncKey = `sync_gas_${collectionName}`;
+         if (!pendingSyncs.has(syncKey)) {
+             pendingSyncs.add(syncKey);
+             console.log(`Syncing ${itemsToSyncToGas.length} items to GAS for ${collectionName}`);
+             GASService.write(collectionName, itemsToSyncToGas)
+                .catch(e => console.error("GAS sync error", e))
+                .finally(() => pendingSyncs.delete(syncKey));
          }
       }
 

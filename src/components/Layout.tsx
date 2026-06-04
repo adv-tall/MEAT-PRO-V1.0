@@ -14,11 +14,11 @@ export default function Layout() {
     <SecurityGuard>
       <div className="flex h-screen w-full bg-[#f3f3f1] overflow-hidden font-sans text-slate-800">
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-        <div className="flex flex-1 flex-col overflow-hidden relative">
+        <div className="flex flex-1 flex-col overflow-hidden">
           <Header />
-          <div className="flex-1 custom-scrollbar overflow-y-auto flex flex-col min-h-0 relative">
+          <div className="flex-1 custom-scrollbar overflow-y-auto flex flex-col min-h-0">
             <div className="flex-1 flex flex-col w-full pt-0">
-              <main id="sys-main-content" className="shrink-0 bg-transparent flex flex-col w-full relative z-0">
+               <main id="sys-main-content" className="shrink-0 bg-transparent flex flex-col w-full">
                 <Outlet />
               </main>
               <footer className="mt-8 shrink-0 py-3.5 flex flex-col items-center gap-0.5 text-center text-[#212c46] w-full bg-transparent">

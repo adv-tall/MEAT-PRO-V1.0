@@ -143,7 +143,6 @@ const INITIAL_DATA = {
 
 const TABS = [
   { id: 'departments', label: 'Departments', icon: 'Building2', title: 'Departments Registry', desc: 'Manage organizational units and coding structures.' },
-  { id: 'categories', label: 'Category & Sub-Cat', icon: 'Layers', title: 'Categories', desc: 'Manage product classification and groupings.' },
   { id: 'brands', label: 'Brand', icon: 'Tag', title: 'Brands', desc: 'Manage manufacturing and OEM branding.' },
   { id: 'customers', label: 'Customer', icon: 'Users', title: 'Customers', desc: 'Manage external client and partner profiles.' },
   { id: 'pdfTemplates', label: 'PDF Templates', icon: 'Printer', title: 'PDF FORM TEMPLATES', desc: 'Configure official document layouts and compliance headers.' },

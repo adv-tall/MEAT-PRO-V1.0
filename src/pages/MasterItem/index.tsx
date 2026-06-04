@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useCollection } from '../../services/useFirestore';
 import { DraggableModal } from '../../components/shared/DraggableModal';
+import { CsvUpload } from '../../components/shared/CsvUpload';
+import { CsvExport } from '../../components/shared/CsvExport';
 import { createPortal } from 'react-dom';
 import * as Icons from 'lucide-react';
 import { UserGuidePanel } from '@/src/components/shared/UserGuidePanel';
@@ -12,7 +14,8 @@ import KpiCard from '../../components/shared/KpiCard';
 const Swal = typeof window !== 'undefined' ? (window as any).Swal || null : null;
 const Papa = typeof window !== 'undefined' ? (window as any).Papa || null : null;
 
-const CATEGORIES = ['All', 'Batter', 'SFG', 'FG', 'Sausage', 'Meatball', 'Bologna', 'Ham', 'Sliced', 'Loaf', 'NPD'];
+const CATEGORIES = ['All', 'Batter', 'SFG', 'FG'];                 // Main Category Options
+const SUB_CATEGORIES = ['All', 'Sausage', 'Meatball', 'Bologna', 'Ham', 'Sliced', 'Loaf', 'NPD']; // Sub-Cat Options
 const BRANDS = ['AFM', 'CJ', 'ARO', 'MAKRO', 'Betagro', 'Generic', 'No Brand', 'Internal', 'Test'];
 
 const THEME = {
@@ -30,29 +33,29 @@ const generateFullMasterItems = () => {
     const todayStr = new Date().toLocaleDateString('en-GB');
     const rawData = [
         // Batters
-        { sku: 'BAT-001', name: 'เนื้อไส้กรอกไก่ Standard', type: 'Batter', category: 'Batter', brand: '', weight: 0, pieces: 0 },
-        { sku: 'BAT-002', name: 'เนื้อไส้กรอกไก่พริกไทยดำ', type: 'Batter', category: 'Batter', brand: '', weight: 0, pieces: 0 },
-        { sku: 'BAT-003', name: 'เนื้อลูกชิ้นไก่ Grade A', type: 'Batter', category: 'Batter', brand: '', weight: 0, pieces: 0 },
-        { sku: 'BAT-005', name: 'เนื้อโบโลน่าไก่พริก', type: 'Batter', category: 'Batter', brand: '', weight: 0, pieces: 0 },
+        { sku: 'BAT-001', name: 'เนื้อไส้กรอกไก่ Standard', type: 'Batter', category: 'Batter', subCategory: '', brand: '', weight: 0, pieces: 0 },
+        { sku: 'BAT-002', name: 'เนื้อไส้กรอกไก่พริกไทยดำ', type: 'Batter', category: 'Batter', subCategory: '', brand: '', weight: 0, pieces: 0 },
+        { sku: 'BAT-003', name: 'เนื้อลูกชิ้นไก่ Grade A', type: 'Batter', category: 'Batter', subCategory: '', brand: '', weight: 0, pieces: 0 },
+        { sku: 'BAT-005', name: 'เนื้อโบโลน่าไก่พริก', type: 'Batter', category: 'Batter', subCategory: '', brand: '', weight: 0, pieces: 0 },
         
         // SFGs
-        { sku: 'SFG-001', name: 'ไส้กรอกไก่รมควัน 6 นิ้ว (จัมโบ้)', type: 'SFG', category: 'SFG', brand: '', weight: 0, pieces: 0 },
-        { sku: 'SFG-002', name: 'ไส้กรอกไก่คอกเทล 4 นิ้ว', type: 'SFG', category: 'SFG', brand: '', weight: 0, pieces: 0 },
-        { sku: 'SFG-006', name: 'โบโลน่าไก่พริก (แท่งยาว)', type: 'SFG', category: 'SFG', brand: '', weight: 0, pieces: 0 },
+        { sku: 'SFG-001', name: 'ไส้กรอกไก่รมควัน 6 นิ้ว (จัมโบ้)', type: 'SFG', category: 'SFG', subCategory: 'Sausage', brand: '', weight: 0, pieces: 0 },
+        { sku: 'SFG-002', name: 'ไส้กรอกไก่คอกเทล 4 นิ้ว', type: 'SFG', category: 'SFG', subCategory: 'Sausage', brand: '', weight: 0, pieces: 0 },
+        { sku: 'SFG-006', name: 'โบโลน่าไก่พริก (แท่งยาว)', type: 'SFG', category: 'SFG', subCategory: 'Bologna', brand: '', weight: 0, pieces: 0 },
         
         // FGs
-        { sku: 'FG-1001', name: 'ไส้กรอกไก่จัมโบ้ ARO 1kg', type: 'FG', category: 'Sausage', brand: 'ARO', weight: 1000, pieces: 20, status: 'Active', updatedAt: '01/02/2026' },
-        { sku: 'FG-1002', name: 'ไส้กรอกไก่จัมโบ้ MAKRO 500g', type: 'FG', category: 'Sausage', brand: 'MAKRO', weight: 500, pieces: 10, status: 'Active', updatedAt: '15/01/2026' },
-        { sku: 'FG-1003', name: 'ไส้กรอกไก่จัมโบ้ (ถุงใส)', type: 'FG', category: 'Sausage', brand: 'No Brand', weight: 5000, pieces: 100, status: 'Active', updatedAt: '20/01/2026' },
-        { sku: 'FG-2001', name: 'ไส้กรอกคอกเทล ARO 1kg', type: 'FG', category: 'Sausage', brand: 'ARO', weight: 1000, pieces: 80, status: 'Active', updatedAt: '01/02/2026' },
-        { sku: 'FG-2002', name: 'ไส้กรอกคอกเทล Betagro 500g', type: 'FG', category: 'Sausage', brand: 'Betagro', weight: 500, pieces: 40, status: 'Active', updatedAt: '10/01/2026' },
-        { sku: 'FG-3001', name: 'ลูกชิ้นหมู ARO 1kg', type: 'FG', category: 'Meatball', brand: 'ARO', weight: 1000, pieces: 100, status: 'Active', updatedAt: '05/02/2026' },
-        { sku: 'FG-3002', name: 'ลูกชิ้นหมู CJ 500g', type: 'FG', category: 'Meatball', brand: 'CJ', weight: 500, pieces: 50, status: 'Active', updatedAt: '05/02/2026' },
-        { sku: 'FG-3005', name: 'ลูกชิ้นปลาเยาวราช 500g', type: 'FG', category: 'Meatball', brand: 'Generic', weight: 500, pieces: 45, status: 'Inactive', updatedAt: '12/12/2025' },
-        { sku: 'FG-3010', name: 'ลูกชิ้นหมูปิ้ง AFM (แพ็ค 10 ไม้)', type: 'FG', category: 'Meatball', brand: 'AFM', weight: 800, pieces: 10, status: 'Active', updatedAt: '02/02/2026' },
-        { sku: 'FG-4001', name: 'โบโลน่าพริก MAKRO 1kg (Sliced)', type: 'FG', category: 'Bologna', brand: 'MAKRO', weight: 1000, pieces: 50, status: 'Active', updatedAt: '28/01/2026' },
-        { sku: 'FG-4002', name: 'โบโลน่าพริก Betagro 200g (Sliced)', type: 'FG', category: 'Bologna', brand: 'Betagro', weight: 200, pieces: 10, status: 'Active', updatedAt: '28/01/2026' },
-        { sku: 'FG-4005', name: 'แซนวิชแฮม 500g (Sliced)', type: 'FG', category: 'Ham', brand: 'ARO', weight: 500, pieces: 25, status: 'Active', updatedAt: '18/01/2026' }
+        { sku: 'FG-1001', name: 'ไส้กรอกไก่จัมโบ้ ARO 1kg', type: 'FG', category: 'FG', subCategory: 'Sausage', brand: 'ARO', weight: 1000, pieces: 20, status: 'Active', updatedAt: '01/02/2026' },
+        { sku: 'FG-1002', name: 'ไส้กรอกไก่จัมโบ้ MAKRO 500g', type: 'FG', category: 'FG', subCategory: 'Sausage', brand: 'MAKRO', weight: 500, pieces: 10, status: 'Active', updatedAt: '15/01/2026' },
+        { sku: 'FG-1003', name: 'ไส้กรอกไก่จัมโบ้ (ถุงใส)', type: 'FG', category: 'FG', subCategory: 'Sausage', brand: 'No Brand', weight: 5000, pieces: 100, status: 'Active', updatedAt: '20/01/2026' },
+        { sku: 'FG-2001', name: 'ไส้กรอกคอกเทล ARO 1kg', type: 'FG', category: 'FG', subCategory: 'Sausage', brand: 'ARO', weight: 1000, pieces: 80, status: 'Active', updatedAt: '01/02/2026' },
+        { sku: 'FG-2002', name: 'ไส้กรอกคอกเทล Betagro 500g', type: 'FG', category: 'FG', subCategory: 'Sausage', brand: 'Betagro', weight: 500, pieces: 40, status: 'Active', updatedAt: '10/01/2026' },
+        { sku: 'FG-3001', name: 'ลูกชิ้นหมู ARO 1kg', type: 'FG', category: 'FG', subCategory: 'Meatball', brand: 'ARO', weight: 1000, pieces: 100, status: 'Active', updatedAt: '05/02/2026' },
+        { sku: 'FG-3002', name: 'ลูกชิ้นหมู CJ 500g', type: 'FG', category: 'FG', subCategory: 'Meatball', brand: 'CJ', weight: 500, pieces: 50, status: 'Active', updatedAt: '05/02/2026' },
+        { sku: 'FG-3005', name: 'ลูกชิ้นปลาเยาวราช 500g', type: 'FG', category: 'FG', subCategory: 'Meatball', brand: 'Generic', weight: 500, pieces: 45, status: 'Inactive', updatedAt: '12/12/2025' },
+        { sku: 'FG-3010', name: 'ลูกชิ้นหมูปิ้ง AFM (แพ็ค 10 ไม้)', type: 'FG', category: 'FG', subCategory: 'Meatball', brand: 'AFM', weight: 800, pieces: 10, status: 'Active', updatedAt: '02/02/2026' },
+        { sku: 'FG-4001', name: 'โบโลน่าพริก MAKRO 1kg (Sliced)', type: 'FG', category: 'FG', subCategory: 'Bologna', brand: 'MAKRO', weight: 1000, pieces: 50, status: 'Active', updatedAt: '28/01/2026' },
+        { sku: 'FG-4002', name: 'โบโลน่าพริก Betagro 200g (Sliced)', type: 'FG', category: 'FG', subCategory: 'Bologna', brand: 'Betagro', weight: 200, pieces: 10, status: 'Active', updatedAt: '28/01/2026' },
+        { sku: 'FG-4005', name: 'แซนวิชแฮม 500g (Sliced)', type: 'FG', category: 'FG', subCategory: 'Ham', brand: 'ARO', weight: 500, pieces: 25, status: 'Active', updatedAt: '18/01/2026' }
     ];
     rawData.forEach((item, index) => {
         items.push({ id: `item-${index}`, status: item.status || 'Active', updatedAt: item.updatedAt || todayStr, ...item });
@@ -98,119 +101,12 @@ const LucideIcon = ({ name, size = 16, className = "", color, style, strokeWidth
 };
 
 
-function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
-    const [dragActive, setDragActive] = useState(false);
-    const [previewData, setPreviewData] = useState<any[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleDrag = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); if (e.type === "dragenter" || e.type === "dragover") setDragActive(true); else setDragActive(false); };
-    const handleDrop = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setDragActive(false); if (e.dataTransfer.files && e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); };
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { if (e.target.files && e.target.files[0]) processFile(e.target.files[0]); };
-    
-    const processFile = (file: File) => {
-        setError(null);
-        if(!Papa) { setError("CSV Parser (PapaParse) ไม่ได้โหลดในระบบ แนะนำให้ป้อนข้อมูลแบบแมนนวล"); return; }
-        Papa.parse(file, { header: true, skipEmptyLines: true, complete: function (results: any) {
-            if (results.errors.length > 0) { setError("Error parsing CSV: " + results.errors[0].message); return; }
-            const requiredHeaders = ["SKU", "Name", "Category", "Brand", "Weight", "Pieces", "Status"];
-            const headers = results.meta.fields;
-            const missing = requiredHeaders.filter((h: string) => !headers.includes(h));
-            if (missing.length > 0) { setError(`Missing columns: ${missing.join(", ")}`); return; }
-            setPreviewData(results.data);
-        }});
-    };
-
-    const confirmUpload = () => {
-        const newData = previewData.map(row => ({
-            sku: row.SKU,
-            name: row.Name,
-            category: row.Category,
-            type: 'FG', 
-            brand: row.Brand,
-            weight: parseFloat(row.Weight) || 0,
-            pieces: parseInt(row.Pieces) || 0,
-            status: row.Status || 'Active',
-            updatedAt: new Date().toLocaleDateString('en-GB'),
-            id: `imported-${Date.now()}-${Math.random()}`
-        }));
-        
-        onUpload(newData);
-        onClose();
-        setPreviewData([]);
-        setError(null);
-        if(Swal) Swal.fire({ icon: 'success', title: 'Imported!', text: 'Data has been successfully imported.', timer: 1500, showConfirmButton: false });
-    };
-
-    return (
-        <DraggableModal 
-            isOpen={isOpen} 
-            onClose={onClose} 
-            title={<><Icons.UploadCloud size={16} /> Import Bulk CSV</>}
-            width="max-w-3xl"
-        >
-            <div className="flex flex-col flex-1 h-full min-h-[400px]">
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
-                    {!previewData.length ? (
-                        <div className={`border-2 border-dashed rounded-xl p-10 text-center transition-all bg-slate-50 ${dragActive ? 'border-red-500 bg-red-50' : 'border-slate-300'}`} onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
-                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-slate-500"><LucideIcon name="file-spreadsheet" size={32} /></div>
-                            <p className="text-[#212c46] font-black mb-2 uppercase tracking-widest text-[12px]">Drag & Drop CSV file here</p>
-                            <p className="text-slate-500 text-[10px] mb-6">Or click the button below to browse</p>
-                            <button onClick={() => fileInputRef.current?.click()} className="bg-slate-800 text-white hover:bg-slate-900 shadow-md font-bold text-xs uppercase tracking-widest rounded-xl transition-all px-6 py-2.5">Browse File</button>
-                            <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleChange} />
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto border border-slate-200 rounded-lg max-h-[300px] custom-scrollbar shadow-inner text-[12px]">
-                            <h4 className="font-bold text-[#212c46] mb-3 px-4 pt-4 flex justify-between items-center">
-                                <span>Preview Data ({previewData.length} rows)</span>
-                                <button onClick={() => setPreviewData([])} className="text-[10px] text-red-600 font-bold uppercase tracking-widest bg-red-50 px-2 py-1 rounded">Clear</button>
-                            </h4>
-                            <table className="w-full text-left whitespace-nowrap table-font">
-                                <thead className="sys-table-header sticky top-0 z-10 uppercase font-black tracking-widest ">
-                    <tr>
-                                        <th className="p-3   ">SKU</th>
-                                        <th className="p-3   ">Name</th>
-                                        <th className="p-3   ">Category</th>
-                                        <th className="p-3   ">Brand</th>
-                                        <th className="p-3 text-right   ">Weight</th>
-                                        <th className="p-3 text-center   ">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100 bg-white">
-                                    {previewData.slice(0, 10).map((row, i) => (
-                                        <tr key={i} className="hover:bg-slate-50 text-[12px]">
-                                            <td className="p-3 font-mono font-bold text-red-600 py-2.5 px-4">{row.SKU || '-'}</td>
-                                            <td className="p-3 text-[#212c46] font-bold py-2.5 px-4">{row.Name || '-'}</td>
-                                            <td className="p-3 text-slate-500 py-2.5 px-4">{row.Category || '-'}</td>
-                                            <td className="p-3 text-slate-400 py-2.5 px-4">{row.Brand || '-'}</td>
-                                            <td className="p-3 text-[#212c46] font-mono text-right py-2.5 px-4">{row.Weight || '-'}</td>
-                                            <td className="p-3 text-center py-2.5 px-4">{row.Status || '-'}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                            {previewData.length > 10 && <div className="p-3 text-center text-[10px] text-slate-500 bg-slate-50 font-bold uppercase tracking-widest border-t border-slate-200">Showing first 10 rows of {previewData.length} records...</div>}
-                        </div>
-                    )}
-                    {error && <div className="mt-4 p-3 bg-red-50 text-red-600 font-bold text-[12px] rounded-lg border border-red-100 flex items-center gap-2"><LucideIcon name="alert-circle" size={16}/> {error}</div>}
-                </div>
-                {previewData.length > 0 && (
-                    <div className="pt-4 border-t border-slate-200 flex justify-end gap-3 shrink-0 mt-4">
-                        <button onClick={() => { onClose(); setPreviewData([]); }} className="px-6 py-2.5 text-slate-500 hover:text-slate-800 font-bold text-[10px] uppercase tracking-widest transition-colors">Cancel</button>
-                        <button onClick={confirmUpload} className="bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 shadow-md font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all px-8 py-2.5 flex items-center gap-2">
-                            <LucideIcon name="check" size={14} color="white" /> Confirm Upload
-                        </button>
-                    </div>
-                )}
-            </div>
-        </DraggableModal>
-    );
-}
 
 function ItemModal({ isOpen, onClose, data, onSave, categories, brands, activeMainTab }: any) {
     const [activeTab, setActiveTab] = useState('info');
     const [formData, setFormData] = useState<any>({
-        sku: '', name: '', category: '', type: 'FG', brand: '', weight: 0, pieces: 0, status: 'Active'
+        sku: '', name: '', category: 'FG', subCategory: '', type: 'FG', brand: '', weight: 0, pieces: 0, status: 'Active'
     });
     const [history, setHistory] = useState<any[]>([]);
 
@@ -218,14 +114,18 @@ function ItemModal({ isOpen, onClose, data, onSave, categories, brands, activeMa
         if (isOpen) {
             setActiveTab('info');
             if (data) {
-                setFormData({ ...data });
+                setFormData({ 
+                    ...data, 
+                    subCategory: data.subCategory || SUB_CATEGORIES[1],
+                    category: data.category || 'FG'
+                });
                 setHistory(getMockHistory());
             } else {
-                setFormData({ sku: '', name: '', type: activeMainTab, category: categories[1], brand: brands[0], weight: 0, pieces: 0, status: 'Active' });
+                setFormData({ sku: '', name: '', type: activeMainTab, category: activeMainTab, subCategory: SUB_CATEGORIES[1], brand: brands[0], weight: 0, pieces: 0, status: 'Active' });
                 setHistory([]);
             }
         }
-    }, [isOpen, data, activeMainTab, categories, brands]);
+    }, [isOpen, data, activeMainTab, brands]);
 
     if (!isOpen) return null;
 
@@ -297,11 +197,20 @@ function ItemModal({ isOpen, onClose, data, onSave, categories, brands, activeMa
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Item Name</label>
                                     <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="sys-input w-full" placeholder="Enter product name..." />
                                 </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Category / Sub-Cat</label>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Category</label>
                                     <div className="relative">
                                         <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="sys-input w-full appearance-none pr-10 cursor-pointer">
-                                            {categories.filter((c: string) => c !== 'All').map((c: string) => <option key={c} value={c}>{c}</option>)}
+                                            {CATEGORIES.filter((c: string) => c !== 'All').map((c: string) => <option key={c} value={c}>{c}</option>)}
+                                        </select>
+                                        <Icons.ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                    </div>
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Sub-Cat</label>
+                                    <div className="relative">
+                                        <select value={formData.subCategory} onChange={e => setFormData({...formData, subCategory: e.target.value})} className="sys-input w-full appearance-none pr-10 cursor-pointer">
+                                            {SUB_CATEGORIES.filter((c: string) => c !== 'All').map((c: string) => <option key={c} value={c}>{c}</option>)}
                                         </select>
                                         <Icons.ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                     </div>
@@ -369,7 +278,22 @@ function ItemModal({ isOpen, onClose, data, onSave, categories, brands, activeMa
 
 export default function MasterItems() {
     const { data: dbItems, add: addItemDb, update: updateItemDb, remove: removeItemDb } = useCollection('Master_Item', generateFullMasterItems());
-    const items = dbItems && dbItems.length > 0 ? dbItems : generateFullMasterItems();
+    const rawItems = dbItems && dbItems.length > 0 ? dbItems : generateFullMasterItems();
+    const items = rawItems.map((item: any) => {
+        let cat = item.category;
+        let subCat = item.subCategory;
+        if (item.category && typeof item.category === 'object') {
+            cat = item.category.cat ?? item.category;
+            subCat = item.category.subCat ?? item.subCategory;
+        } else if (typeof item.category === 'string' && item.category.startsWith('{')) {
+            try {
+                const parsed = JSON.parse(item.category);
+                cat = parsed.cat ?? item.category;
+                subCat = parsed.subCat ?? item.subCategory;
+            } catch (e) {}
+        }
+        return { ...item, category: cat, subCat: subCat, subCategory: subCat };
+    });
 
     const setItems = (action: (prev: any[]) => any[]) => {
        // fallback, wait we should replace usage of setItems to add/update/remove
@@ -434,24 +358,50 @@ export default function MasterItems() {
 
     const handleSaveItem = (newItem: any) => {
         const existingItem = items.find(item => item.sku === newItem.sku);
+        
+        const payload = { 
+            ...newItem, 
+            category: JSON.stringify({ cat: newItem.category || '', subCat: newItem.subCategory || '' }),
+            updatedAt: new Date().toLocaleDateString('en-GB') 
+        };
+
         if (itemModal.data && existingItem?.id) {
-            updateItemDb(existingItem.id, { ...newItem, updatedAt: new Date().toLocaleDateString('en-GB') });
+            updateItemDb(existingItem.id, payload);
         } else {
-            addItemDb({ ...newItem, updatedAt: new Date().toLocaleDateString('en-GB') });
+            addItemDb(payload);
         }
         if(Swal) Swal.fire({ icon: 'success', title: 'Saved Successfully', showConfirmButton: false, timer: 1000 });
     };
 
-    const handleCsvUpload = (newItems: any[]) => {
+    const handleCsvUpload = (rawData: any[]) => {
+        const newItems = rawData.map(row => ({
+            sku: row.SKU || row.sku,
+            name: row.Name || row.name,
+            category: row.Category || row.category,
+            subCategory: row.SubCategory || row.subCategory || '',
+            type: 'FG', 
+            brand: row.Brand || row.brand,
+            weight: parseFloat(row.Weight || row.weight) || 0,
+            pieces: parseInt(row.Pieces || row.pieces) || 0,
+            status: row.Status || row.status || 'Active',
+            updatedAt: new Date().toLocaleDateString('en-GB')
+        }));
+        
         newItems.forEach(newItem => {
             const existingItem = items.find(i => i.sku === newItem.sku);
+            const payload = {
+                ...newItem,
+                category: JSON.stringify({ cat: newItem.category || '', subCat: newItem.subCategory || '' })
+            };
             if (existingItem?.id) { 
-                updateItemDb(existingItem.id, newItem);
+                updateItemDb(existingItem.id, payload);
             } 
             else { 
-                addItemDb(newItem); 
+                addItemDb(payload); 
             }
         });
+        setCsvModalOpen(false);
+        if(Swal) Swal.fire({ icon: 'success', title: 'Imported!', text: 'Data has been successfully imported.', timer: 1500, showConfirmButton: false });
     };
 
     return (
@@ -508,7 +458,13 @@ export default function MasterItems() {
                 </div>
             </UserGuidePanel>
             
-            <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={handleCsvUpload} />
+            <DraggableModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} title="Bulk Upload Items" width="max-w-2xl">
+                <CsvUpload 
+                    onUpload={handleCsvUpload} 
+                    requiredHeaders={['SKU', 'Name', 'Category', 'Brand']}
+                    templateName="master_items_template.xlsx"
+                />
+            </DraggableModal>
             <ItemModal 
                 isOpen={itemModal.isOpen} 
                 onClose={() => setItemModal({ isOpen: false, data: null })} 
@@ -644,6 +600,7 @@ export default function MasterItems() {
                         {/* Right Side: Action Buttons */}
                         <div className="flex gap-3 w-full xl:w-auto mt-4 xl:mt-0">
                             <button onClick={() => setCsvModalOpen(true)} className="flex-1 md:flex-none justify-center bg-white border border-slate-200 hover:border-slate-300 text-slate-500 px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors h-10 hover:text-[#212c46]"><Icons.Upload size={14} /> Import</button>
+                            <CsvExport data={items} filename="master_items.csv" label="Export" className="flex-1 md:flex-none justify-center bg-white border border-slate-200 hover:border-slate-300 text-slate-500 px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors h-10 hover:text-[#212c46]" />
                             <button onClick={() => setItemModal({ isOpen: true, data: null })} className="sys-btn-primary flex-1 md:flex-none h-10 whitespace-nowrap">
                                 <Icons.Plus size={16} fill="none" color="white" /> New {activeMainTab}
                             </button>
@@ -658,7 +615,7 @@ export default function MasterItems() {
                     <tr>
                                         <th className="pl-6 w-[14%] whitespace-nowrap   ">SKU / Code</th>
                                         <th className="w-[30%] whitespace-nowrap   ">Item Name</th>
-                                        <th className="w-[12%] whitespace-nowrap   ">Category</th>
+                                        <th className="w-[14%] whitespace-nowrap   ">CATEGORY</th>
                                         <th className="w-[10%] whitespace-nowrap   ">Brand</th>
                                         <th className="w-[12%] text-right whitespace-nowrap   ">Size</th>
                                         <th className="w-[10%] text-center whitespace-nowrap   ">Status</th>
@@ -680,12 +637,14 @@ export default function MasterItems() {
                                                 {item.name}
                                             </td>
 
-                                            {/* Col 3: Category (Stacked) */}
-                                            <td className="sys-table-td align-middle py-2.5 px-4">
-                                                <div className="flex flex-col items-start gap-1.5">
+                                            <td className="sys-table-td align-middle py-2.5 px-4 w-[14%] whitespace-nowrap">
+                                                <div className="flex flex-col items-start gap-1">
                                                     <span className={`px-2.5 py-0.5 rounded-md border text-[11px] font-bold uppercase tracking-widest ${getCategoryStyle(item.category)}`}>
-                                                        {item.category}
+                                                        {item.category || '-'}
                                                     </span>
+                                                    {item.subCategory && item.subCategory !== 'All' && (
+                                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1.5 ml-1"><Icons.CornerDownRight size={10}/> {item.subCategory}</span>
+                                                    )}
                                                 </div>
                                             </td>
 

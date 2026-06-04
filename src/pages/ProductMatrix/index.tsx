@@ -4,6 +4,8 @@ import * as Icons from 'lucide-react';
 import { UserGuidePanel } from '@/src/components/shared/UserGuidePanel';
 import KpiCard from '../../components/shared/KpiCard';
 import { DraggableModal } from '../../components/shared/DraggableModal';
+import { CsvUpload } from '../../components/shared/CsvUpload';
+import { CsvExport } from '../../components/shared/CsvExport';
 import { useCollection } from '../../services/useFirestore';
 
 // --- Mocking External Dependencies for Standalone Run ---
@@ -172,87 +174,7 @@ const LucideIcon = ({ name, size = 16, className = "", color, style, strokeWidth
 };
 
 
-function CsvUploadModal({ isOpen, onClose, onUpload }: any) {
-    const [dragActive, setDragActive] = useState(false);
-    const [previewData, setPreviewData] = useState<any[]>([]);
-    const [error, setError] = useState<string|null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    if (!isOpen) return null;
-
-    const handleDrag = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); if (e.type === "dragenter" || e.type === "dragover") setDragActive(true); else setDragActive(false); };
-    const handleDrop = (e: React.DragEvent) => { e.preventDefault(); e.stopPropagation(); setDragActive(false); if (e.dataTransfer.files && e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); };
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { if (e.target.files && e.target.files[0]) processFile(e.target.files[0]); };
-    
-    const processFile = (file: File) => {
-        setError(null);
-        if(!Papa) { setError("CSV Parser (PapaParse) ไม่ได้โหลดในระบบ แนะนำให้ป้อนข้อมูลแบบแมนนวล"); return; }
-        Papa.parse(file, { header: true, skipEmptyLines: true, complete: function (results: any) {
-            if (results.errors.length > 0) { setError("Error parsing CSV: " + results.errors[0].message); return; }
-            setPreviewData(results.data);
-        }});
-    };
-
-    const confirmUpload = () => {
-        onUpload([]); 
-        onClose(); 
-        setPreviewData([]); 
-        setError(null);
-        if(Swal) Swal.fire({ icon: 'success', title: 'Imported!', timer: 1500, showConfirmButton: false });
-    };
-
-    return (
-        <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-2xl" hideDefaultHeader>
-            <div className="bg-white rounded-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                <div className="p-5 border-b border-slate-200 flex justify-between items-center bg-[#212c46] text-white">
-                    <h3 className="font-black flex items-center gap-2 uppercase tracking-widest text-sm"><LucideIcon name="upload-cloud" /> Import CSV</h3>
-                    <button onClick={onClose} className="hover:bg-white/20 p-1.5 rounded-lg transition-colors"><LucideIcon name="x" /></button>
-                </div>
-                <div className="p-8 flex-1 overflow-y-auto custom-scrollbar">
-                    {!previewData.length ? (
-                        <div className={`border-2 border-dashed rounded-xl p-10 text-center transition-all bg-slate-50 ${dragActive ? 'border-red-500 bg-red-50' : 'border-slate-300'}`} onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
-                            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm text-slate-500"><LucideIcon name="file-up" size={32} /></div>
-                            <p className="text-[#212c46] font-black mb-2 uppercase tracking-widest text-[12px]">Drag & Drop CSV file here</p>
-                            <p className="text-slate-500 text-[10px] mb-6">Or click the button below to browse</p>
-                            <button onClick={() => fileInputRef.current?.click()} className="sys-btn-primary px-6 py-2.5">Browse File</button>
-                            <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={handleChange} />
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto border border-slate-200 rounded-lg max-h-[300px] custom-scrollbar shadow-inner text-[12px]">
-                            <table className="w-full text-left whitespace-nowrap table-font">
-                                <thead className="sys-table-header sticky top-0 z-10 ">
-                    <tr>
-                                        <th className="p-3 sys-table-th   ">SFG_ID</th>
-                                        <th className="p-3 sys-table-th   ">FG_SKU</th>
-                                        <th className="p-3 sys-table-th   ">FG_Name</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100 bg-white">
-                                    {previewData.slice(0, 10).map((row, i) => (
-                                        <tr key={i} className="hover:bg-slate-50">
-                                            <td className="p-3 font-mono font-bold text-red-600 py-2.5 px-4">{row.SFG_ID || '-'}</td>
-                                            <td className="p-3 font-mono text-[#212c46] font-bold py-2.5 px-4">{row.FG_SKU || '-'}</td>
-                                            <td className="p-3 text-slate-500 py-2.5 px-4">{row.FG_Name || '-'}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                    {error && <div className="mt-4 p-3 bg-red-50 text-red-600 text-[12px] rounded-lg border border-red-100 flex items-center gap-2 font-bold"><LucideIcon name="alert-circle" size={16}/> {error}</div>}
-                </div>
-                {previewData.length > 0 && (
-                    <div className="p-4 border-t border-slate-200 flex justify-end gap-3 bg-slate-50">
-                        <button onClick={onClose} className="px-6 py-2.5 text-slate-500 hover:text-[#212c46] font-bold text-[12px] uppercase tracking-widest transition-colors">Cancel</button>
-                        <button onClick={confirmUpload} className="sys-btn-primary px-8 py-2.5 flex items-center gap-2">
-                            <LucideIcon name="check" size={14} color="white"/> Confirm Upload
-                        </button>
-                    </div>
-                )}
-            </div>
-        </DraggableModal>
-    );
-}
 
 function MatrixConfigModal({ isOpen, onClose, sfgData, onSave, batters, fgDatabase }: any) {
     const [formData, setFormData] = useState<any>(null);
@@ -527,7 +449,17 @@ export default function ProductMatrix() {
                 </div>
             </UserGuidePanel>
             
-            <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={(d: any) => { d.forEach((item: any) => addMatrix?.(item)); }} />
+            <DraggableModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} title="Bulk Upload Product Matrix" width="max-w-2xl">
+                <CsvUpload 
+                    onUpload={(data) => {
+                        data.forEach((item: any) => addMatrix?.(item));
+                        setCsvModalOpen(false);
+                        if(Swal) Swal.fire({ icon: 'success', title: 'Imported!', timer: 1500, showConfirmButton: false });
+                    }} 
+                    requiredHeaders={['SFG_ID', 'FG_SKU', 'FG_Name']}
+                    templateName="product_matrix_template.xlsx"
+                />
+            </DraggableModal>
             <MatrixConfigModal isOpen={modal.isOpen} onClose={() => setModal({ isOpen: false, data: null })} sfgData={modal.data} onSave={handleSave} batters={batters} fgDatabase={masterItems} />
 
             {/* Header Bar */}
@@ -599,6 +531,7 @@ export default function ProductMatrix() {
                                 <input type="text" placeholder="Search SFG..." value={searchTerm} onChange={(e) => setSearchQuery(e.target.value)} className="sys-input w-full pl-10 pr-4 py-2 h-10" />
                             </div>
                             <button onClick={() => setCsvModalOpen(true)} className="flex-1 sm:flex-none justify-center bg-white border border-slate-200 hover:border-slate-300 text-slate-500 px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors hover:text-[#212c46] h-10"><LucideIcon name="upload" size={14} /> Import</button>
+                            <CsvExport data={matrixData} filename="product_matrix_export.csv" label="Export" className="flex-1 sm:flex-none justify-center bg-white border border-slate-200 hover:border-slate-300 text-slate-500 px-4 py-2 rounded-xl font-bold text-[12px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-colors h-10 hover:text-[#212c46]" />
                             <button onClick={() => setModal({ isOpen: true, data: null })} className="sys-btn-primary flex-1 sm:flex-none h-10 whitespace-nowrap">
                                 <LucideIcon name="plus" size={16} color="white"/> New SFG
                             </button>

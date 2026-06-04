@@ -1,4 +1,4 @@
-export const GAS_WEB_APP_URL: string = "https://script.google.com/macros/s/AKfycbwzDBGifeikgQvjKcBedrpaqqwhyai5Lr0ytKVzsahpJcU3O5GPL31p9OQnfovo5OXJ/exec";
+export const GAS_WEB_APP_URL: string = "https://script.google.com/macros/s/AKfycbyC9XjmPZXr3Ufsj1cP6VDD_AnlDYLQG0btgxT_G6BkGX2fWMxsOiVfjszXrXuTfCDMSQ/exec";
 export const GAS_API_KEY = "your_secret_key_here";
 
 /**
@@ -9,13 +9,15 @@ export class GASService {
   private static deserializeData(data: any) {
     if (!data) return data;
     const processItem = (item: any) => {
-      const deserialized = { ...item };
-      for (const key in deserialized) {
-        if (typeof deserialized[key] === 'string') {
-          const str = deserialized[key].trim();
+      const deserialized: any = {};
+      for (const key in item) {
+        const cleanKey = key.trim();
+        deserialized[cleanKey] = item[key];
+        if (typeof deserialized[cleanKey] === 'string') {
+          const str = deserialized[cleanKey].trim();
           if ((str.startsWith('{') && str.endsWith('}')) || (str.startsWith('[') && str.endsWith(']'))) {
              try {
-               deserialized[key] = JSON.parse(str);
+               deserialized[cleanKey] = JSON.parse(str);
              } catch(e) {}
           }
         }
@@ -60,12 +62,12 @@ export class GASService {
     };
 
     try {
-      const response = await fetch(GAS_WEB_APP_URL, {
+      const response = await fetch("/api/gas", {
         method: "POST",
         headers: {
-          "Content-Type": "text/plain;charset=utf-8", // text/plain is used to avoid CORS preflight issues with GAS
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ url: GAS_WEB_APP_URL, payload }),
       });
 
       const result = await response.json();

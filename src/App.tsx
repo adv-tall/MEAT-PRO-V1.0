@@ -22,6 +22,7 @@ import ProductionSummarizer from "./pages/ProductionSummarizer";
 import ProductionCalendar from "./pages/ProductionCalendar";
 import MasterItem from "./pages/MasterItem";
 import ProductMatrix from "./pages/ProductMatrix";
+import ConfigGeneral from "./pages/ConfigGeneral";
 import DevPermit from "./pages/DevPermit";
 import SystemConfig from "./pages/SystemConfig";
 import SystemLogs from "./pages/SystemLogs";
@@ -122,6 +123,15 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <EquipmentRegistry />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/config/general"
+                element={
+                  <ProtectedRoute>
+                    <ConfigGeneral />
                   </ProtectedRoute>
                 }
               />

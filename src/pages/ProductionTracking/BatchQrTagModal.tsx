@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { X, Printer, Download, Sparkles, Send, Tag, AlertCircle } from 'lucide-react';
 
@@ -10,9 +11,12 @@ interface BatchQrTagModalProps {
 }
 
 export function BatchQrTagModal({ isOpen, onClose, order, onSimulateScan }: BatchQrTagModalProps) {
-  if (!isOpen || !order) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  return (
+  if (!isOpen || !order || !mounted) return null;
+
+  return createPortal(
     <div id="qr-tag-backdrop" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
       <div 
         id="qr-tag-card"
@@ -126,6 +130,7 @@ export function BatchQrTagModal({ isOpen, onClose, order, onSimulateScan }: Batc
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -140,6 +140,38 @@ Each recommendation must contain:
     }
   });
 
+  // Proxy for Google Apps Script to bypass CORS
+  app.post("/api/gas", async (req, res) => {
+    try {
+      const { url, payload } = req.body;
+      if (!url || !url.startsWith("https://script.google.com/")) {
+        return res.status(400).json({ error: "Invalid GAS URL" });
+      }
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify(payload),
+        redirect: "follow",
+      });
+
+      const responseText = await response.text();
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        return res.status(500).json({ error: "Invalid response from GAS", details: responseText });
+      }
+
+      res.json(result);
+    } catch (err: any) {
+      console.error("GAS Proxy Error:", err);
+      res.status(500).json({ error: err.message || "Failed to communicate with GAS" });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

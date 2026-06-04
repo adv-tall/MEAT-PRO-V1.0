@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Draggable from 'react-draggable';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -27,6 +28,11 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
   width
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const shouldHideHeader = hideHeader || hideDefaultHeader;
   const containerClass = width || 'max-w-lg';
@@ -34,17 +40,17 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
   // In iframes, a dragged item can get "stuck" to the cursor if the mouse is released outside the frame.
   // react-draggable usually handles this with window mouseup listeners, but sometimes bounds="parent" breaks it.
   // We remove bounds and simplify the DOM structure to prevent transform conflicts with framer-motion.
-  return (
+  const content = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#212c46]/60 backdrop-blur-sm overflow-hidden" 
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-[#212c46]/60 backdrop-blur-sm overflow-hidden" 
              onPointerDown={(e) => {
                  // Close when clicking the backdrop
                  if (e.target === e.currentTarget) onClose(); 
              }}>
           {/* @ts-ignore */}
           <Draggable nodeRef={nodeRef} handle=".drag-handle" cancel="button, input, select, textarea, .no-drag">
-            <div ref={nodeRef} className={`absolute w-full ${containerClass} pointer-events-auto`} style={{ zIndex: 101 }}>
+            <div ref={nodeRef} className={`absolute w-full ${containerClass} pointer-events-auto`} style={{ zIndex: 10000 }}>
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -77,4 +83,7 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
       )}
     </AnimatePresence>
   );
+
+  if (!mounted) return null;
+  return createPortal(content, document.body);
 };

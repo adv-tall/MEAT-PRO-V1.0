@@ -118,16 +118,9 @@ export default function DowntimeTracking() {
   const [formSupervisorSig, setFormSupervisorSig] = useState('');
 
   // Firestore & local fallback integration
-  const { data: fbDowntimes, add: addDowntime, update: updateDowntime } = useCollection<any>('downtime_tracking');
-  const [localDowntimes, setLocalDowntimes] = useState(INITIAL_DOWNTIMES);
-
-  const downtimes = useMemo(() => {
-    const merged = [...fbDowntimes];
-    localDowntimes.forEach(ld => {
-      if (!merged.find(m => m.id === ld.id)) merged.push(ld);
-    });
-    return merged;
-  }, [fbDowntimes, localDowntimes]);
+  const { data: fbDowntimes, add: addDowntime, update: updateDowntime } = useCollection<any>('Machine_Downtime', INITIAL_DOWNTIMES);
+  
+  const downtimes = fbDowntimes && fbDowntimes.length > 0 ? fbDowntimes : INITIAL_DOWNTIMES;
 
   const filteredDowntimes = useMemo(() => {
     return downtimes.filter(dw => {
@@ -217,18 +210,10 @@ export default function DowntimeTracking() {
     };
 
     if (editingIncident) {
-      if (typeof editingIncident.id === 'string' && editingIncident.id.length > 10) {
-        await updateDowntime(editingIncident.id, dataObj);
-      } else {
-        setLocalDowntimes(prev => prev.map(item => item.id === editingIncident.id ? { ...item, ...dataObj } : item));
-      }
+      await updateDowntime(editingIncident.id, dataObj);
     } else {
       const newId = `DW-${Date.now().toString().slice(-6)}`;
-      try {
-        await addDowntime({ id: newId, ...dataObj });
-      } catch (e) {
-        setLocalDowntimes(prev => [{ id: newId, ...dataObj }, ...prev]);
-      }
+      await addDowntime({ id: newId, ...dataObj });
     }
     setShowIncidentModal(false);
     setEditingIncident(null);

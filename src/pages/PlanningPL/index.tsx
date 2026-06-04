@@ -173,14 +173,23 @@ export default function PlanningPL() {
       setNewPL(prev => ({...prev, batches: b, batchSize: bs, itemSku: sku, totalKg: packs * fg.weight, totalPacks: packs}));
   };
 
-  const { data: dailyReports } = useCollection<any>('daily_production_reports');
+  const { data: dailyReports } = useCollection<any>('Daily_Reports');
+  const { data: plDataList, loading: plLoading, add, update, remove } = useCollection<any>('Orders_PL', MOCK_PL_DATA);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(t);
-  }, []);
+     if (!plLoading) {
+         setLoading(false);
+     }
+  }, [plLoading]);
 
   const [mockPlData, setMockPlData] = useState(() => MOCK_PL_DATA);
+
+  // Sync GAS data
+  useEffect(() => {
+      if (plDataList && plDataList.length > 0) {
+          setMockPlData(plDataList);
+      }
+  }, [plDataList]);
 
   const syncedData = useMemo(() => {
     return mockPlData.map(pl => {
@@ -448,7 +457,33 @@ export default function PlanningPL() {
           </div>
           <div className="pt-4 flex justify-end gap-3">
              <button onClick={() => setIsCreateOpen(false)} className="px-4 py-2 text-[11px] font-black text-[#7a8b95] uppercase tracking-widest hover:text-[#212c46]">Cancel</button>
-             <button onClick={() => { alert('Plan Created!'); setIsCreateOpen(false); }} className="px-6 py-2 bg-[#212c46] text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-sm hover:bg-[#414757]">Save Plan</button>
+             <button onClick={async () => {
+                 try {
+                     const plNoStr = `PL-${new Date().toISOString().replace(/-/g, '').substring(2, 6)}-${Math.floor(Math.random() * 10000).toString().padStart(4, "0")}`;
+                     const fg = FG_DATABASE.find(f => f.sku === newPL.itemSku);
+                     await add({
+                         plNo: plNoStr,
+                         date: newPL.date,
+                         shift: newPL.shift,
+                         customer: newPL.customer,
+                         skuCount: 1,
+                         item: fg || { sku: newPL.itemSku, name: 'Unknown' },
+                         totalKg: newPL.totalKg,
+                         totalPacks: newPL.totalPacks,
+                         batches: newPL.batches,
+                         batchSize: newPL.batchSize,
+                         priority: newPL.priority,
+                         status: 'DRAFT',
+                         progress: 0,
+                         delayDetected: false,
+                         createdBy: 'Staff'
+                     });
+                     alert('Plan Created!'); 
+                     setIsCreateOpen(false); 
+                 } catch(e) {
+                     alert("Failed to create plan");
+                 }
+             }} className="px-6 py-2 bg-[#212c46] text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-sm hover:bg-[#414757]">Save Plan</button>
           </div>
         </div>
       </DraggableModal>
@@ -537,10 +572,14 @@ export default function PlanningPL() {
                  {actionType === 'edit' && (
                    <div className="pt-6 border-t border-[#eaeaec] flex justify-end gap-3">
                       <button onClick={() => setIsActionOpen(false)} className="px-4 py-2 text-[11px] font-black text-[#7a8b95] uppercase tracking-widest hover:text-[#212c46]">Cancel</button>
-                      <button onClick={() => { 
-                          setMockPlData(prev => prev.map(p => p.plNo === actionItem.plNo ? actionItem : p));
-                          alert('Plan updated!'); 
-                          setIsActionOpen(false); 
+                      <button onClick={async () => { 
+                          try {
+                              await update(actionItem.plNo || actionItem.id, actionItem);
+                              alert('Plan updated!'); 
+                              setIsActionOpen(false); 
+                          } catch(e) {
+                              alert('Failed to update plan');
+                          }
                       }} className="px-6 py-2 bg-[#212c46] text-white text-[11px] font-black uppercase tracking-widest rounded-lg shadow-sm hover:bg-[#414757]">Save Changes</button>
                    </div>
                  )}

@@ -42,7 +42,11 @@ const GLOBAL_SHEETS_CONFIG = {
     'Unplanned_Jobs': ['id', 'reason', 'sku', 'qty', 'requesterId', 'status', 'createdAt', 'updatedAt'],
     
     // ANALYTICS & REPORTS
-    'Daily_Reports': ['id', 'date', 'totalYield', 'totalOEE', 'totalDowntime', 'createdAt']
+    'Daily_Reports': ['id', 'date', 'totalYield', 'totalOEE', 'totalDowntime', 'createdAt'],
+    'cost_analysis_monthly': ['id', 'month', 'totalCost', 'createdAt', 'updatedAt'],
+    'efficiency_summary_ledger': ['id', 'date', 'efficiency', 'updatedAt'],
+    'quality_metrics': ['id', 'date', 'qualityScore', 'createdAt', 'updatedAt'],
+    'reject_logs_database': ['id', 'date', 'rejectReason', 'createdAt', 'updatedAt']
 };
 
 function setupDatabase() {

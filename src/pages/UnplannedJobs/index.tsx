@@ -6,6 +6,8 @@ import KpiCard from '../../components/shared/KpiCard';
 import { UserGuidePanel } from '../../components/shared/UserGuidePanel';
 import UserGuideButton from '../../components/shared/UserGuideButton';
 
+import { useCollection } from '../../services/useFirestore';
+
 // --- SYSTEM COLOR PALETTE (Matched with Main Home Theme) ---
 const THEME = {
   bgMain: '#f3f3f1',
@@ -63,7 +65,8 @@ const INITIAL_PROBLEMS = [
 ];
 
 export default function UnplannedJobs() {
-  const [problems, setProblems] = useState(INITIAL_PROBLEMS);
+  const { data: dbProblems, add, update, remove, loading } = useCollection('Unplanned_Jobs', INITIAL_PROBLEMS);
+  const problems = dbProblems && dbProblems.length > 0 ? dbProblems : INITIAL_PROBLEMS;
   const [searchTerm, setSearchTerm] = useState('');
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -159,9 +162,8 @@ export default function UnplannedJobs() {
     }
   };
 
-  const executeProblemSubmission = (lossAmount: number) => {
+  const executeProblemSubmission = async (lossAmount: number) => {
     const newPrb = {
-      id: `PRB-${String(problems.length + 1).padStart(3, '0')}`,
       date: new Date().toLocaleDateString('en-GB'),
       planId: newProblem.planId,
       product: newProblem.product || 'Unknown Product',
@@ -172,17 +174,21 @@ export default function UnplannedJobs() {
       status: 'Pending Replan'
     };
 
-    setProblems([newPrb, ...problems]);
-    setIsReportOpen(false);
-    setNewProblem({ planId: '', product: '', type: '', lossKg: '' });
+    try {
+        await add(newPrb);
+        setIsReportOpen(false);
+        setNewProblem({ planId: '', product: '', type: '', lossKg: '' });
 
-    Swal.fire({
-      title: 'Problem Reported!',
-      text: 'IA Generator will calculate new Plan ID for replacement.',
-      icon: 'success',
-      confirmButtonColor: '#111f42',
-      confirmButtonText: 'รับทราบหลักการ'
-    });
+        Swal.fire({
+          title: 'Problem Reported!',
+          text: 'IA Generator will calculate new Plan ID for replacement.',
+          icon: 'success',
+          confirmButtonColor: '#111f42',
+          confirmButtonText: 'รับทราบหลักการ'
+        });
+    } catch(e) {
+        alert("Failed to report problem");
+    }
   };
 
   // Generate Replan with AI Engine
@@ -198,13 +204,13 @@ export default function UnplannedJobs() {
         Swal.showLoading();
       },
       timer: 1200
-    }).then(() => {
-      setProblems(prev => prev.map(p => {
-        if (p.id === id) {
-          return { ...p, status: 'Replanned' };
-        }
-        return p;
-      }));
+    }).then(async () => {
+      try {
+          const target = problems.find((p: any) => p.id === id);
+          if(target) {
+              await update(id, { ...target, status: 'Replanned' });
+          }
+      } catch(e) {}
 
       const replanId = id.replace('PRB', 'RP-PLAN');
       Swal.fire({

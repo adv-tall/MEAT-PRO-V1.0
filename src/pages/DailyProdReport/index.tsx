@@ -192,19 +192,10 @@ export default function DailyProdReport() {
   const [formRemarks, setFormRemarks] = useState('');
 
   // Firestore integration with local mock state fallback
-  const { data: dbReports, add: addReport, update: updateReport } = useCollection<any>('daily_production_reports');
-  const [localReports, setLocalReports] = useState<any[]>(INITIAL_REPORTS_LEDGER);
-
+  const { data: dbReports, add: addReport, update: updateReport } = useCollection<any>('Daily_Reports', INITIAL_REPORTS_LEDGER);
+  
   // Sync merged collection
-  const reports = useMemo(() => {
-    const merged = [...dbReports];
-    localReports.forEach(loc => {
-      if (!merged.find(m => m.id === loc.id)) {
-        merged.push(loc);
-      }
-    });
-    return merged.sort((a, b) => b.date.localeCompare(a.date));
-  }, [dbReports, localReports]);
+  const reports = dbReports && dbReports.length > 0 ? dbReports.sort((a, b) => b.date.localeCompare(a.date)) : INITIAL_REPORTS_LEDGER.sort((a, b) => b.date.localeCompare(a.date));
 
   // Filtering System
   const filteredReports = useMemo(() => {
@@ -370,18 +361,10 @@ export default function DailyProdReport() {
     };
 
     if (editingEntry) {
-      if (typeof editingEntry.id === 'string' && editingEntry.id.length > 10) {
-        await updateReport(editingEntry.id, dataObj);
-      } else {
-        setLocalReports(prev => prev.map(item => item.id === editingEntry.id ? { ...item, ...dataObj } : item));
-      }
+      await updateReport(editingEntry.id, dataObj);
     } else {
       const generatedId = `REP-${formDate.replace(/-/g, '').slice(2)}-${formShift === 'Shift A (Day)' ? 'A' : 'B'}-${formLineId.match(/\d+/) ? formLineId.match(/\d+/)![0] : '1'}`;
-      try {
-        await addReport({ id: generatedId, ...dataObj });
-      } catch (err) {
-        setLocalReports(prev => [{ id: generatedId, ...dataObj }, ...prev]);
-      }
+      await addReport({ id: generatedId, ...dataObj });
     }
 
     setShowEntryModal(false);

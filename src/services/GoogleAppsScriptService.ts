@@ -1,4 +1,4 @@
-export const GAS_WEB_APP_URL: string = "https://script.google.com/macros/s/AKfycbwNeP8EJ2ahG8fz5-mOllH0q7sYJzCO6tzDQgWPhRoup5Jjkbq8QMeYgO7__l-cp16JPA/exec";
+export const GAS_WEB_APP_URL: string = "https://script.google.com/macros/s/AKfycbwzDBGifeikgQvjKcBedrpaqqwhyai5Lr0ytKVzsahpJcU3O5GPL31p9OQnfovo5OXJ/exec";
 export const GAS_API_KEY = "your_secret_key_here";
 
 /**

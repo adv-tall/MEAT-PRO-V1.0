@@ -128,8 +128,8 @@ export default function AccessLogs() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(15);
     
-    // Fetch real-time data from Firestore 'accessLogs' collection
-    const { data: firebaseLogs, loading } = useCollection<any>('accessLogs');
+    // Fetch real-time data from Firestore 'SystemLogs' collection
+    const { data: firebaseLogs, loading } = useCollection<any>('SystemLogs');
 
     const logs = useMemo(() => {
         return firebaseLogs.map(log => ({

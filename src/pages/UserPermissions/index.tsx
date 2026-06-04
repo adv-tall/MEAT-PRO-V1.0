@@ -299,22 +299,13 @@ export default function UserPermission() {
   const [expandedModules, setExpandedModules] = useState<any>({ sr_so: true, vendors: true, analytics: true, inventory: true });
   const [confidentialityMap, setConfidentialityMap] = useState<any>({'settings': true, 'risk_management': true});
 
-  const { data: firebaseUsers, add: addUser, update: updateUser } = useCollection<any>('users');
-  const [localUsers, setLocalUsers] = useState([
+  const { data: firebaseUsers, add: addUser, update: updateUser } = useCollection<any>('Users', [
     { id: '1', name: 'SOMCHAI WORKER', position: 'SALES MANAGER', email: 'somchai.w@salepro.com', avatar: 'https://i.pravatar.cc/150?img=11', isDev: false, permissions: { dashboard: [1, 2, 3, 4], analytics: [1, 2] } },
     { id: '2', name: 'SUDA QUALITY', position: 'QC SUPERVISOR', email: 'suda.q@salepro.com', avatar: 'https://i.pravatar.cc/150?img=5', isDev: false, permissions: { dashboard: [1] } },
     { id: '3', name: 'PHICHAMON ADMIN', position: 'Lead Developer', email: 'tallintelligence.dcc@gmail.com', avatar: 'https://drive.google.com/thumbnail?id=1Z_fRbN9S4aA7OkHb3mlim_t60wIT4huY&sz=w400', isDev: true, permissions: { '*': [1, 2, 3, 4] } },
     { id: '4', name: 'SARAH ACCOUNTING', position: 'FINANCE', email: 'sarah@salepro.com', avatar: 'https://i.pravatar.cc/150?img=9', isDev: false, permissions: { dashboard: [1] } }
   ]);
-
-  const users = useMemo(() => {
-    // Merge firebase users and local mock users so it looks somewhat populated
-    const merged = [...firebaseUsers];
-    localUsers.forEach(lu => {
-       if (!merged.find(mu => mu.id === lu.id)) merged.push(lu);
-    });
-    return merged;
-  }, [firebaseUsers, localUsers]);
+  const users = firebaseUsers && firebaseUsers.length > 0 ? firebaseUsers : [];
 
   const filteredUsers = useMemo(() => {
     return users.filter(u => u.name.toLowerCase().includes(search.toLowerCase()) || u.position.toLowerCase().includes(search.toLowerCase()));
@@ -338,14 +329,7 @@ export default function UserPermission() {
             await addUser(rest);
         }
     } catch(e) {
-        setLocalUsers(prevUsers => {
-          const exists = prevUsers.find(u => u.id === savedUser.id);
-          if (exists) {
-            return prevUsers.map(u => u.id === savedUser.id ? { ...u, ...savedUser, permissions: newPermissions } : u);
-          } else {
-            return [{ ...savedUser, permissions: newPermissions }, ...prevUsers];
-          }
-        });
+        console.error('Failed to save user permissions:', e);
     }
   };
 

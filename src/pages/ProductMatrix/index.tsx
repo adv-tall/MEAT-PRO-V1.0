@@ -4,6 +4,7 @@ import * as Icons from 'lucide-react';
 import { UserGuidePanel } from '@/src/components/shared/UserGuidePanel';
 import KpiCard from '../../components/shared/KpiCard';
 import { DraggableModal } from '../../components/shared/DraggableModal';
+import { useCollection } from '../../services/useFirestore';
 
 // --- Mocking External Dependencies for Standalone Run ---
 const Swal = typeof window !== 'undefined' ? (window as any).Swal || null : null;
@@ -406,30 +407,21 @@ function MatrixConfigModal({ isOpen, onClose, sfgData, onSave, batters, fgDataba
 
 export default function ProductMatrix() {
     const [searchTerm, setSearchQuery] = useState('');
-    const [matrixData, setMatrixData] = useState<any[]>([]);
-    const [masterItems, setMasterItems] = useState<any[]>([]);
-    const [batters, setBatters] = useState<any[]>([]);
+    const { data: dbBatters, loading: bLoad } = useCollection('Meat_Formula', MOCK_STANDARDS);
+    const { data: dbMatrix, loading: mLoad, add: addMatrix, update: updateMatrix, remove: removeMatrix } = useCollection('Product_Matrix', MOCK_MATRIX);
+    const { data: dbMaster, loading: msLoad } = useCollection('Master_Item', MOCK_MASTER);
+
+    const batters = dbBatters && dbBatters.length > 0 ? dbBatters : MOCK_STANDARDS;
+    const matrixData = dbMatrix && dbMatrix.length > 0 ? dbMatrix : MOCK_MATRIX;
+    const masterItems = dbMaster && dbMaster.length > 0 ? dbMaster : MOCK_MASTER;
+
     const [modal, setModal] = useState<{isOpen: boolean, data: any}>({ isOpen: false, data: null });
     const [csvModalOpen, setCsvModalOpen] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const loading = bLoad || mLoad || msLoad;
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [activeMainTab, setActiveMainTab] = useState('Batter');
-
-    // Mock Data Loading for Standalone Environment
-    useEffect(() => {
-        const load = () => {
-            setLoading(true);
-            setTimeout(() => {
-                setMasterItems(MOCK_MASTER);
-                setBatters(MOCK_STANDARDS);
-                setMatrixData(MOCK_MATRIX);
-                setLoading(false);
-            }, 600); // Simulate network delay
-        };
-        load();
-    }, []);
 
     const filteredData = useMemo(() => matrixData.filter(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.id.toLowerCase().includes(searchTerm.toLowerCase())), [searchTerm, matrixData]);
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -437,20 +429,27 @@ export default function ProductMatrix() {
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-    const handleSave = (item: any) => { 
-        const newData = modal.data ? matrixData.map(i => i.id === item.id ? item : i) : [...matrixData, item]; 
-        setMatrixData(newData); 
-        if(Swal) Swal.fire({ icon: 'success', title: 'Saved!', timer: 1500, showConfirmButton: false });
+    const handleSave = async (item: any) => { 
+        try {
+            if(modal.data) {
+                await updateMatrix(item.id, item);
+            } else {
+                await addMatrix(item);
+            }
+            if(Swal) Swal.fire({ icon: 'success', title: 'Saved!', timer: 1500, showConfirmButton: false });
+        } catch(e) {
+            if(Swal) Swal.fire({ icon: 'error', title: 'Failed to save', timer: 1500, showConfirmButton: false });
+        }
     };
     
     const handleDelete = (id: string) => { 
         if(Swal) {
-            Swal.fire({ title: 'Are you sure?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#EF4444' }).then((r: any) => { 
-                if(r.isConfirmed) { setMatrixData(matrixData.filter(i => i.id !== id)); } 
+            Swal.fire({ title: 'Are you sure?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#EF4444' }).then(async (r: any) => { 
+                if(r.isConfirmed) { await removeMatrix(id); } 
             }); 
         } else {
             if(window.confirm('Are you sure you want to delete this item?')) {
-                setMatrixData(matrixData.filter(i => i.id !== id));
+                removeMatrix(id);
             }
         }
     };
@@ -528,7 +527,7 @@ export default function ProductMatrix() {
                 </div>
             </UserGuidePanel>
             
-            <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={(d: any) => { setMatrixData([...matrixData, ...d]); }} />
+            <CsvUploadModal isOpen={csvModalOpen} onClose={() => setCsvModalOpen(false)} onUpload={(d: any) => { d.forEach((item: any) => addMatrix?.(item)); }} />
             <MatrixConfigModal isOpen={modal.isOpen} onClose={() => setModal({ isOpen: false, data: null })} sfgData={modal.data} onSave={handleSave} batters={batters} fgDatabase={masterItems} />
 
             {/* Header Bar */}

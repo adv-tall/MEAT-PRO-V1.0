@@ -531,6 +531,7 @@ const BatchExecutionView = ({
   onFinishSet,
   onStartSet
 }: any) => {
+  const MIXING_MACHINES = React.useMemo(() => getDynamicMixingMachines(), []);
   const config = STEP_CONFIG[activeStep];
   const [qrData, setQrData] = useState<any>(null);
   const [simSpeed, setSimSpeed] = useState(1);
@@ -985,6 +986,7 @@ const OverviewView = () => (
 
 // --- MAIN APP ---
 export default function DailyBoard() {
+  const MIXING_MACHINES = React.useMemo(() => getDynamicMixingMachines(), []);
   const [orders, setOrders, updateOrder] = useSharedOrders();
   const [activeTab, setActiveTab] = useState("mixing");
   const [activeView, setActiveView] = useState("execution");

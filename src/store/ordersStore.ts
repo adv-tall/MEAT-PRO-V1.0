@@ -1,12 +1,5 @@
 import { useState, useEffect } from 'react';
-import { 
-  collection, 
-  onSnapshot, 
-  doc, 
-  setDoc, 
-  writeBatch 
-} from 'firebase/firestore';
-import { db, auth, handleFirestoreError, OperationType } from '../services/firebase';
+import { GASService } from '../services/GoogleAppsScriptService';
 import { MOCK_ORDERS as initialMockOrders } from '../data/mockOrders';
 
 type Order = any;
@@ -15,139 +8,79 @@ class OrdersStore {
   private orders: Order[] = [];
   private listeners: Set<() => void> = new Set();
   private isLoaded: boolean = false;
-  private unsubscribeFn: (() => void) | null = null;
+  private isLoading: boolean = false;
 
   constructor() {
-    this.initFirestoreListener();
+    this.initGASListener();
   }
 
-  private initFirestoreListener() {
-    try {
-      const colRef = collection(db, 'orders');
-      this.unsubscribeFn = onSnapshot(colRef, (snapshot) => {
-        const dbOrders: Order[] = [];
-        snapshot.forEach((docSnap) => {
-          dbOrders.push(docSnap.data() as Order);
-        });
+  private async initGASListener() {
+    if (this.isLoading) return;
+    this.isLoading = true;
 
-        if (dbOrders.length === 0 && !this.isLoaded) {
-          // Empty remote database -> seed with mock orders if authenticated, else fallback to local/storage
-          if (auth.currentUser) {
-            this.seedMockOrders();
-          } else {
-            const stored = localStorage.getItem('prod_orders');
-            if (stored) {
-              try {
-                this.orders = JSON.parse(stored);
-              } catch (e) {
-                this.orders = initialMockOrders;
-              }
-            } else {
-              this.orders = initialMockOrders;
-            }
-            this.isLoaded = true;
-            this.listeners.forEach(l => l());
-          }
+    try {
+      const response = await GASService.read('Orders_Production');
+      if (response && response.status === 'success') {
+        const gasOrders = response.data?.items || [];
+        
+        if (gasOrders.length === 0 && !this.isLoaded) {
+          // If no data, try to fetch from Orders_PL as fallback, or seed it
+          await this.seedMockOrders();
         } else {
-          // Sort items by ID so they stay in precise lexicographical order
-          this.orders = dbOrders.sort((a, b) => a.id.localeCompare(b.id));
+          this.orders = gasOrders.sort((a: any, b: any) => String(a.id).localeCompare(String(b.id)));
           this.isLoaded = true;
           this.listeners.forEach(l => l());
         }
-      }, (error) => {
-        // Fallback to local storage if user gets permission denied during unauthenticated load
-        console.warn("Firestore snapshot listener failed, using local fallback:", error);
-        
-        const stored = localStorage.getItem('prod_orders');
-        if (stored) {
-          try {
-            this.orders = JSON.parse(stored);
-          } catch (e) {
-            this.orders = initialMockOrders;
-          }
-        } else {
-          this.orders = initialMockOrders;
-        }
-        this.isLoaded = true;
-        this.listeners.forEach(l => l());
-        
-        // Log the permission error to console for diagnostic purposes without crashing the entire React UI
-        try {
-          handleFirestoreError(error, OperationType.LIST, 'orders');
-        } catch (diagnosticError) {
-          console.error("Firestore Permission Notice / Diagnostic Log:", diagnosticError);
-        }
-      });
-    } catch (e) {
-      console.error("Failed to initialize Firestore listener:", e);
-    }
-  }
-
-  private async seedMockOrders() {
-    this.isLoaded = true;
-    
-    // Attempt Firestore persistence first
-    try {
-      const batch = writeBatch(db);
-      const isoNow = new Date().toISOString();
-      
-      // Limit to 450 items to stay safely under Firestore's 500 batch limit
-      const itemsToSeed = initialMockOrders.slice(0, 450);
-      
-      itemsToSeed.forEach((o) => {
-        const docRef = doc(db, 'orders', o.id);
-        const orderDoc = {
-          id: o.id,
-          sku: o.sku,
-          name: o.name,
-          qty: o.qty || 1,
-          fgKg: o.fgKg || 0,
-          sfgKg: o.sfgKg || 0,
-          batterKg: o.batterKg || 0,
-          batches: o.batches || 0,
-          batchSize: o.batchSize || 100,
-          customer: o.customer || '',
-          deadline: o.deadline || '12:00',
-          status: o.status || 'PLANNED',
-          isReplacement: !!o.isReplacement,
-          shift: o.shift || 'Morning',
-          currentStep: o.currentStep || 'Entry',
-          mixingCount: o.mixingCount !== undefined ? o.mixingCount : 0,
-          formingCount: o.formingCount !== undefined ? o.formingCount : 0,
-          cookingCount: o.cookingCount !== undefined ? o.cookingCount : 0,
-          coolingCount: o.coolingCount !== undefined ? o.coolingCount : 0,
-          cuttingCount: o.cuttingCount !== undefined ? o.cuttingCount : 0,
-          packingCount: o.packingCount !== undefined ? o.packingCount : 0,
-          whCount: o.whCount !== undefined ? o.whCount : 0,
-          createdAt: isoNow,
-          updatedAt: isoNow
-        };
-        batch.set(docRef, orderDoc);
-      });
-      
-      await batch.commit();
-      console.log(`Seeded ${itemsToSeed.length} mock orders successfully into Firestore`);
-    } catch (err) {
-      console.warn("Failsafe: error seeding mock orders (might be permission issue, using local fallback):", err);
-      // Fallback locally
+      }
+    } catch (error) {
+      console.warn("GAS Read Error, fallback to local:", error);
       const stored = localStorage.getItem('prod_orders');
       if (stored) {
         try {
-          this.orders = JSON.parse(stored);
+          const parsed = JSON.parse(stored);
+          this.orders = parsed.length > 0 ? parsed : initialMockOrders;
         } catch (e) {
           this.orders = initialMockOrders;
         }
       } else {
         this.orders = initialMockOrders;
       }
+      this.isLoaded = true;
+      this.listeners.forEach(l => l());
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private async seedMockOrders() {
+    this.isLoaded = true;
+    console.log("Seeding mock orders to Google Sheets...");
+    try {
+      const isoNow = new Date().toISOString();
+      const itemsToSeed = initialMockOrders.map(o => ({
+          ...o,
+          createdAt: isoNow,
+          updatedAt: isoNow
+      }));
+
+      // For speed, just take the first 100 to avoid GAS timeout
+      const chunk = itemsToSeed.slice(0, 100);
+      
+      await GASService.write('Orders_Production', chunk);
+      console.log(`Seeded ${chunk.length} mock orders to Sheets`);
+      this.orders = chunk;
+    } catch (e) {
+      console.warn("Error seeding to GAS:", e);
+      this.orders = initialMockOrders.slice(0, 50);
     }
     
+    // Also save locally
+    localStorage.setItem('prod_orders', JSON.stringify(this.orders));
     this.listeners.forEach(l => l());
   }
 
-  // Force seed method to expose to UI
-  public triggerForceSeed() {
-    this.seedMockOrders();
+  public async triggerForceSeed() {
+    await this.seedMockOrders();
   }
 
   subscribe(listener: () => void) {
@@ -189,40 +122,12 @@ class OrdersStore {
     }
 
     try {
-      const batch = writeBatch(db);
-      const isoNow = new Date().toISOString();
-      
-      resolvedOrders.forEach(o => {
-        const docRef = doc(db, 'orders', o.id);
-        const orderDoc = {
-          id: o.id,
-          sku: o.sku,
-          name: o.name,
-          qty: o.qty || 1,
-          fgKg: o.fgKg || 0,
-          sfgKg: o.sfgKg || 0,
-          batterKg: o.batterKg || 0,
-          deadline: o.deadline || '12:00',
-          status: o.status || 'PLANNED',
-          isReplacement: !!o.isReplacement,
-          shift: o.shift || 'Morning',
-          currentStep: o.currentStep || 'Entry',
-          mixingCount: o.mixingCount !== undefined ? o.mixingCount : 0,
-          formingCount: o.formingCount !== undefined ? o.formingCount : 0,
-          cookingCount: o.cookingCount !== undefined ? o.cookingCount : 0,
-          coolingCount: o.coolingCount !== undefined ? o.coolingCount : 0,
-          cuttingCount: o.cuttingCount !== undefined ? o.cuttingCount : 0,
-          packingCount: o.packingCount !== undefined ? o.packingCount : 0,
-          whCount: o.whCount !== undefined ? o.whCount : 0,
-          createdAt: o.createdAt || isoNow,
-          updatedAt: isoNow
-        };
-        batch.set(docRef, orderDoc);
-      });
-      
-      await batch.commit();
+      // Find the difference/new ones theoretically, or just overwrite/update
+      // For now we'll do an update operation on GAS for all resolved orders
+      const updates = resolvedOrders.map(o => ({...o}));
+      await GASService.update('Orders_Production', updates);
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, 'orders');
+       console.error("GAS Update Error:", error);
     }
   }
 
@@ -236,23 +141,20 @@ class OrdersStore {
     this.listeners.forEach(l => l());
 
     if (this.isDemo) {
-      console.log(`DEMO user bypassed order update (orders/${id})`);
+      console.log(`DEMO user bypassed order update (${id})`);
       return;
     }
 
     try {
-      const docRef = doc(db, 'orders', id);
       const isoNow = new Date().toISOString();
-      
-      const fullUpdatedOrder = {
+      const updatedItem = {
         ...currentOrder,
         ...updates,
         updatedAt: isoNow
       };
-      
-      await setDoc(docRef, fullUpdatedOrder, { merge: true });
+      await GASService.update('Orders_Production', [updatedItem]);
     } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `orders/${id}`);
+       console.error("GAS Single Update Error:", error);
     }
   }
 }

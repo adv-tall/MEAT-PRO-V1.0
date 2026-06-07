@@ -101,6 +101,66 @@
         }
       },
       "required": ["email"]
+    },
+    "qrCodeHistory": {
+      "title": "QR Code Print History Log",
+      "description": "Historical log of printed QR codes and label configurations",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "orderId": {
+          "type": "string"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "sku": {
+          "type": "string"
+        },
+        "qty": {
+          "type": "number"
+        },
+        "unitRef": {
+          "type": "string"
+        },
+        "printedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "printedBy": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "orderId", "productName", "printedAt", "printedBy"]
+    },
+    "qrLabelSettings": {
+      "title": "QR Label Print Configuration Settings",
+      "description": "Customizable metadata titles and visibility rules for printed QR stickers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "companyName": { "type": "string" },
+        "docTitle": { "type": "string" },
+        "labelTitle": { "type": "string" },
+        "labelSub": { "type": "string" },
+        "batchIdLabel": { "type": "string" },
+        "productNameLabel": { "type": "string" },
+        "skuCodeLabel": { "type": "string" },
+        "targetQtyLabel": { "type": "string" },
+        "unitRefLabel": { "type": "string" },
+        "showBatchId": { "type": "boolean" },
+        "showProductName": { "type": "boolean" },
+        "showSkuCode": { "type": "boolean" },
+        "showTargetQty": { "type": "boolean" },
+        "showUnitRef": { "type": "boolean" },
+        "instructionText": { "type": "string" }
+      },
+      "required": ["id"]
     }
   },
   "firestore": {
@@ -111,6 +171,14 @@
     "/admins/{adminId}": {
       "schema": "admin",
       "description": "Privileged administrator documents identified by Auth UID"
+    },
+    "/Qr_Code_History/{id}": {
+      "schema": "qrCodeHistory",
+      "description": "Log history stored for printed task traveler badges and barcodes"
+    },
+    "/Qr_Label_Settings/{id}": {
+      "schema": "qrLabelSettings",
+      "description": "Custom templates for printed labels"
     }
   }
 }

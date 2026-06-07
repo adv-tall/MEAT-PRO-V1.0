@@ -52,14 +52,14 @@ const CHART_THEME = {
 const STEPS = ['Mixing', 'Forming', 'Cooking', 'Cooling', 'Peeling', 'Cutting', 'Packing'];
 
 const INITIAL_EQUIPMENT = [
-    { id: 'EQ-MIX-001', name: 'Bowl Cutter 200L', step: 'Mixing', qty: 2, note: 'เครื่องหลักไลน์ A' },
-    { id: 'EQ-MIX-002', name: 'Vacuum Mixer 500L', step: 'Mixing', qty: 1, note: 'สำหรับผสม Batter' },
-    { id: 'EQ-FRM-001', name: 'Frank-A-Matic Hi-Speed', step: 'Forming', qty: 2, note: 'ไส้กรอกยาว' },
-    { id: 'EQ-FRM-002', name: 'Meatball Former', step: 'Forming', qty: 3, note: 'ลูกชิ้น' },
-    { id: 'EQ-CK-001', name: 'SmokeHouse Gen3', step: 'Cooking', qty: 2, note: 'ตู้อบรมควัน' },
-    { id: 'EQ-CL-001', name: 'Rapid Chill Tunnel', step: 'Cooling', qty: 1, note: 'ลดอุณหภูมิ' },
-    { id: 'EQ-PK-001', name: 'Thermoformer Pack', step: 'Packing', qty: 2, note: 'แพ็คสูญญากาศ' },
-    { id: 'EQ-PK-002', name: 'Flow Pack Wrapper', step: 'Packing', qty: 1, note: 'แพ็คซองตั้ง' },
+    { id: 'EQ-MIX-001', name: 'Bowl Cutter 200L', step: 'Mixing', capacity: '200 L/batch', note: 'เครื่องหลักไลน์ A' },
+    { id: 'EQ-MIX-002', name: 'Vacuum Mixer 500L', step: 'Mixing', capacity: '500 L/batch', note: 'สำหรับผสม Batter' },
+    { id: 'EQ-FRM-001', name: 'Frank-A-Matic Hi-Speed', step: 'Forming', capacity: '2.5 T/hr', note: 'ไส้กรอกยาว' },
+    { id: 'EQ-FRM-002', name: 'Meatball Former', step: 'Forming', capacity: '500 kg/hr', note: 'ลูกชิ้น' },
+    { id: 'EQ-CK-001', name: 'SmokeHouse Gen3', step: 'Cooking', capacity: '6 T/batch', note: 'ตู้อบรมควัน' },
+    { id: 'EQ-CL-001', name: 'Rapid Chill Tunnel', step: 'Cooling', capacity: '3 T/hr', note: 'ลดอุณหภูมิ' },
+    { id: 'EQ-PK-001', name: 'Thermoformer Pack', step: 'Packing', capacity: '120 packs/min', note: 'แพ็คสูญญากาศ' },
+    { id: 'EQ-PK-002', name: 'Flow Pack Wrapper', step: 'Packing', capacity: '150 packs/min', note: 'แพ็คซองตั้ง' },
 ];
 
 const generateMockBreakdowns = () => [
@@ -83,11 +83,11 @@ const LucideIcon = ({ name, size = 16, className = "", color, style }: any) => {
 
 
 function EquipmentModal({ isOpen, onClose, data, onSave }: any) {
-    const [formData, setFormData] = useState({ id: '', name: '', step: 'Mixing', qty: 1, note: '' });
+    const [formData, setFormData] = useState({ id: '', name: '', step: 'Mixing', capacity: '', note: '' });
 
     useEffect(() => {
         if (isOpen) {
-            setFormData(data ? { ...data } : { id: '', name: '', step: 'Mixing', qty: 1, note: '' });
+            setFormData(data ? { ...data } : { id: '', name: '', step: 'Mixing', capacity: '', note: '' });
         }
     }, [isOpen, data]);
 
@@ -104,9 +104,9 @@ function EquipmentModal({ isOpen, onClose, data, onSave }: any) {
     };
 
     return (
-        <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-2xl" hideDefaultHeader>
+        <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-2xl" hideDefaultHeader hideCloseButton>
             <div className="bg-white rounded-xl w-full flex flex-col overflow-hidden max-h-[90vh]">
-                <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#eaeaec]">
+                <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#eaeaec] drag-handle cursor-move">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20">
                             <LucideIcon name={data ? "edit-3" : "plus-circle"} size={20} />
@@ -136,8 +136,8 @@ function EquipmentModal({ isOpen, onClose, data, onSave }: any) {
                             </select>
                         </div>
                         <div>
-                            <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Quantity</label>
-                            <input type="number" min="0" value={formData.qty} onChange={e => setFormData({...formData, qty: parseInt(e.target.value)})} className="w-full border border-[#eaeaec] bg-[#f8f9fa] focus:bg-white rounded-xl p-3 text-[12px] font-mono font-bold text-[#212c46] focus:border-[#4d87a8] transition-all outline-none" />
+                            <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Capacity (กำลังการผลิต)</label>
+                            <input type="text" value={formData.capacity || ''} onChange={e => setFormData({...formData, capacity: e.target.value})} className="w-full border border-[#eaeaec] bg-[#f8f9fa] focus:bg-white rounded-xl p-3 text-[12px] font-bold text-[#212c46] focus:border-[#4d87a8] transition-all outline-none" placeholder="e.g. 500 kg/hr หรือ 200L" />
                         </div>
                         <div className="col-span-2">
                             <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Note</label>
@@ -176,9 +176,9 @@ function BreakdownModal({ isOpen, onClose, data, onSave, equipment }: any) {
     };
 
     return (
-        <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-2xl" hideDefaultHeader>
+        <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-2xl" hideDefaultHeader hideCloseButton>
             <div className="bg-white rounded-xl w-full flex flex-col overflow-hidden max-h-[90vh]">
-                <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#eaeaec]">
+                <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#eaeaec] drag-handle cursor-move">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-white/10 text-white flex items-center justify-center border border-white/20">
                             <LucideIcon name={data ? "edit-3" : "alert-triangle"} size={20} className={!data ? "text-[#b7a159]" : ""} />
@@ -297,7 +297,7 @@ export default function EquipmentRegistry() {
     // Data Filtering
     const filteredEquipment = useMemo(() => {
         return equipment.filter(item => {
-            const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.id.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchSearch = (item.name || "").toLowerCase().includes((searchTerm || "").toLowerCase()) || (item.id || "").toLowerCase().includes((searchTerm || "").toLowerCase());
             const matchStep = filterStep === 'All' || item.step === filterStep;
             return matchSearch && matchStep;
         });
@@ -305,9 +305,9 @@ export default function EquipmentRegistry() {
 
     const filteredBreakdowns = useMemo(() => {
         return breakdowns.filter(item => {
-            const matchSearch = item.machineName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                item.problem.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                item.id.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchSearch = (item.machineName || "").toLowerCase().includes((searchTerm || "").toLowerCase()) || 
+                                (item.problem || "").toLowerCase().includes((searchTerm || "").toLowerCase()) ||
+                                (item.id || "").toLowerCase().includes((searchTerm || "").toLowerCase());
             return matchSearch;
         });
     }, [searchTerm, breakdowns]);
@@ -480,13 +480,13 @@ export default function EquipmentRegistry() {
                             id: row.ID,
                             name: row.Name,
                             step: row.Step,
-                            qty: parseInt(row.Quantity) || 0,
+                            capacity: row.Capacity || '',
                             note: row.Note || ''
                         }));
                         handleCsvUpload(newData);
                         setCsvModalOpen(false);
                     }} 
-                    requiredHeaders={['ID', 'Name', 'Step', 'Quantity']}
+                    requiredHeaders={['ID', 'Name', 'Step', 'Capacity']}
                     templateName="equipment_registry_template.xlsx"
                 />
             </DraggableModal>
@@ -609,7 +609,7 @@ export default function EquipmentRegistry() {
                                                     <th className="pl-8 w-[15%] align-middle font-black whitespace-nowrap ">ID</th>
                                                     <th className="w-auto align-middle font-black whitespace-nowrap ">Machine Name</th>
                                                     <th className="w-[15%] text-center align-middle font-black whitespace-nowrap ">Process Step</th>
-                                                    <th className="w-[15%] text-center align-middle font-black whitespace-nowrap ">Quantity</th>
+                                                    <th className="w-[15%] text-center align-middle font-black whitespace-nowrap ">Capacity</th>
                                                     <th className="w-[20%] align-middle font-black whitespace-nowrap ">Note</th>
                                                     <th className="pr-8 text-right w-20 align-middle font-black whitespace-nowrap ">Action</th>
                                                 </tr>
@@ -639,7 +639,7 @@ export default function EquipmentRegistry() {
                                                                 <span className="bg-white text-[#7a8b95] px-3 py-1 rounded-full text-[10px] font-bold border border-[#eaeaec] uppercase tracking-widest shadow-sm">{item.step}</span>
                                                             </td>
                                                             <td className="px-4 align-middle text-center py-2.5">
-                                                                <div className="font-black text-[#212c46] text-[12px] font-mono bg-slate-50 px-3 py-1 rounded-md border border-[#eaeaec] inline-block shadow-sm">{item.qty}</div>
+                                                                <div className="font-black text-[#212c46] text-[12px] font-mono bg-slate-50 px-3 py-1 rounded-md border border-[#eaeaec] inline-block shadow-sm">{item.capacity || '-'}</div>
                                                             </td>
                                                             <td className="px-4 align-middle py-2.5">
                                                                 <div className="text-[11px] text-[#7a8b95] font-normal truncate max-w-xs">{item.note || '-'}</div>

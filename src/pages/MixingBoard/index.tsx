@@ -7,6 +7,7 @@ import UserGuideButton from "@/src/components/shared/UserGuideButton";
 import KpiCard from "@/src/components/shared/KpiCard";
 import { useSharedOrders } from "@/src/store/ordersStore";
 import { BatchQrScannerModal } from "@/src/pages/ProductionTracking/BatchQrScannerModal";
+import { BatchQrTagModal } from "@/src/pages/ProductionTracking/BatchQrTagModal";
 
 const THEME = {
   bgMain: "#f3f3f1",
@@ -667,43 +668,25 @@ const BatchExecutionView = ({
 
   return (
     <div className="flex flex-col flex-1 animate-fadeIn overflow-hidden bg-transparent">
-      {qrData &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <div
-            className="fixed inset-0 bg-[#1d2636]/60 backdrop-blur-sm z-[5000] flex items-center justify-center p-4 animate-fadeIn"
-            onClick={() => setQrData(null)}
-          >
-            <div
-              className="bg-white rounded-xl p-8 text-center shadow-2xl relative w-full max-w-sm"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setQrData(null)}
-                className="absolute top-4 right-4 text-[#7a8b95] hover:text-[#a94228] transition-colors"
-              >
-                <Icons.X size={20} />
-              </button>
-              <h3 className="font-black mb-6 uppercase text-[#212c46] tracking-widest border-b border-[#eaeaec] pb-4">
-                BATCH ID: {qrData.id}
-              </h3>
-              <div className="bg-[#f8f9fa] p-4 border border-[#eaeaec] rounded-xl flex shadow-inner mb-6 items-center justify-center">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${qrData.id}`}
-                  alt="QR"
-                  className="mix-blend-multiply w-[200px] h-[200px] object-contain"
-                />
-              </div>
-              <button
-                onClick={() => setQrData(null)}
-                className="w-full py-3 bg-[#212c46] text-white rounded-xl font-bold uppercase tracking-widest hover:bg-[#1a233a] transition-colors shadow-sm"
-              >
-                CLOSE
-              </button>
-            </div>
-          </div>,
-          document.body,
-        )}
+      {qrData && (
+        <BatchQrTagModal
+          isOpen={qrData !== null}
+          onClose={() => setQrData(null)}
+          order={qrData}
+          onSimulateScan={(id) => {
+            if ((window as any).Swal) {
+              (window as any).Swal.fire({
+                icon: "success",
+                title: "จำลองการสแกนสำเร็จ",
+                text: `จำลองการแกนรหัสคุมงาน: ${id} บนบอร์ดไลน์ผลิต`,
+                timer: 2000,
+                showConfirmButton: false
+              });
+            }
+          }}
+          allOrders={processSets}
+        />
+      )}
 
       {/* Board Sub-Header */}
       <div className="bg-white rounded-xl flex-1 flex flex-col shadow-sm mt-0 rounded-t-none border border-t-0 border-[#eaeaec] z-10 relative">

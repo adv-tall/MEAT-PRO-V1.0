@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import { DraggableModal } from '../../components/shared/DraggableModal';
 import { googleSignIn, initAuth, logout, formatGoogleSheet } from '../../utils/googleWorkspace';
 import { User } from 'firebase/auth';
+import { db } from '../../services/firebaseConfig';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { 
   Settings2, 
   Building2, 
@@ -147,6 +149,7 @@ const TABS = [
   { id: 'customers', label: 'Customer', icon: 'Users', title: 'Customers', desc: 'Manage external client and partner profiles.' },
   { id: 'pdfTemplates', label: 'PDF Templates', icon: 'Printer', title: 'PDF FORM TEMPLATES', desc: 'Configure official document layouts and compliance headers.' },
   { id: 'idFormats', label: 'ID Formats', icon: 'Barcode', title: 'ID FORMAT CONFIG', desc: 'Define auto-generation rules for system identifiers.' },
+  { id: 'qrLabelConfig', label: 'QR Label Settings', icon: 'Printer', title: 'QR LABEL PRINT CONFIGURATION', desc: 'Customize label headers, labels, and metadata visibility.' },
   { id: 'googleSheets', label: 'Google Sheets', icon: 'Database', title: 'GOOGLE SHEETS SYNC', desc: 'Manage database connection and format spreadsheets.' }
 ];
 
@@ -166,6 +169,58 @@ import KpiCard from '../../components/shared/KpiCard';
 // --- Main Component ---
 export default function SystemConfig() {
   const [activeTab, setActiveTab] = useState('departments'); 
+  const [qrSettings, setQrSettings] = useState({
+    companyName: 'MEAT PRO FOOD GROUP CO., LTD.',
+    docTitle: 'OFFICIAL PRODUCTION JOB STICKER LABEL',
+    labelTitle: 'Pallet Bin Batch Traveller',
+    labelSub: 'SCAN TO UPDATE FACTORY RUN',
+    batchIdLabel: 'BATCH RUN ID:',
+    productNameLabel: 'PRODUCT NAME:',
+    skuCodeLabel: 'SKU CODE:',
+    targetQtyLabel: 'TARGET QTY:',
+    unitRefLabel: 'UNIT REF:',
+    showBatchId: true,
+    showProductName: true,
+    showSkuCode: true,
+    showTargetQty: true,
+    showUnitRef: true,
+    instructionText: 'ติดป้ายบัตรนี้ที่ตัวถังผสมหรือพาเลทวัตถุดิบเพื่อให้พนักงานกวาดสแกนอัปเดตงาน'
+  });
+  const [savingQr, setSavingQr] = useState(false);
+  const [qrSaveResult, setQrSaveResult] = useState('');
+
+  // Fetch QR Settings on load
+  useEffect(() => {
+    const fetchQrSettings = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'Qr_Label_Settings', 'default'));
+        if (snap.exists()) {
+          setQrSettings(snap.data() as any);
+        }
+      } catch (err) {
+        console.error('Failed to load QR Label Settings from firestore:', err);
+      }
+    };
+    fetchQrSettings();
+  }, []);
+
+  const handleSaveQrSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingQr(true);
+    setQrSaveResult('');
+    try {
+      await setDoc(doc(db, 'Qr_Label_Settings', 'default'), qrSettings);
+      localStorage.setItem('qr_label_settings_cached', JSON.stringify(qrSettings));
+      setQrSaveResult('success');
+      setTimeout(() => setQrSaveResult(''), 4000);
+    } catch (err) {
+      console.error('Failed to save QR Label Settings:', err);
+      setQrSaveResult('error');
+    } finally {
+      setSavingQr(false);
+    }
+  };
+
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [data, setData] = useState<any>(INITIAL_DATA);
   const [search, setSearch] = useState('');
@@ -241,7 +296,7 @@ export default function SystemConfig() {
 
   const filteredList = useMemo(() => {
       return currentList.filter((item: any) => {
-          const s = search.toLowerCase();
+          const s = (search || "").toLowerCase();
           if (activeTab === 'idFormats') {
               return (item.prefix?.toLowerCase().includes(s) || 
                       item.pages?.join(',').toLowerCase().includes(s));
@@ -447,7 +502,7 @@ export default function SystemConfig() {
                             </h4>
                             <p className="text-[11px] font-bold text-[#7a8b95] uppercase tracking-widest mt-1">{activeTabData.desc}</p>
                         </div>
-                        {activeTab !== 'googleSheets' && (
+                        {activeTab !== 'googleSheets' && activeTab !== 'qrLabelConfig' && (
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             <div className="relative flex-1 md:w-64">
                                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a8b95]" />
@@ -512,6 +567,266 @@ export default function SystemConfig() {
                                 {formatError && <p className="text-[11px] font-black text-[#932c2e] uppercase tracking-widest mt-2 flex items-center gap-2"><AlertTriangle size={14}/> {formatError}</p>}
                            </div>
                        </div>
+                    ) : activeTab === 'qrLabelConfig' ? (
+                        <form onSubmit={handleSaveQrSettings} className="p-8 flex flex-col gap-6 bg-[#f8f9fa] h-full no-print">
+                            {/* Alert banners */}
+                            {qrSaveResult === 'success' && (
+                              <div className="bg-[#657f4d]/10 border-2 border-[#657f4d] p-4 rounded-xl flex items-center gap-3 animate-fadeIn text-[#657f4d]">
+                                <CheckCircle size={20} className="shrink-0 animate-bounce" />
+                                <div className="text-[12px] font-black uppercase tracking-wider">
+                                  QR SPECIFICATION PARAMETERS SAVED & DEPLOYED GLOBALLY!
+                                </div>
+                              </div>
+                            )}
+
+                            {qrSaveResult === 'error' && (
+                              <div className="bg-red-50 border-2 border-[#932c2e] p-4 rounded-xl flex items-center gap-3 animate-fadeIn text-[#932c2e]">
+                                <AlertTriangle size={20} className="shrink-0 animate-pulse" />
+                                <div className="text-[12px] font-black uppercase tracking-wider">
+                                  CRITICAL UPDATE ERROR: FAILED TO SAVE CONFIGURATION.
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Left Column: Title Headings & Instructions */}
+                              <div className="bg-white p-5 rounded-xl border border-[#eaeaec] shadow-xs flex flex-col gap-4">
+                                <h3 className="text-[11px] font-black text-[#212c46] uppercase tracking-widest border-b pb-2 mb-2 flex items-center gap-1.5 text-indigo-700">
+                                  <LucideIcon name="Bookmark" size={14} /> Document Header Branding
+                                </h3>
+
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Company / Organization name</label>
+                                    <input 
+                                      type="text" 
+                                      value={qrSettings.companyName} 
+                                      onChange={(e) => setQrSettings({ ...qrSettings, companyName: e.target.value })}
+                                      className="w-full bg-white border border-[#eaeaec] rounded-lg px-3 py-2 text-[12px] font-bold text-[#212c46] outline-none focus:border-[#b7a159] shadow-inner"
+                                      placeholder="e.g. MEAT PRO CO., LTD."
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Official Document Title</label>
+                                    <input 
+                                      type="text" 
+                                      value={qrSettings.docTitle} 
+                                      onChange={(e) => setQrSettings({ ...qrSettings, docTitle: e.target.value })}
+                                      className="w-full bg-white border border-[#eaeaec] rounded-lg px-3 py-2 text-[12px] font-bold text-[#212c46] outline-none focus:border-[#b7a159] shadow-inner"
+                                      placeholder="e.g. OFFICIAL STICKER LABEL"
+                                    />
+                                  </div>
+                                </div>
+
+                                <h3 className="text-[11px] font-black text-[#212c46] uppercase tracking-widest border-b pb-2 mt-4 mb-2 flex items-center gap-1.5 text-indigo-700">
+                                  <LucideIcon name="FileText" size={14} /> Travel Batch Subtitles
+                                </h3>
+
+                                <div className="space-y-4">
+                                  <div>
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Mini Sticker Label Header</label>
+                                    <input 
+                                      type="text" 
+                                      value={qrSettings.labelTitle} 
+                                      onChange={(e) => setQrSettings({ ...qrSettings, labelTitle: e.target.value })}
+                                      className="w-full bg-white border border-[#eaeaec] rounded-lg px-3 py-2 text-[12px] font-bold text-[#212c46] outline-none focus:border-[#b7a159] shadow-inner"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Mini Sticker Label Subtitle</label>
+                                    <input 
+                                      type="text" 
+                                      value={qrSettings.labelSub} 
+                                      onChange={(e) => setQrSettings({ ...qrSettings, labelSub: e.target.value })}
+                                      className="w-full bg-white border border-[#eaeaec] rounded-lg px-3 py-2 text-[12px] font-bold text-[#212c46] outline-none focus:border-[#b7a159] shadow-inner"
+                                    />
+                                  </div>
+                                </div>
+
+                                <h3 className="text-[11px] font-black text-[#212c46] uppercase tracking-widest border-b pb-2 mt-4 mb-2 flex items-center gap-1.5 text-indigo-700">
+                                  <LucideIcon name="HelpCircle" size={14} /> Scanner Instructions text
+                                </h3>
+
+                                <div>
+                                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Thai / English Instructions</label>
+                                  <textarea 
+                                    rows={2}
+                                    value={qrSettings.instructionText} 
+                                    onChange={(e) => setQrSettings({ ...qrSettings, instructionText: e.target.value })}
+                                    className="w-full bg-white border border-[#eaeaec] rounded-lg px-3 py-2 text-[12px] font-bold text-[#212c46] outline-none focus:border-[#b7a159] shadow-inner resize-none"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Right Column: Metadata keys custom labels & visibility settings */}
+                              <div className="bg-white p-5 rounded-xl border border-[#eaeaec] shadow-xs flex flex-col gap-4">
+                                <h3 className="text-[11px] font-black text-[#212c46] uppercase tracking-widest border-b pb-2 mb-2 flex items-center justify-between text-[#a94228]">
+                                  <span className="flex items-center gap-1.5"><LucideIcon name="Sliders" size={14} /> METADATA LABELS & FIELD VISIBILITY</span>
+                                  <span className="text-[8px] font-black font-mono tracking-widest uppercase text-slate-400">ACTIVE CONTROLS</span>
+                                </h3>
+
+                                <div className="space-y-4">
+                                  {/* Field Row: Batch RUN ID */}
+                                  <div className="p-3 bg-[#fafafa] rounded-xl border border-slate-100 flex flex-col gap-2">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[11px] font-black text-[#212c46] uppercase tracking-wide">BATCH RUN ID FIELD</span>
+                                      <label className="relative inline-flex items-center cursor-pointer">
+                                        <input 
+                                          type="checkbox" 
+                                          checked={qrSettings.showBatchId} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, showBatchId: e.target.checked })}
+                                          className="sr-only peer" 
+                                        />
+                                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:width-4 after:w-4 after:transition-all peer-checked:bg-[#657f4d]"></div>
+                                      </label>
+                                    </div>
+                                    {qrSettings.showBatchId && (
+                                      <div>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Label Title English/Thai</label>
+                                        <input 
+                                          type="text" 
+                                          value={qrSettings.batchIdLabel} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, batchIdLabel: e.target.value })}
+                                          className="w-full bg-white border border-[#eaeaec] rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-[#212c46] outline-none"
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Field Row: Product Name */}
+                                  <div className="p-3 bg-[#fafafa] rounded-xl border border-slate-100 flex flex-col gap-2">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[11px] font-black text-[#212c46] uppercase tracking-wide">PRODUCT NAME FIELD</span>
+                                      <label className="relative inline-flex items-center cursor-pointer">
+                                        <input 
+                                          type="checkbox" 
+                                          checked={qrSettings.showProductName} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, showProductName: e.target.checked })}
+                                          className="sr-only peer" 
+                                        />
+                                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:width-4 after:w-4 after:transition-all peer-checked:bg-[#657f4d]"></div>
+                                      </label>
+                                    </div>
+                                    {qrSettings.showProductName && (
+                                      <div>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Label Title English/Thai</label>
+                                        <input 
+                                          type="text" 
+                                          value={qrSettings.productNameLabel} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, productNameLabel: e.target.value })}
+                                          className="w-full bg-white border border-[#eaeaec] rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-[#212c46] outline-none"
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Field Row: SKU CODE */}
+                                  <div className="p-3 bg-[#fafafa] rounded-xl border border-slate-100 flex flex-col gap-2">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[11px] font-black text-[#212c46] uppercase tracking-wide">SKU CODE FIELD</span>
+                                      <label className="relative inline-flex items-center cursor-pointer">
+                                        <input 
+                                          type="checkbox" 
+                                          checked={qrSettings.showSkuCode} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, showSkuCode: e.target.checked })}
+                                          className="sr-only peer" 
+                                        />
+                                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:width-4 after:w-4 after:transition-all peer-checked:bg-[#657f4d]"></div>
+                                      </label>
+                                    </div>
+                                    {qrSettings.showSkuCode && (
+                                      <div>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Label Title English/Thai</label>
+                                        <input 
+                                          type="text" 
+                                          value={qrSettings.skuCodeLabel} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, skuCodeLabel: e.target.value })}
+                                          className="w-full bg-white border border-[#eaeaec] rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-[#212c46] outline-none"
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Field Row: TARGET QTY */}
+                                  <div className="p-3 bg-[#fafafa] rounded-xl border border-slate-100 flex flex-col gap-2">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[11px] font-black text-[#212c46] uppercase tracking-wide">TARGET QTY FIELD</span>
+                                      <label className="relative inline-flex items-center cursor-pointer">
+                                        <input 
+                                          type="checkbox" 
+                                          checked={qrSettings.showTargetQty} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, showTargetQty: e.target.checked })}
+                                          className="sr-only peer" 
+                                        />
+                                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:width-4 after:w-4 after:transition-all peer-checked:bg-[#657f4d]"></div>
+                                      </label>
+                                    </div>
+                                    {qrSettings.showTargetQty && (
+                                      <div>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Label Title English/Thai</label>
+                                        <input 
+                                          type="text" 
+                                          value={qrSettings.targetQtyLabel} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, targetQtyLabel: e.target.value })}
+                                          className="w-full bg-white border border-[#eaeaec] rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-[#212c46] outline-none"
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Field Row: UNIT REF */}
+                                  <div className="p-3 bg-[#fafafa] rounded-xl border border-slate-100 flex flex-col gap-2">
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-[11px] font-black text-[#212c46] uppercase tracking-wide">UNIT REF FIELD</span>
+                                      <label className="relative inline-flex items-center cursor-pointer">
+                                        <input 
+                                          type="checkbox" 
+                                          checked={qrSettings.showUnitRef} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, showUnitRef: e.target.checked })}
+                                          className="sr-only peer" 
+                                        />
+                                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:width-4 after:w-4 after:transition-all peer-checked:bg-[#657f4d]"></div>
+                                      </label>
+                                    </div>
+                                    {qrSettings.showUnitRef && (
+                                      <div>
+                                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Label Title English/Thai</label>
+                                        <input 
+                                          type="text" 
+                                          value={qrSettings.unitRefLabel} 
+                                          onChange={(e) => setQrSettings({ ...qrSettings, unitRefLabel: e.target.value })}
+                                          className="w-full bg-white border border-[#eaeaec] rounded-lg px-2.5 py-1.5 text-[11px] font-bold text-[#212c46] outline-none"
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Submit Row */}
+                            <div className="flex justify-end pt-4 border-t mt-4">
+                              <button 
+                                type="submit"
+                                disabled={savingQr}
+                                className="bg-[#212c46] hover:bg-[#151c2d] disabled:opacity-50 text-[#b7a159] hover:text-white px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-lg transition-all active:scale-95 cursor-pointer max-w-xs shrink-0"
+                              >
+                                {savingQr ? (
+                                  <>
+                                    <div className="w-3.5 h-3.5 border-2 border-[#b7a159] border-t-transparent animate-spin rounded-full"></div>
+                                    <span>DEPLOYING CUSTOM SETTINGS...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <LucideIcon name="Save" size={14} />
+                                    <span>SAVE & DEPLOY SPECIFICATIONS</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                        </form>
                     ) : (
                       <>
 

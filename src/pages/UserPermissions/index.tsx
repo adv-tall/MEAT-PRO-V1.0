@@ -308,7 +308,7 @@ export default function UserPermission() {
   const users = firebaseUsers && firebaseUsers.length > 0 ? firebaseUsers : [];
 
   const filteredUsers = useMemo(() => {
-    return users.filter(u => u.name.toLowerCase().includes(search.toLowerCase()) || u.position.toLowerCase().includes(search.toLowerCase()));
+    return users.filter(u => String(u.name || "").toLowerCase().includes((search || "").toLowerCase()) || String(u.position || "").toLowerCase().includes((search || "").toLowerCase()));
   }, [users, search]);
 
   const currentData = filteredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);

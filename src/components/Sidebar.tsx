@@ -26,6 +26,7 @@ interface SidebarProps {
 }
 
 const CATEGORIES = [
+  'SALE & PLANNING DEPT.',
   'OPERATIONAL MODULES',
   'ANALYTICS & PERFORMANCE',
   'ADMINISTRATION'
@@ -147,11 +148,27 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
         {/* Categories Level */}
         {CATEGORIES.map(catName => {
-          if (catName === 'ADMINISTRATION' && user?.employeeId === 'DEMO') {
-            return null;
+          let catItems = MENU_ITEMS.filter(item => item.category === catName && visibility[item.id] !== false);
+          
+          if (!user?.isDev) {
+            if (user?.role === 'Viewer' || user?.employeeId === 'DEMO') {
+              // Demo sees everything except ADMIN
+              if (catName === 'ADMINISTRATION') return null;
+            } else if (user?.role === 'Employee' || user?.id === 'GUEST') {
+              // Unregistered Employee
+              if (catName === 'ADMINISTRATION') return null;
+              catItems = catItems.filter(item => ['planning', 'daily_board', 'daily_problem', 'process'].includes(item.id));
+              if (catItems.length === 0) return null;
+            } else if (user?.role === 'Operator') {
+              // General Workers
+              if (catName === 'ADMINISTRATION') return null;
+              catItems = catItems.filter(item => item.id !== 'prod_config');
+            } else if (user?.role === 'Planner' || user?.role === 'Supervisor') {
+              // Supervisor / Planner
+              // Sees everything except dev permit
+            }
           }
 
-          const catItems = MENU_ITEMS.filter(item => item.category === catName && visibility[item.id] !== false);
           if (catItems.length === 0) return null;
 
           return (

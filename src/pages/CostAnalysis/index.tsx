@@ -34,7 +34,7 @@ const THEME = {
 };
 
 const getCategoryFromName = (name: string) => {
-  const n = name.toLowerCase();
+  const n = (name || "").toLowerCase();
   if (n.includes('bologna') || n.includes('โบโลน่า')) return 'Bologna';
   if (n.includes('sausage') || n.includes('ไส้กรอก') || n.includes('hotdog')) return 'Sausage';
   if (n.includes('meatball') || n.includes('ลูกชิ้น')) return 'Meatball';

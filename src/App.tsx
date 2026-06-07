@@ -21,7 +21,7 @@ import AiCopilot from "./pages/AiCopilot";
 import ProductionSummarizer from "./pages/ProductionSummarizer";
 import ProductionCalendar from "./pages/ProductionCalendar";
 import MasterItem from "./pages/MasterItem";
-import ProductMatrix from "./pages/ProductMatrix";
+import BatterMatrix from "./pages/BatterMatrix";
 import ConfigGeneral from "./pages/ConfigGeneral";
 import DevPermit from "./pages/DevPermit";
 import SystemConfig from "./pages/SystemConfig";
@@ -34,6 +34,7 @@ import ProductionPlanning from "./pages/ProductionPlanning";
 import ProductionTracking from "./pages/ProductionTracking";
 import MixingBoard from "./pages/MixingBoard";
 import PackingBoard from "./pages/PackingBoard";
+import BatchTraceability from "./pages/BatchTraceability";
 import MachineBreakdown from "./pages/MachineBreakdown";
 import AiPlannerAsst from "./pages/AiPlannerAsst";
 import UnplannedJobs from "./pages/UnplannedJobs";
@@ -101,10 +102,10 @@ export default function App() {
               />
 
               <Route
-                path="/config/matrix"
+                path="/config/batter-matrix"
                 element={
                   <ProtectedRoute>
-                    <ProductMatrix />
+                    <BatterMatrix />
                   </ProtectedRoute>
                 }
               />
@@ -184,6 +185,14 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <PackingBoard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/process/traceability"
+                element={
+                  <ProtectedRoute>
+                    <BatchTraceability />
                   </ProtectedRoute>
                 }
               />
@@ -277,6 +286,14 @@ export default function App() {
               />
 
               {/* General Modules (Read-only by default) */}
+              <Route
+                path="/sale/order-placeholder"
+                element={
+                  <ProtectedRoute>
+                    <PlaceholderPage title="SALE ORDER" />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/employees"
                 element={

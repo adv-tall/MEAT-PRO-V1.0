@@ -69,7 +69,7 @@ export default function ConfigGeneral() {
     };
 
     const filteredList = useMemo(() => {
-        return subCats.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+        return subCats.filter(c => (c.name || "").toLowerCase().includes((search || "").toLowerCase()));
     }, [subCats, search]);
 
     return (

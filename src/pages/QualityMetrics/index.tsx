@@ -101,13 +101,13 @@ export default function QualityMetrics() {
 
   const filteredLogs = useMemo(() => {
     return qualityLogs.filter(qLog => {
-      const q = search.toLowerCase();
+      const q = (search || "").toLowerCase();
       return (
-        qLog.batchId.toLowerCase().includes(q) ||
-        qLog.productName.toLowerCase().includes(q) ||
-        qLog.inspectedBy.toLowerCase().includes(q) ||
-        qLog.id.toLowerCase().includes(q) ||
-        (qLog.remarks && qLog.remarks.toLowerCase().includes(q))
+        (qLog.batchId || "").toLowerCase().includes(q) ||
+        (qLog.productName || "").toLowerCase().includes(q) ||
+        (qLog.inspectedBy || "").toLowerCase().includes(q) ||
+        (qLog.id || "").toLowerCase().includes(q) ||
+        (qLog.remarks && (qLog.remarks || "").toLowerCase().includes(q))
       );
     });
   }, [qualityLogs, search]);

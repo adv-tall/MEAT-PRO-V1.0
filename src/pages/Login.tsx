@@ -154,7 +154,7 @@ export default function Login() {
               <div className="space-y-3">
                 <div>
                   <label className="block text-[13px] font-bold text-[#1a2035] mb-2.5">
-                    Staff Code
+                    User (ชื่อพนักงาน)
                   </label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500/80">
@@ -164,7 +164,7 @@ export default function Login() {
                       type="text"
                       required
                       className="block w-full bg-white/40 border border-white/60 rounded-xl py-3.5 pl-12 pr-4 text-[14px] font-bold text-slate-800 placeholder:text-slate-500/60 focus:bg-white/70 focus:border-white focus:ring-2 focus:ring-white/50 outline-none transition-all shadow-inner"
-                      placeholder="e.g., DEMO"
+                      placeholder="e.g., DEV001, DEMO"
                       value={employeeId}
                       onChange={(e) => setEmployeeId(e.target.value)}
                     />
@@ -173,7 +173,7 @@ export default function Login() {
 
                 <div>
                   <label className="block text-[13px] font-bold text-[#1a2035] mb-2.5">
-                    ID Card Number
+                    Password (รหัสพนักงาน)
                   </label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-500/80">
@@ -183,7 +183,7 @@ export default function Login() {
                       type={showIdCard ? "text" : "password"}
                       required
                       className="block w-full bg-white/40 border border-white/60 rounded-xl py-3.5 pl-12 pr-12 text-[14px] font-bold text-slate-800 placeholder:text-slate-500/60 focus:bg-white/70 focus:border-white focus:ring-2 focus:ring-white/50 outline-none transition-all shadow-inner"
-                      placeholder="13 digits or DEMO123456789"
+                      placeholder="Enter employee code..."
                       value={idCard}
                       onChange={(e) => setIdCard(e.target.value)}
                     />
@@ -224,8 +224,12 @@ export default function Login() {
               </button>
               
               <div className="mt-6 rounded-xl bg-white/60 p-4 text-center shadow-inner border border-white/60 backdrop-blur-sm">
-                <div className="font-bold text-[#1a2035] text-[13px] mb-1.5">Demo Credentials</div>
-                <div className="text-[13px] font-semibold text-slate-700">User: DEMO / Pass: DEMO123456789</div>
+                <div className="font-bold text-[#1a2035] text-[13px] mb-1.5">Simulation Note</div>
+                <div className="text-[11px] font-semibold text-slate-700 leading-relaxed uppercase tracking-widest space-y-1">
+                  <div>Dev: DEV001 | Demo: DEMO | Guest: GUEST</div>
+                  <div className="text-[#a94228]">Operator: OP001 | Planner: PL001</div>
+                  <div className="text-[9px] text-[#7a8b95] normal-case mt-2">Password can be anything during simulation.</div>
+                </div>
               </div>
             </form>
           </motion.div>

@@ -11,6 +11,7 @@ import { AspectModal } from '@/src/components/shared/AspectModal';
 import { DraggableModal } from '@/src/components/shared/DraggableModal';
 import { useSharedOrders } from '@/src/store/ordersStore';
 import { FG_DATABASE, MOCK_ORDERS } from '@/src/data/mockOrders';
+import { useCollection } from '@/src/services/useFirestore';
 
 const SHIFTS = [
     { id: 'Morning', icon: 'sun', activeColor: 'bg-[#4d87a8] text-white shadow-md border-[#4d87a8]' },
@@ -129,6 +130,23 @@ export default function ProductionPlanning() {
     const [activeMainTab, setActiveMainTab] = useState('Entry');
     const [activeShift, setActiveShift] = useState('All Day');
     const [orders, setOrders] = useSharedOrders();
+
+    const { data: dbEq } = useCollection('Equipment_Registry', MACHINE_CAPACITIES as any);
+    const { data: dbBd } = useCollection('Equipment_Breakdowns', []);
+    
+    const dynamicCapacities = useMemo(() => {
+        const eqList = dbEq && dbEq.length > 0 ? dbEq : MACHINE_CAPACITIES;
+        return eqList.map((eq: any) => {
+            const isDown = dbBd?.find((b:any) => b.machineId === eq.id && String(b.status).toLowerCase() === 'open');
+            return {
+               ...eq,
+               capacity: eq.capacity || 30000,
+               allocated: eq.allocated || Math.floor(Math.random() * 20000),
+               status: isDown ? 'Maintenance' : (eq.status || 'Online')
+            }
+        });
+    }, [dbEq, dbBd]);
+
     const [loading, setLoading] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -322,9 +340,9 @@ export default function ProductionPlanning() {
         
         if (searchTerm) {
             filtered = filtered.filter(o => 
-                o.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                o.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                o.sku.toLowerCase().includes(searchTerm.toLowerCase())
+                (o.name || "").toLowerCase().includes((searchTerm || "").toLowerCase()) || 
+                (o.id || "").toLowerCase().includes((searchTerm || "").toLowerCase()) ||
+                (o.sku || "").toLowerCase().includes((searchTerm || "").toLowerCase())
             );
         }
         return filtered;
@@ -538,8 +556,8 @@ export default function ProductionPlanning() {
                          </button>
                      </div>
                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6">
-                        {MACHINE_CAPACITIES.map(mc => (
-                            <MachineCapacityBar key={mc.id} {...mc} />
+                        {dynamicCapacities.slice(0, 6).map((mc: any, idx: number) => (
+                            <MachineCapacityBar key={mc.id || idx} {...mc} />
                         ))}
                      </div>
                 </div>

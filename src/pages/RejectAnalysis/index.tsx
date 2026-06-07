@@ -100,13 +100,13 @@ export default function RejectAnalysis() {
 
   const filteredLogs = useMemo(() => {
     return logs.filter(log => {
-      const q = search.toLowerCase();
+      const q = (search || "").toLowerCase();
       return (
-        log.batchId.toLowerCase().includes(q) ||
-        log.productName.toLowerCase().includes(q) ||
-        log.inspectedBy.toLowerCase().includes(q) ||
-        log.id.toLowerCase().includes(q) ||
-        (log.cause && log.cause.toLowerCase().includes(q))
+        (log.batchId || "").toLowerCase().includes(q) ||
+        (log.productName || "").toLowerCase().includes(q) ||
+        (log.inspectedBy || "").toLowerCase().includes(q) ||
+        (log.id || "").toLowerCase().includes(q) ||
+        (log.cause && (log.cause || "").toLowerCase().includes(q))
       );
     });
   }, [logs, search]);

@@ -124,12 +124,12 @@ export default function DowntimeTracking() {
 
   const filteredDowntimes = useMemo(() => {
     return downtimes.filter(dw => {
-      const q = search.toLowerCase();
+      const q = (search || "").toLowerCase();
       return (
-        dw.machineName.toLowerCase().includes(q) ||
-        dw.problem.toLowerCase().includes(q) ||
-        dw.reportedBy.toLowerCase().includes(q) ||
-        dw.id.toLowerCase().includes(q)
+        (dw.machineName || "").toLowerCase().includes(q) ||
+        (dw.problem || "").toLowerCase().includes(q) ||
+        (dw.reportedBy || "").toLowerCase().includes(q) ||
+        (dw.id || "").toLowerCase().includes(q)
       );
     });
   }, [downtimes, search]);

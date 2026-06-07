@@ -49,7 +49,7 @@ export class GASService {
       } catch(e) {}
     }
 
-    if (isDemo && ['write', 'update', 'delete'].includes(action)) {
+    if (isDemo && ['write', 'update', 'delete', 'sync'].includes(action)) {
       console.log(`GASService DEMO user action '${action}' intercepted:`, sheet, data);
       return { status: "success", message: "Mocked for DEMO", data: { items: [] } };
     }
@@ -62,15 +62,42 @@ export class GASService {
     };
 
     try {
-      const response = await fetch("/api/gas", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ url: GAS_WEB_APP_URL, payload }),
-      });
+      let response;
+      let retries = 3;
+      while (retries > 0) {
+        try {
+          response = await fetch("/api/gas", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ url: GAS_WEB_APP_URL, payload }),
+          });
+          if (!response.ok && response.status >= 500) {
+              throw new Error(`Server Error: ${response.status}`);
+          }
+          break;
+        } catch (e: any) {
+          retries--;
+          const msg = e?.message || "";
+          if (retries === 0 || (!msg.includes("Failed to fetch") && !msg.includes("NetworkError") && !msg.includes("fetch failed") && !msg.includes("Server Error"))) {
+            throw e;
+          }
+          console.warn(`Fetch to /api/gas failed, retrying in 1.5s (${retries} retries left)...`, e);
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+      }
 
-      const result = await response.json();
+      if (!response) {
+         throw new Error("Failed to fetch after retries");
+      }
+
+      let result;
+      try {
+        result = await response.json();
+      } catch (err: any) {
+         throw new Error(`Invalid JSON response: ${err.message}`);
+      }
       
       if (result.status === "error") {
         throw new Error(result.message);

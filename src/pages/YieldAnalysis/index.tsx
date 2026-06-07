@@ -179,14 +179,14 @@ export default function YieldAnalysis() {
 
   // Filter batches based on search bar
   const filteredBatches = useMemo(() => {
-    const q = searchTerm.toLowerCase().trim();
+    const q = (searchTerm || "").toLowerCase().trim();
     if (!q) return calculatedBatches;
     return calculatedBatches.filter(
-      b => b.batchId.toLowerCase().includes(q) ||
-           b.product.toLowerCase().includes(q) ||
-           b.category.toLowerCase().includes(q) ||
-           b.line.toLowerCase().includes(q) ||
-           b.status.toLowerCase().includes(q)
+      b => (b.batchId || "").toLowerCase().includes(q) ||
+           (b.product || "").toLowerCase().includes(q) ||
+           (b.category || "").toLowerCase().includes(q) ||
+           (b.line || "").toLowerCase().includes(q) ||
+           (b.status || "").toLowerCase().includes(q)
     );
   }, [calculatedBatches, searchTerm]);
 

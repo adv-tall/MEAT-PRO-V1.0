@@ -69,8 +69,8 @@ const getMockHistory = () => [
     { date: '10/01/2026 11:00', user: 'Admin', action: 'Create', detail: 'Initial creation of item' },
 ];
 
-const getCategoryStyle = (category: string) => {
-    switch (category?.toUpperCase()) {
+const getCategoryStyle = (category: any) => {
+    switch (String(category || '').toUpperCase()) {
         case 'SAUSAGE': return 'bg-white text-rose-600 border-rose-200 shadow-sm';
         case 'MEATBALL': return 'bg-white text-emerald-600 border-emerald-200 shadow-sm';
         case 'BOLOGNA': return 'bg-white text-amber-600 border-amber-200 shadow-sm';
@@ -82,8 +82,8 @@ const getCategoryStyle = (category: string) => {
     }
 };
 
-const getStatusStyle = (status: string) => {
-    switch (status?.toUpperCase()) {
+const getStatusStyle = (status: any) => {
+    switch (String(status || '').toUpperCase()) {
         case 'ACTIVE': return 'bg-emerald-50 text-emerald-600 border-emerald-200';
         case 'INACTIVE': return 'bg-slate-50 text-slate-500 border-slate-200';
         case 'DRAFT': return 'bg-amber-50 text-amber-600 border-amber-200';
@@ -121,7 +121,8 @@ function ItemModal({ isOpen, onClose, data, onSave, categories, brands, activeMa
                 });
                 setHistory(getMockHistory());
             } else {
-                setFormData({ sku: '', name: '', type: activeMainTab, category: activeMainTab, subCategory: SUB_CATEGORIES[1], brand: brands[0], weight: 0, pieces: 0, status: 'Active' });
+                const defaultType = (activeMainTab === 'All' || !activeMainTab) ? 'FG' : activeMainTab;
+                setFormData({ sku: '', name: '', type: defaultType, category: defaultType, subCategory: SUB_CATEGORIES[1], brand: brands[0], weight: 0, pieces: 0, status: 'Active' });
                 setHistory([]);
             }
         }
@@ -196,6 +197,18 @@ function ItemModal({ isOpen, onClose, data, onSave, categories, brands, activeMa
                                 <div className="col-span-2">
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Item Name</label>
                                     <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="sys-input w-full" placeholder="Enter product name..." />
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Item Type</label>
+                                    <div className="relative">
+                                        <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} disabled={!!data} className="sys-input w-full appearance-none pr-10 cursor-pointer">
+                                            <option value="FG">Finished Goods (FG)</option>
+                                            <option value="SFG">Semi-Finished Goods (SFG)</option>
+                                            <option value="RM">Raw Materials (RM)</option>
+                                            <option value="Batter">Batter Formula</option>
+                                        </select>
+                                        <Icons.ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                                    </div>
                                 </div>
                                 <div className="col-span-2 md:col-span-1">
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Category</label>
@@ -318,7 +331,7 @@ export default function MasterItems() {
 
     const filteredData = useMemo(() => {
         return items.filter(item => {
-            const matchSearch = (item.sku + item.name + item.brand).toLowerCase().includes(searchTerm.toLowerCase());
+            const matchSearch = (item.sku + item.name + item.brand).toLowerCase().includes((searchTerm || "").toLowerCase());
             const matchTab = item.type === activeMainTab;
             const matchCat = activeCategory === 'All' || item.category === activeCategory;
             const matchBrand = activeBrand === 'All' || item.brand === activeBrand;
@@ -356,21 +369,27 @@ export default function MasterItems() {
         }
     };
 
-    const handleSaveItem = (newItem: any) => {
+    const handleSaveItem = async (newItem: any) => {
         const existingItem = items.find(item => item.sku === newItem.sku);
         
         const payload = { 
             ...newItem, 
-            category: JSON.stringify({ cat: newItem.category || '', subCat: newItem.subCategory || '' }),
+            category: newItem.category || '',
+            subCategory: newItem.subCategory || '',
             updatedAt: new Date().toLocaleDateString('en-GB') 
         };
 
-        if (itemModal.data && existingItem?.id) {
-            updateItemDb(existingItem.id, payload);
-        } else {
-            addItemDb(payload);
+        try {
+            if (itemModal.data && existingItem?.id) {
+                await updateItemDb(existingItem.id, payload);
+            } else {
+                await addItemDb(payload);
+            }
+            if(Swal) Swal.fire({ icon: 'success', title: 'Saved Successfully', showConfirmButton: false, timer: 1000 });
+        } catch (e: any) {
+            console.error("Save error", e);
+            if(Swal) Swal.fire({ icon: 'error', title: 'Failed to Save', text: String(e.message || e), timer: 3000, showConfirmButton: false });
         }
-        if(Swal) Swal.fire({ icon: 'success', title: 'Saved Successfully', showConfirmButton: false, timer: 1000 });
     };
 
     const handleCsvUpload = (rawData: any[]) => {
@@ -391,7 +410,8 @@ export default function MasterItems() {
             const existingItem = items.find(i => i.sku === newItem.sku);
             const payload = {
                 ...newItem,
-                category: JSON.stringify({ cat: newItem.category || '', subCat: newItem.subCategory || '' })
+                category: newItem.category || '',
+                subCategory: newItem.subCategory || ''
             };
             if (existingItem?.id) { 
                 updateItemDb(existingItem.id, payload);

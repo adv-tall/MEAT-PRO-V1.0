@@ -86,8 +86,11 @@ export function BatchQrScannerModal({
     setScannerLog(prev => [`[${timestamp}] ${msg}`, ...prev].slice(0, 10));
   };
 
+  const isCameraTransitioning = useRef<boolean>(false);
+
   // Safe camera startup
   const startCameraScan = async (selectedCamId?: string) => {
+    if (isCameraTransitioning.current) return;
     pushLog("กำลังเปิดใช้งานกล้อง...");
     setCameraState('starting');
     setScannerErrorMessage('');
@@ -95,6 +98,7 @@ export function BatchQrScannerModal({
     // Clear previous if exist
     await stopCameraScan();
 
+    isCameraTransitioning.current = true;
     try {
       const html5QrCode = new Html5Qrcode(elementId);
       html5QrCodeRef.current = html5QrCode;
@@ -137,19 +141,30 @@ export function BatchQrScannerModal({
       setCameraState('permissions_failed');
       setScannerErrorMessage(error?.message || "ไม่ได้รับอนุญาตให้ใช้กล้อง หรือบราวเซอร์บล็อกเฟรม");
       pushLog(`⚠️ ข้อผิดพลาดกล้อง: ${error?.message || 'Access Denied'}`);
+    } finally {
+      isCameraTransitioning.current = false;
     }
   };
 
   // Stop camera feed
   const stopCameraScan = async () => {
+    if (isCameraTransitioning.current) {
+      while (isCameraTransitioning.current) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
+
     if (html5QrCodeRef.current) {
+      isCameraTransitioning.current = true;
       try {
         if (html5QrCodeRef.current.isScanning) {
           await html5QrCodeRef.current.stop();
         }
-        html5QrCodeRef.current = null;
       } catch (err) {
-        console.error("Failed to safely unmount html5-qrcode renderer", err);
+        console.warn("Failed to safely unmount html5-qrcode renderer ignored", err);
+      } finally {
+        isCameraTransitioning.current = false;
+        html5QrCodeRef.current = null;
       }
     }
     setCameraState('idle');

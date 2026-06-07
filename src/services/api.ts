@@ -44,7 +44,7 @@ export const api = {
       } catch(e) {}
     }
 
-    if (isDemo && ['write', 'update', 'delete'].includes(action)) {
+    if (isDemo && ['write', 'update', 'delete', 'sync'].includes(action)) {
       console.log(`DEMO user action '${action}' intercepted to localStorage:`, sheet, data);
       const cacheKey = `demo_db_${sheet}`;
       const existingStr = localStorage.getItem(cacheKey) || '[]';
@@ -91,30 +91,102 @@ const mockResponse = async (action: string, data: any): Promise<ApiResponse> => 
   await new Promise(resolve => setTimeout(resolve, 800));
   
   if (action === 'login') {
-    if ((data.employeeId === 'DEMO' && data.idCard === 'DEMO123456789') || 
-        (data.employeeId === 'U001' && data.idCard === 'ADMIN12345678') ||
-        (data.employeeId === 'DEV001' && data.idCard === '1234567890123')) {
-      const isOperator = data.employeeId === 'DEMO';
-      const isSuperAdmin = data.employeeId === 'DEV001';
+    const userUpper = (data.employeeId || '').toUpperCase();
+    
+    // DEMO
+    if (userUpper === 'DEMO') {
       return {
         status: 'success',
         data: {
-          id: isOperator ? '3' : (isSuperAdmin ? '1' : '2'),
-          employeeId: data.employeeId,
-          name: isOperator ? 'Demo Operator' : (isSuperAdmin ? 'Super Admin' : 'Demo Admin'),
-          role: isOperator ? 'Viewer' : (isSuperAdmin ? 'Developer' : 'Administrator'),
-          isDev: isSuperAdmin,
+          id: 'DEMO',
+          employeeId: 'DEMO',
+          name: 'Demo Visitor',
+          role: 'Viewer',
+          email: 'demo@salepro.com',
+          isDev: false,
+          avatar: 'https://i.pravatar.cc/150?img=1',
+          permissions: {}
+        }
+      };
+    }
+    
+    // DEVELOPERS
+    if (userUpper === 'DEV001' || userUpper === 'U001') {
+      return {
+        status: 'success',
+        data: {
+          id: 'DEV',
+          employeeId: userUpper,
+          name: 'System Developer',
+          role: 'Administrator',
+          email: 'dev@salepro.com',
+          isDev: true,
           avatar: 'https://drive.google.com/thumbnail?id=1Z_fRbN9S4aA7OkHb3mlim_t60wIT4huY&sz=w400',
+          permissions: { '*': [1, 2, 3, 4] }
+        }
+      };
+    }
+
+    // OPERATORS
+    if (userUpper === 'OP001') {
+      return {
+        status: 'success',
+        data: {
+          id: 'OP',
+          employeeId: userUpper,
+          name: 'General Worker',
+          role: 'Operator',
+          email: 'operator@salepro.com',
+          isDev: false,
+          avatar: 'https://i.pravatar.cc/150?img=11',
           permissions: {
-            canCreate: !isOperator,
-            canEdit: !isOperator,
-            canApprove: !isOperator,
-            canVerify: !isOperator,
+             'daily_board': [1,2,3,4], // full access
+             'planning': [1] // viewer
           }
         }
       };
     }
-    return { status: 'error', message: 'Invalid credentials' };
+
+    // PLANNERS
+    if (userUpper === 'PL001') {
+      return {
+        status: 'success',
+        data: {
+          id: 'PL',
+          employeeId: userUpper,
+          name: 'Planning Supervisor',
+          role: 'Planner',
+          email: 'planner@salepro.com',
+          isDev: false,
+          avatar: 'https://i.pravatar.cc/150?img=5',
+          permissions: {
+             'planning': [1,2,3,4],
+             'daily_board': [1,2,3,4]
+          }
+        }
+      };
+    }
+
+    // UNREGISTERED EMPLOYEE CHECK
+    // If not matching any registered users in Firestore later, we simulate here
+    // For now, let's treat "GUEST" as an unregistered employee
+    if (userUpper === 'GUEST') {
+      return {
+         status: 'success',
+         data: {
+            id: 'GUEST',
+            employeeId: 'GUEST_999',
+            name: 'Unregistered Employee',
+            role: 'Employee',
+            email: 'guest@salepro.com',
+            isDev: false,
+            avatar: 'https://i.pravatar.cc/150?img=2',
+            permissions: {} // empty means viewer
+         }
+      }
+    }
+
+    return { status: 'error', message: 'User not found in system or incorrect password.' };
   }
   
   return { status: 'success', data: [] };

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Calendar, Box, Target, Bell } from 'lucide-react';
+import { Clock, Calendar, Box, Target, Bell, QrCode } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 import NotificationCenter from './NotificationCenter';
+import { BatchTraceabilityModal } from './shared/BatchTraceabilityModal';
 
 export default function Header() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const { unreadCount } = useNotifications();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isTraceModalOpen, setIsTraceModalOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -71,6 +73,15 @@ export default function Header() {
                   </span>
               </div>
           </div>
+          {/* Quick Batch Scan Button */}
+          <button 
+              onClick={() => setIsTraceModalOpen(true)}
+              className="w-11 h-11 rounded-full bg-white shadow-sm flex items-center justify-center text-[#a94228] hover:bg-[#f8f9fa] transition-all group border border-[#cdd0db]/50 hover:scale-105 shrink-0 cursor-pointer"
+              title="Quick Batch Traceability"
+          >
+              <QrCode size={18} className="group-hover:scale-110 transition-transform" />
+          </button>
+
           <div className="relative">
               <button 
                   onClick={() => setIsNotifOpen(!isNotifOpen)}
@@ -86,6 +97,7 @@ export default function Header() {
               <NotificationCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
           </div>
       </div>
+      <BatchTraceabilityModal isOpen={isTraceModalOpen} onClose={() => setIsTraceModalOpen(false)} />
     </header>
   );
 }

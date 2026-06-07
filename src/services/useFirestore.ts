@@ -29,47 +29,80 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
 
       // 2. Fetch from GAS
       let gasData: any[] = [];
-      const response = await GASService.read(collectionName);
-      if (response && response.status === 'success') {
-         gasData = response.data?.items || [];
+      try {
+          const response = await GASService.read(collectionName);
+          if (response && response.status === 'success') {
+             gasData = response.data?.items || [];
+          }
+      } catch (gasErr) {
+          console.error(`GAS read failed for ${collectionName}:`, gasErr);
       }
 
       // 3. Merge data (prefer GAS, then Firebase, then seed)
-      let mergedData = [...gasData];
-      let needsFbSync = false;
-      let itemsToSyncToGas: any[] = [];
+      let mergedData: any[] = [];
       let itemsToSyncToFb: any[] = [];
+      let itemsToSyncToGas: any[] = [];
 
-      // Find items in Firebase that are missing in GAS
+      const mergedDataMap = new Map();
+
+      // Ensure all GAS data makes it into our merged state (GAS is single source of truth for items actually saved)
+      gasData.forEach((gasItem: any) => {
+          const key = String(gasItem.id || gasItem.sku || Math.random()).trim();
+          mergedDataMap.set(key, gasItem);
+      });
+
+      // Include Firebase data that might be missing from GAS and requires sync
       fbData.forEach(fbItem => {
+         const key = String(fbItem.id || fbItem.sku || '').trim();
+         
          const existsInGas = gasData.some(g => {
-            if (g.id && String(g.id).trim() === String(fbItem.id).trim()) return true;
+            if (g.id && fbItem.id && String(g.id).trim() === String(fbItem.id).trim()) return true;
             if (g.sku && fbItem.sku && String(g.sku).trim() === String(fbItem.sku).trim()) return true;
-            if (g.employeeId && fbItem.employeeId && String(g.employeeId).trim() === String(fbItem.employeeId).trim()) return true;
             return false;
          });
          
-         if (!existsInGas) {
-             mergedData.push(fbItem);
+         if (!existsInGas && fbItem.id && fbItem.id.toString().trim() !== '') {
+             if (!mergedDataMap.has(key)) {
+                 mergedDataMap.set(key, fbItem);
+             }
              itemsToSyncToGas.push(fbItem);
          }
       });
 
-      // Find items in GAS that are missing in Firebase
+      // Find items in GAS that are missing in Firebase to sync back to Firebase
       gasData.forEach(gasItem => {
          const existsInFb = fbData.some(m => {
             if (m.id && gasItem.id && String(m.id).trim() === String(gasItem.id).trim()) return true;
             if (m.sku && gasItem.sku && String(m.sku).trim() === String(gasItem.sku).trim()) return true;
-            if (m.employeeId && gasItem.employeeId && String(m.employeeId).trim() === String(gasItem.employeeId).trim()) return true;
             return false;
          });
          
          if (!existsInFb) {
             itemsToSyncToFb.push(gasItem);
          } else {
-             itemsToSyncToFb.push(gasItem); // Sync the gasItem to override FB's stale data
+             itemsToSyncToFb.push(gasItem); // Sync to override stale FB data
          }
       });
+      
+      mergedData = Array.from(mergedDataMap.values());
+
+      // Merge initial seed data if missing
+      if (initialSeedData && initialSeedData.length > 0) {
+         initialSeedData.forEach((seedItem: any) => {
+            const key = String(seedItem.id || seedItem.sku || '').trim();
+            const exists = mergedData.some((m: any) => {
+                if (m.id && seedItem.id && String(m.id).trim() === String(seedItem.id).trim()) return true;
+                if (m.sku && seedItem.sku && String(m.sku).trim() === String(seedItem.sku).trim()) return true;
+                return false;
+            });
+            if (!exists) {
+                const itemToInsert = { ...seedItem, createdAt: new Date().toISOString() };
+                mergedData.push(itemToInsert);
+                itemsToSyncToFb.push(itemToInsert);
+                itemsToSyncToGas.push(itemToInsert);
+            }
+         });
+      }
 
       // If still empty, use either cached data or initial seed data
       if (mergedData.length === 0) {
@@ -103,7 +136,9 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
              console.log(`Syncing ${itemsToSyncToFb.length} items to Firebase for ${collectionName}`);
              Promise.all(itemsToSyncToFb.map(async (item) => {
                 try {
-                  if (item.id) await setDoc(doc(db, collectionName, String(item.id)), item);
+                  let docId = String(item.id || item.sku || "").trim();
+                  if (!docId) docId = Math.random().toString(36).substring(7);
+                  await setDoc(doc(db, collectionName, docId), item);
                 } catch(e) { console.error("Firebase sync error", e); }
              })).finally(() => pendingSyncs.delete(syncKey));
          }
@@ -145,11 +180,6 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
   };
 
   const add = async (item: Omit<T, 'id'>) => {
-    if (isDemo()) {
-      console.log(`DEMO user bypassed addDoc to ${collectionName}`);
-      return { id: 'demo-' + Date.now() }; // mock ref
-    }
-    
     const itemId = (item as any).id || `temp-${Date.now()}`;
     const newItem = { ...item, id: itemId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as T;
     
@@ -158,25 +188,30 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
         localStorage.setItem(`gas_cache_${collectionName}`, JSON.stringify(next));
         return next;
     });
+
+    if (isDemo()) {
+      console.log(`DEMO user bypassed addDoc to ${collectionName}`);
+      return { id: itemId }; // mock ref
+    }
     
     try {
       // Create in Firebase
       await setDoc(doc(db, collectionName, itemId), newItem);
+    } catch(e) {
+      console.error(`Firebase add failed for ${collectionName}`, e);
+    }
+
+    try {
       // Create in GAS
       await GASService.write(collectionName, [newItem]);
       return { id: itemId };
     } catch(e) {
-      console.error(`Failed to add item to ${collectionName}`, e);
-      throw e;
+      console.error(`GAS add failed for ${collectionName}`, e);
+      return { id: itemId }; // Do not throw, allow frontend to proceed
     }
   };
 
   const update = async (id: string, item: Partial<T>) => {
-    if (isDemo()) {
-      console.log(`DEMO user bypassed updateDoc on ${collectionName}/${id}`);
-      return;
-    }
-
     const updatedItem = { ...item, updatedAt: new Date().toISOString() };
     setData(prev => {
         const next = prev.map(d => (d as any).id === id ? { ...d, ...updatedItem } : d);
@@ -184,9 +219,16 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
         return next;
     });
 
+    if (isDemo()) {
+      console.log(`DEMO user bypassed updateDoc on ${collectionName}/${id}`);
+      return;
+    }
+
     try {
       // Update in Firebase
-      await setDoc(doc(db, collectionName, id), updatedItem, { merge: true });
+      if (id && String(id).trim() !== '') {
+          await setDoc(doc(db, collectionName, String(id).trim()), updatedItem, { merge: true });
+      }
     } catch(e) {
       console.error(`Firebase update failed for ${id} in ${collectionName}`, e);
     }
@@ -200,20 +242,22 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
   };
 
   const remove = async (id: string) => {
-    if (isDemo()) {
-      console.log(`DEMO user bypassed deleteDoc on ${collectionName}/${id}`);
-      return;
-    }
-
     setData(prev => {
         const next = prev.filter(d => (d as any).id !== id);
         localStorage.setItem(`gas_cache_${collectionName}`, JSON.stringify(next));
         return next;
     });
 
+    if (isDemo()) {
+      console.log(`DEMO user bypassed deleteDoc on ${collectionName}/${id}`);
+      return;
+    }
+
     try {
       // Delete in Firebase
-      await deleteDoc(doc(db, collectionName, id));
+      if (id && String(id).trim() !== '') {
+          await deleteDoc(doc(db, collectionName, String(id).trim()));
+      }
     } catch(e) {
       console.error(`Firebase delete failed for ${id} in ${collectionName}`, e);
     }

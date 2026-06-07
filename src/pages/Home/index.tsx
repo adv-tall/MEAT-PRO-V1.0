@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Users, Briefcase, UserCheck, CalendarDays, TrendingUp, BrainCircuit, ShieldCheck, Factory,
   ChevronRight, ChevronLeft, Bell, UserPlus, PartyPopper, Send, Globe, Plus, CalendarClock, Info, AlertCircle, Newspaper, Box, Archive,
-  Zap, X, Clock, Sparkles, Activity
+  Zap, X, Clock, Sparkles, Activity, Compass, Calendar, ClipboardList, LineChart, Settings2, BarChart, PieChart, CircleDollarSign
 } from 'lucide-react';
 import { DraggableModal } from '../../components/shared/DraggableModal';
 
@@ -310,9 +310,25 @@ const NewsCard = ({ tag, title, description, date, isNew, onClick }: any) => (
   </button>
 );
 
+const SHORTCUT_MENUS = [
+  { title: "PROD CALENDAR", subtitle: "ปฏิทินการผลิต", icon: Calendar, path: "/production-calendar" },
+  { title: "AI PLANNER", subtitle: "AI จัดแผนการผลิต", icon: BrainCircuit, path: "/planning/ai" },
+  { title: "DATA TRACKING", subtitle: "ติดตามปัญหาการผลิต", icon: ClipboardList, path: "/board/tracking" },
+  { title: "PL DASHBOARD", subtitle: "แดชบอร์ดสรุปผล", icon: LineChart, path: "/planning/pl" },
+  { title: "MIXING BOARD", subtitle: "กระดานขั้นตอนผสม", icon: Settings2, path: "/board/mixing" },
+  { title: "PACKING BOARD", subtitle: "กระดานขั้นตอนบรรจุ", icon: Factory, path: "/board/packing" },
+  { title: "PROCESS TIME", subtitle: "เวลามาตรฐานกระบวน", icon: CalendarClock, path: "/config/std-time" },
+  { title: "BATTER MATRIX", subtitle: "สูตรผสม Batter", icon: Activity, path: "/config/batter-matrix" },
+  { title: "MACHINE BREAK", subtitle: "แจ้งซ่อม/ขัดข้อง", icon: AlertCircle, path: "/problem/machine" },
+  { title: "OEE MONITORING", subtitle: "ประเมินประสิทธิภาพ", icon: BarChart, path: "/analytics/oee" },
+  { title: "PROD REPORT", subtitle: "รายงานการผลิตประจำวัน", icon: PieChart, path: "/analytics/daily" },
+  { title: "COST ANALYSIS", subtitle: "วิเคราะห์ต้นทุนการผลิต", icon: CircleDollarSign, path: "/analytics/cost" }
+];
+
 export default function Home() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isQuickActionsOpen, setIsQuickActionsOpen] = useState(false);
   const [feedIndex, setFeedIndex] = useState(0);
   const [modalState, setModalState] = useState<{isOpen: boolean, title: string, content: any, modalClass?: string, headerClass?: string, hideHeader?: boolean}>({isOpen: false, title: '', content: null});
@@ -584,6 +600,35 @@ export default function Home() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* EXPLORE BY SECTOR - QUICK SHORTCUTS */}
+      <div className="bg-[#edece8] border border-[#dcdad4] rounded-xl p-4 shadow-sm flex flex-col">
+          <h3 className="text-[#212c46] text-sm font-black uppercase tracking-[0.15em] flex items-center gap-2 mb-1">
+             <Compass size={18} className="text-[#a94228]" /> EXPLORE BY SECTOR / สำรวจแยกตามหมวดหมู่
+          </h3>
+          <p className="text-[9px] md:text-[10px] text-[#7a8b95] font-black tracking-[0.2em] uppercase mb-6 ml-[26px]">
+             QUICK SHORTCUT HUBS TO CENTRAL DATABASE SECTORS AND PROCESSES
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+            {SHORTCUT_MENUS.map((item, idx) => {
+              const isActive = location.pathname === item.path;
+              return (
+              <button 
+                key={idx}
+                onClick={() => navigate(item.path)}
+                className={`flex flex-col items-center justify-center p-4 rounded-[16px] border text-center transition-all min-h-[120px] group ${isActive ? 'bg-gradient-to-r from-[#b91c1c] to-[#dc2626] border-[#b91c1c] shadow-md shadow-[#b91c1c]/20' : 'bg-[#e3ded2] border-[#d8d3c5] hover:bg-[#d8d3c5] hover:border-[#a94228] hover:shadow-md'}`}
+              >
+                <item.icon size={28} strokeWidth={1.5} className={`mb-3 transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-white' : 'text-[#a94228]'}`} />
+                <h4 className={`text-[10px] md:text-[11px] font-black tracking-widest uppercase mb-1.5 leading-tight ${isActive ? 'text-white' : 'text-[#212c46]'}`}>
+                  {item.title}
+                </h4>
+                <p className={`text-[9px] font-medium leading-tight ${isActive ? 'text-white/80' : 'text-[#7a8b95]'}`}>
+                  {item.subtitle}
+                </p>
+              </button>
+            )})}
+          </div>
       </div>
       
       <DraggableModal 

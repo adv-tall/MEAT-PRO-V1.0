@@ -44,14 +44,23 @@ const STANDARD_BATCH_SIZES = [100, 150];
 const MOCK_STANDARDS = [
     {
         id: 'STD-001', name: 'Standard Smoked Sausage', category: 'Sausage', rawWeightPerBatch: 150, yieldPercent: 88.5, status: 'Active', updateDate: '26/02/2025',
-        mixingStandards: [{ id: 1, machine: 'Vacuum Mixer', batter: 'Standard Pork', batchPerCycle: 1, cycleTimeMin: 15, yieldPercent: 100 }],
-        formingStandards: [{ id: 1, batter: 'Standard Pork', size: 'Jumbo', type: 'Twist Linker', casing: 'Cellulose', stuffed: true, capacityKgHr: 2000 }],
+        mixingStandards: [
+            { id: 1, machine: 'Vacuum Mixer', batter: 'BAT-001', batchPerCycle: 1, cycleTimeMin: 15, yieldPercent: 100 },
+            { id: 2, machine: 'Bowl Cutter 200L', batter: 'BAT-001', batchPerCycle: 0.8, cycleTimeMin: 10, yieldPercent: 100 }
+        ],
+        formingStandards: [{ id: 1, batter: 'BAT-001', size: 'Jumbo', type: 'Twist Linker', casing: 'Cellulose', stuffed: true, capacityKgHr: 2000 }],
         cookingStandards: [{ id: 1, oven: 'Smoke House 6T', program: 'Smoke_Std', cycleTimeMin: 120, capacityBatch: 10 }],
         coolingStandards: [{ id: 1, unit: 'Rapid Chill Tunnel', program: 'Shower_Fast', cycleTimeMin: 60, capacityBatch: 10 }],
         peelingStandards: [{ id: 1, method: 'Machine Only', capacityKgHr: 1500 }],
-        cuttingStandards: [],
-        packingStandards: [{ id: 1, machine: 'Thermoformer', packSize: '1kg', format: 'Bag', sfgSize: 'Jumbo', capacityKgHr: 1000 }],
-        packVariants: []
+        cuttingStandards: [{ id: 1, machine: 'Guillotine Cutter', lengthCm: 15, capacityKgHr: 1200 }],
+        packingStandards: [
+            { id: 1, machine: 'Thermoformer', packSize: '1kg', format: 'Vacuum Bag', sfgSize: 'Jumbo', capacityKgHr: 1000 },
+            { id: 2, machine: 'Flow Pack', packSize: '500g', format: 'Pillow Bag', sfgSize: 'Jumbo', capacityKgHr: 800 }
+        ],
+        packVariants: [
+            { sku: 'FG-SMK-1KG', name: 'Standard Smoked Sausage 1KG', weight: 1.0, targetPackOutPercent: 70 },
+            { sku: 'FG-SMK-500G', name: 'Standard Smoked Sausage 500G', weight: 0.5, targetPackOutPercent: 30 }
+        ]
     },
     {
         id: 'STD-002', name: 'Premium Meatball', category: 'Meatball', rawWeightPerBatch: 100, yieldPercent: 95, status: 'Active', updateDate: '25/02/2025',
@@ -195,8 +204,8 @@ const MOCK_STANDARDS = [
     }
 ];
 
-const getCategoryStyle = (category: string) => {
-    switch (category?.toUpperCase()) {
+const getCategoryStyle = (category: any) => {
+    switch (String(category || '').toUpperCase()) {
         case 'SAUSAGE': return 'bg-white text-[#932c2e] border-[#932c2e]/30';
         case 'MEATBALL': return 'bg-white text-[#4d87a8] border-[#4d87a8]/30';
         case 'BOLOGNA': return 'bg-white text-[#b7a159] border-[#b7a159]/30';
@@ -206,8 +215,8 @@ const getCategoryStyle = (category: string) => {
     }
 };
 
-const getStatusStyle = (status: string) => {
-    switch (status?.toUpperCase()) {
+const getStatusStyle = (status: any) => {
+    switch (String(status || '').toUpperCase()) {
         case 'ACTIVE': return 'bg-white text-[#2e7d32] border-[#2e7d32]/60';
         case 'INACTIVE': return 'bg-white text-[#7a8b95] border-[#7a8b95]/60';
         case 'DRAFT': return 'bg-white text-[#f59e0b] border-[#f59e0b]/60';
@@ -227,7 +236,116 @@ const LucideIcon = ({ name, size = 16, className = "", color, style }: any) => {
 
 
 
-function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
+function StandardTable({ title, data, columns, onChange, isReadOnly }: { title: string, data: any[], columns: any[], onChange: (data: any[]) => void, isReadOnly: boolean }) {
+    const handleAddRow = () => {
+        const newRow: any = { id: Date.now() };
+        columns.forEach(col => {
+            newRow[col.key] = col.type === 'number' ? 0 : col.type === 'boolean' ? false : '';
+        });
+        onChange([...(data || []), newRow]);
+    };
+
+    const handleUpdateRow = (index: number, key: string, value: any) => {
+        const newData = [...(data || [])];
+        newData[index] = { ...newData[index], [key]: value };
+        onChange(newData);
+    };
+
+    const handleRemoveRow = (index: number) => {
+        const newData = [...(data || [])];
+        newData.splice(index, 1);
+        onChange(newData);
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-xl border border-[#eaeaec] shadow-sm animate-fadeIn">
+            <div className="flex justify-between items-center border-b border-[#eaeaec] pb-3 mb-4">
+                <h4 className="text-[12px] font-black text-[#212c46] uppercase tracking-widest">{title}</h4>
+                {!isReadOnly && (
+                    <button onClick={handleAddRow} className="text-[#4d87a8] hover:text-[#212c46] transition-colors flex items-center gap-1 font-bold text-[10px] uppercase tracking-widest">
+                        <LucideIcon name="plus" size={14} /> Add Row
+                    </button>
+                )}
+            </div>
+            
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="border-b border-[#eaeaec]">
+                            {columns.map(col => (
+                                <th key={col.key} className="py-2 px-3 text-[10px] font-black text-[#7a8b95] uppercase tracking-widest">{col.label}</th>
+                            ))}
+                            {!isReadOnly && <th className="py-2 px-3 w-10"></th>}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {(!data || data.length === 0) ? (
+                            <tr>
+                                <td colSpan={columns.length + (isReadOnly ? 0 : 1)} className="py-8 text-center text-[#7a8b95] text-[11px] font-medium uppercase tracking-widest">
+                                    No records found
+                                </td>
+                            </tr>
+                        ) : data.map((row, idx) => (
+                            <tr key={row.id || idx} className="border-b border-[#eaeaec]/50 hover:bg-[#f8f9fa] transition-colors">
+                                {columns.map(col => (
+                                    <td key={col.key} className="py-2 px-3">
+                                        {isReadOnly ? (
+                                            <span className={`text-[12px] font-bold ${col.type === 'number' ? 'font-mono text-[#4d87a8]' : 'text-[#212c46]'}`}>
+                                                {col.type === 'boolean' ? (row[col.key] ? 'Yes' : 'No') : (typeof row[col.key] === 'object' && row[col.key] !== null ? JSON.stringify(row[col.key]) : String(row[col.key] ?? ''))}
+                                            </span>
+                                        ) : (
+                                            col.type === 'select' ? (
+                                                <select
+                                                    value={String(typeof row[col.key] === 'object' && row[col.key] !== null ? '' : (row[col.key] ?? ''))}
+                                                    onChange={e => handleUpdateRow(idx, col.key, e.target.value)}
+                                                    className={`w-full border border-transparent hover:border-[#eaeaec] rounded-md px-2 py-1 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all focus:bg-white bg-transparent appearance-none cursor-pointer`}
+                                                >
+                                                    <option value="" disabled>Select {col.label}</option>
+                                                    {row[col.key] && typeof row[col.key] !== 'object' && !col.options?.includes(row[col.key]) && (
+                                                        <option value={String(row[col.key])}>{String(row[col.key])} (Legacy)</option>
+                                                    )}
+                                                    {col.options?.map((opt: any) => (
+                                                        <option key={typeof opt === 'object' ? JSON.stringify(opt) : opt} value={typeof opt === 'object' ? JSON.stringify(opt) : opt}>
+                                                            {typeof opt === 'object' ? JSON.stringify(opt) : opt}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            ) : col.type === 'boolean' ? (
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={row[col.key] || false}
+                                                    onChange={e => handleUpdateRow(idx, col.key, e.target.checked)}
+                                                    className="rounded border-[#eaeaec] text-[#4d87a8] focus:ring-[#4d87a8]"
+                                                />
+                                            ) : (
+                                                <input
+                                                    type={col.type === 'number' ? 'number' : 'text'}
+                                                    value={typeof row[col.key] === 'object' ? '' : (row[col.key] ?? '')}
+                                                    onChange={e => handleUpdateRow(idx, col.key, col.type === 'number' ? (e.target.value === '' ? '' : parseFloat(e.target.value)) : e.target.value)}
+                                                    className={`w-full border border-transparent hover:border-[#eaeaec] rounded-md px-2 py-1 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all focus:bg-white bg-transparent ${col.type === 'number' ? 'font-mono' : ''}`}
+                                                    placeholder={`Enter ${col.label}...`}
+                                                />
+                                            )
+                                        )}
+                                    </td>
+                                ))}
+                                {!isReadOnly && (
+                                    <td className="py-2 px-3 text-right">
+                                        <button onClick={() => handleRemoveRow(idx)} className="text-[#dc2626]/70 hover:text-[#dc2626] transition-colors p-1 rounded hover:bg-[#dc2626]/10">
+                                            <LucideIcon name="trash-2" size={14} />
+                                        </button>
+                                    </td>
+                                )}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
+
+function ConfigModal({ isOpen, onClose, data, onSave, mode, categories, machinesList }: any) {
     const [topTab, setTopTab] = useState('info');
     const [activeTab, setActiveTab] = useState('batter');
     const [config, setConfig] = useState<any>(null);
@@ -237,6 +355,9 @@ function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
         productSizes: ['S', 'M', 'L', 'Jumbo', 'Cocktail']
     });
     
+    const safeStr = (v: any) => (typeof v === 'object' && v !== null) ? 'INVALID' : String(v || '');
+    const safeNum = (v: any) => { const p = parseFloat(v); return isNaN(p) ? '' : p; };
+
     const DEFAULT_CONFIG = {
         id: '', name: '', category: categories[0] || 'Batter', status: 'Active',
         rawWeightPerBatch: 150.00, yieldPercent: 100, specPiecesPerKg: 0,
@@ -277,12 +398,12 @@ function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
     );
 
     return (
-        <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-6xl" hideDefaultHeader>
+        <DraggableModal isOpen={isOpen} onClose={onClose} width="max-w-6xl" hideDefaultHeader hideCloseButton>
             <div className="bg-white rounded-xl w-full h-[90vh] flex flex-col shadow-2xl overflow-hidden relative border border-white/40">
-                <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#212c46]">
+                <div className="bg-[#212c46] px-8 py-5 flex justify-between items-center shrink-0 border-b border-[#212c46] drag-handle cursor-move">
                     <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
                         <Icons.Settings2 size={24} className="text-[#b7a159]" />
-                        {config.name || 'New Process Standard'} <span className="text-[#7a8b95] ml-2">{config.id}</span>
+                        {typeof config.name === 'object' ? 'INVALID' : (config.name || 'New Process Standard')} <span className="text-[#7a8b95] ml-2">{typeof config.id === 'object' ? 'INVALID' : config.id}</span>
                     </h3>
                     <button onClick={onClose} className="text-white/50 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-xl"><LucideIcon name="x" size={20} /></button>
                 </div>
@@ -305,31 +426,121 @@ function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
                                     <div className="grid grid-cols-2 gap-6">
                                         <div className="col-span-2">
                                             <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Standard Name</label>
-                                            <input disabled={isReadOnly} type="text" value={config.name} onChange={e=>setConfig({...config, name: e.target.value})} className={`w-full border border-[#eaeaec] rounded-xl p-3 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all ${isReadOnly ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#212c46]'}`} />
+                                            <input disabled={isReadOnly} type="text" value={safeStr(config.name)} onChange={e=>setConfig({...config, name: e.target.value})} className={`w-full border border-[#eaeaec] rounded-xl p-3 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all ${isReadOnly ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#212c46]'}`} />
                                         </div>
                                         <div>
                                             <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Category</label>
-                                            <select disabled={isReadOnly} value={config.category} onChange={e=>setConfig({...config, category: e.target.value})} className={`w-full border border-[#eaeaec] rounded-xl p-3 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all cursor-pointer ${isReadOnly ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#212c46]'}`}>
-                                                {categories.filter((c: any) => c !== 'All').map((c: any) => <option key={c} value={c}>{c}</option>)}
+                                            <select disabled={isReadOnly} value={safeStr(config.category)} onChange={e=>setConfig({...config, category: e.target.value})} className={`w-full border border-[#eaeaec] rounded-xl p-3 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all cursor-pointer ${isReadOnly ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#212c46]'}`}>
+                                                {categories.filter((c: any) => c !== 'All').map((c: any) => <option key={typeof c === 'object' ? JSON.stringify(c) : c} value={typeof c === 'object' ? JSON.stringify(c) : c}>{typeof c === 'object' ? JSON.stringify(c) : c}</option>)}
                                             </select>
                                         </div>
                                         <div>
                                             <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Status</label>
-                                            <select disabled={isReadOnly} value={config.status || 'Active'} onChange={e=>setConfig({...config, status: e.target.value})} className={`w-full border border-[#eaeaec] rounded-xl p-3 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all cursor-pointer ${isReadOnly ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#212c46]'}`}>
+                                            <select disabled={isReadOnly} value={safeStr(config.status)} onChange={e=>setConfig({...config, status: e.target.value})} className={`w-full border border-[#eaeaec] rounded-xl p-3 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all cursor-pointer ${isReadOnly ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#212c46]'}`}>
                                                 <option value="Active">Active</option>
                                                 <option value="Inactive">Inactive</option>
                                                 <option value="Draft">Draft</option>
                                             </select>
                                         </div>
+                                        <div>
+                                            <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Raw Weight Per Batch (kg)</label>
+                                            <input disabled={isReadOnly} type="number" value={safeNum(config.rawWeightPerBatch)} onChange={e=>setConfig({...config, rawWeightPerBatch: e.target.value === '' ? '' : parseFloat(e.target.value)})} className={`w-full border border-[#eaeaec] rounded-xl p-3 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all font-mono ${isReadOnly ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#4d87a8]'}`} />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-black text-[#7a8b95] uppercase tracking-widest block mb-2">Yield Percent (%)</label>
+                                            <input disabled={isReadOnly} type="number" value={safeNum(config.yieldPercent)} onChange={e=>setConfig({...config, yieldPercent: e.target.value === '' ? '' : parseFloat(e.target.value)})} className={`w-full border border-[#eaeaec] rounded-xl p-3 text-[12px] font-bold focus:border-[#4d87a8] outline-none transition-all font-mono ${isReadOnly ? 'bg-[#f8f9fa] text-[#7a8b95]' : 'bg-[#f8f9fa] focus:bg-white text-[#4d87a8]'}`} />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         )}
-                        {activeTab !== 'batter' && (
-                             <div className="bg-white p-8 rounded-xl border border-[#eaeaec] shadow-sm animate-fadeIn flex flex-col items-center justify-center text-[#7a8b95] py-20">
-                                 <Icons.Settings size={48} className="mb-4 text-[#eaeaec]"/>
-                                 <p className="font-bold uppercase tracking-widest text-[12px]">Advanced Config Panel placeholder</p>
-                             </div>
+                        {activeTab === 'mixing' && (
+                            <StandardTable
+                                title="Mixing Standards"
+                                data={config.mixingStandards}
+                                onChange={(newData: any) => setConfig({ ...config, mixingStandards: newData })}
+                                columns={[
+                                    { key: 'machine', label: 'Machine', type: 'select', options: machinesList },
+                                    { key: 'batter', label: 'Batter Formula' },
+                                    { key: 'batchPerCycle', label: 'Batch/Cycle', type: 'number' },
+                                    { key: 'cycleTimeMin', label: 'Cycle Time (min)', type: 'number' },
+                                    { key: 'yieldPercent', label: 'Yield (%)', type: 'number' }
+                                ]}
+                                isReadOnly={isReadOnly}
+                            />
+                        )}
+                        {activeTab === 'forming' && (
+                            <StandardTable
+                                title="Forming Standards"
+                                data={config.formingStandards}
+                                onChange={(newData: any) => setConfig({ ...config, formingStandards: newData })}
+                                columns={[
+                                    { key: 'batter', label: 'Batter Formula' },
+                                    { key: 'size', label: 'Size' },
+                                    { key: 'type', label: 'Type' },
+                                    { key: 'casing', label: 'Casing' },
+                                    { key: 'stuffed', label: 'Stuffed (Y/N)', type: 'boolean' },
+                                    { key: 'capacityKgHr', label: 'Capacity (kg/hr)', type: 'number' }
+                                ]}
+                                isReadOnly={isReadOnly}
+                            />
+                        )}
+                        {activeTab === 'cooking' && (
+                            <StandardTable
+                                title="Cooking Standards"
+                                data={config.cookingStandards}
+                                onChange={(newData: any) => setConfig({ ...config, cookingStandards: newData })}
+                                columns={[
+                                    { key: 'oven', label: 'Oven', type: 'select', options: machinesList },
+                                    { key: 'program', label: 'Program' },
+                                    { key: 'cycleTimeMin', label: 'Cycle Time (min)', type: 'number' },
+                                    { key: 'capacityBatch', label: 'Capacity/Batch', type: 'number' }
+                                ]}
+                                isReadOnly={isReadOnly}
+                            />
+                        )}
+                        {activeTab === 'cooling' && (
+                            <StandardTable
+                                title="Cooling Standards"
+                                data={config.coolingStandards}
+                                onChange={(newData: any) => setConfig({ ...config, coolingStandards: newData })}
+                                columns={[
+                                    { key: 'unit', label: 'Cooling Unit', type: 'select', options: machinesList },
+                                    { key: 'program', label: 'Program' },
+                                    { key: 'cycleTimeMin', label: 'Cycle Time (min)', type: 'number' },
+                                    { key: 'capacityBatch', label: 'Capacity/Batch', type: 'number' }
+                                ]}
+                                isReadOnly={isReadOnly}
+                            />
+                        )}
+                        {activeTab === 'packing' && (
+                            <div className="space-y-6">
+                                <StandardTable
+                                    title="Packing Standards"
+                                    data={config.packingStandards}
+                                    onChange={(newData: any) => setConfig({ ...config, packingStandards: newData })}
+                                    columns={[
+                                        { key: 'machine', label: 'Machine', type: 'select', options: machinesList },
+                                        { key: 'packSize', label: 'Pack Size' },
+                                        { key: 'format', label: 'Format' },
+                                        { key: 'sfgSize', label: 'SFG Size' },
+                                        { key: 'capacityKgHr', label: 'Capacity (kg/hr)', type: 'number' }
+                                    ]}
+                                    isReadOnly={isReadOnly}
+                                />
+                                <StandardTable
+                                    title="Pack Variants"
+                                    data={config.packVariants || []}
+                                    onChange={(newData: any) => setConfig({ ...config, packVariants: newData })}
+                                    columns={[
+                                        { key: 'sku', label: 'SKU' },
+                                        { key: 'name', label: 'Variant Name' },
+                                        { key: 'weight', label: 'Weight (kg)', type: 'number' },
+                                        { key: 'targetPackOutPercent', label: 'Target PackOut (%)', type: 'number' }
+                                    ]}
+                                    isReadOnly={isReadOnly}
+                                />
+                            </div>
                         )}
                     </div>
                 </div>
@@ -349,12 +560,32 @@ function ConfigModal({ isOpen, onClose, data, onSave, mode, categories }: any) {
 
 export default function STDProcess() {
     const { data: dbData, loading: dbLoading, add: addDb, update: updateDb, remove: removeDb } = useCollection('Std_Process_Time', MOCK_STANDARDS);
+    const { data: equipmentData } = useCollection('Equipment_Registry', []);
     const masterData = dbData && dbData.length > 0 ? dbData : MOCK_STANDARDS;
+    const machinesList = useMemo(() => {
+        if (!equipmentData || equipmentData.length === 0) return [];
+        return Array.from(new Set(equipmentData.map((eq: any) => eq.name))).filter(Boolean);
+    }, [equipmentData]);
     
-    // We can keep loading for the initial load if we want
-    // But we'll rely on dbLoading
-    // Remove the useEffect that sets dummy data!
-    
+    // Cleanup Effect
+    useEffect(() => {
+        if (dbData && dbData.length > 0) {
+            dbData.forEach((item: any) => {
+                if (
+                    (item.id && typeof item.id === 'object') ||
+                    (item.name && typeof item.name === 'object') ||
+                    (item.category && typeof item.category === 'object')
+                ) {
+                    if (item.firebaseId) {
+                        removeDb(item.firebaseId);
+                    } else if (item.id && typeof item.id === 'string') {
+                        removeDb(item.id);
+                    }
+                }
+            });
+        }
+    }, [dbData, removeDb]);
+
     const [searchTerm, setSearchQuery] = useState('');
     const [filterCategory, setFilterCategory] = useState('All');
     const [categories, setCategories] = useState(INITIAL_CATEGORIES);
@@ -373,8 +604,8 @@ export default function STDProcess() {
 
     const filteredData = useMemo(() => {
         return masterData.filter(item => {
-            const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                  item.id.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSearch = (item.name || "").toLowerCase().includes((searchTerm || "").toLowerCase()) || 
+                                  (item.id || "").toLowerCase().includes((searchTerm || "").toLowerCase());
             const matchesCategory = filterCategory === 'All' || item.category === filterCategory;
             return matchesSearch && matchesCategory;
         });
@@ -382,12 +613,24 @@ export default function STDProcess() {
 
     const activeItemsCount = masterData.filter(i => i.status === 'Active').length;
 
-    const handleDelete = (id: string) => {
+    const handleDelete = (item: any) => {
         if(Swal) {
             Swal.fire({ title: 'Are you sure?', text: "You won't be able to revert this!", icon: 'warning', showCancelButton: true, confirmButtonColor: THEME.accent, confirmButtonText: 'Yes, delete it!' }).then((result: any) => { 
                 if (result.isConfirmed) { 
-                    removeDb(id); 
-                    Swal.fire({icon: 'success', title: 'Deleted!', text: 'Record deleted.', timer: 1500, showConfirmButton: false}); 
+                    let deleteId = item.firebaseId;
+                    if (!deleteId) {
+                        if (typeof item.id === 'string') {
+                            deleteId = item.id;
+                        } else if (typeof item.id === 'object' && item.id !== null) {
+                            deleteId = item.id.id || JSON.stringify(item.id);
+                        }
+                    }
+                    if (deleteId) {
+                        removeDb(deleteId); 
+                        Swal.fire({icon: 'success', title: 'Deleted!', text: 'Record deleted.', timer: 1500, showConfirmButton: false}); 
+                    } else {
+                        Swal.fire({icon: 'error', title: 'Error!', text: 'Cannot delete: Invalid ID.', timer: 1500, showConfirmButton: false}); 
+                    }
                 } 
             });
         }
@@ -517,7 +760,7 @@ export default function STDProcess() {
                     templateName="process_standards_template.xlsx"
                 />
             </DraggableModal>
-            <ConfigModal isOpen={modalConfig.isOpen} onClose={() => setModalConfig({ ...modalConfig, isOpen: false, data: null })} data={modalConfig.data} mode={modalConfig.mode} onSave={handleSave} categories={categories} />
+            <ConfigModal isOpen={modalConfig.isOpen} onClose={() => setModalConfig({ ...modalConfig, isOpen: false, data: null })} data={modalConfig.data} mode={modalConfig.mode} onSave={handleSave} categories={categories} machinesList={machinesList} />
 
             {batchConfigOpen && (
                 <DraggableModal
@@ -668,7 +911,7 @@ export default function STDProcess() {
                                     <Icons.Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7a8b95] group-hover:text-[#212c46] transition-colors" />
                                     <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="pl-9 pr-8 py-2 border border-[#eaeaec] rounded-xl text-[12px] font-bold bg-[#f8f9fa] focus:border-[#4d87a8] outline-none cursor-pointer transition-all text-[#212c46] shadow-sm appearance-none h-10 w-44">
                                         <option value="All">All Categories</option>
-                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                        {categories.map(c => <option key={typeof c === 'object' ? JSON.stringify(c) : c} value={typeof c === 'object' ? JSON.stringify(c) : c}>{typeof c === 'object' ? JSON.stringify(c) : c}</option>)}
                                     </select>
                                     <Icons.ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7a8b95] pointer-events-none" />
                                 </div>
@@ -707,23 +950,23 @@ export default function STDProcess() {
                                             <tr key={item.id} className="hover:bg-[#f8f9fa] transition-colors group">
                                                 <td className="px-4 pl-8 align-middle py-2.5">
                                                     <span className="font-bold text-[#4d87a8] text-[12px] font-mono leading-tight bg-[#4d87a8]/10 px-2.5 py-1 rounded-md border border-[#4d87a8]/20 cursor-pointer hover:bg-[#4d87a8] hover:text-white transition-colors" onClick={() => setModalConfig({ isOpen: true, mode: 'view', data: item })}>
-                                                        {item.id}
+                                                        {typeof item.id === 'object' ? 'INVALID' : item.id}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 align-middle py-2.5">
                                                     <div className="font-bold text-[#212c46] text-[12px] leading-tight cursor-pointer hover:text-[#4d87a8] transition-colors" onClick={() => setModalConfig({ isOpen: true, mode: 'view', data: item })}>
-                                                        {item.name}
+                                                        {typeof item.name === 'object' ? 'INVALID' : item.name}
                                                     </div>
                                                 </td>
                                                 <td className="px-4 align-middle py-2.5">
                                                     <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-bold uppercase tracking-widest shadow-sm ${getCategoryStyle(item.category)}`}>
-                                                        {item.category}
+                                                        {typeof item.category === 'object' ? 'INVALID' : item.category}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 align-middle text-right py-2.5">
                                                     <div className="flex items-baseline justify-end gap-[1px] whitespace-nowrap">
                                                         <span className="font-mono font-black text-[#212c46] text-[12px]">
-                                                            {item.rawWeightPerBatch}
+                                                            {typeof item.rawWeightPerBatch === 'object' ? 'INVALID' : item.rawWeightPerBatch}
                                                         </span>
                                                         <span className="text-[10px] text-[#7a8b95] font-bold uppercase tracking-widest">
                                                             KG
@@ -733,14 +976,14 @@ export default function STDProcess() {
                                                 <td className="px-4 align-middle text-center py-2.5">
                                                     <div className="flex flex-col items-center justify-center gap-[1px] w-full max-w-[80px] mx-auto">
                                                         <div className="w-full h-1.5 bg-[#eaeaec] rounded-full overflow-hidden">
-                                                            <div className="h-full bg-[#4d87a8] rounded-full" style={{ width: `${item.yieldPercent}%` }}></div>
+                                                            <div className="h-full bg-[#4d87a8] rounded-full" style={{ width: `${typeof item.yieldPercent === 'number' ? item.yieldPercent : 0}%` }}></div>
                                                         </div>
-                                                        <span className="font-mono font-black text-[#212c46] text-[11px] leading-none">{item.yieldPercent}%</span>
+                                                        <span className="font-mono font-black text-[#212c46] text-[11px] leading-none">{typeof item.yieldPercent === 'object' ? '0' : item.yieldPercent}%</span>
                                                     </div>
                                                 </td>
                                                 <td className="px-4 align-middle text-center py-2.5">
                                                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border whitespace-nowrap ${getStatusStyle(item.status)}`}>
-                                                        {item.status.toUpperCase()}
+                                                        {String(typeof item.status === 'object' ? 'INVALID' : (item.status || '')).toUpperCase()}
                                                     </span>
                                                 </td>
                                                 <td className="px-4 pr-8 align-middle py-2.5">
@@ -749,7 +992,7 @@ export default function STDProcess() {
                                                             <Icons.Pencil size={16} />
                                                         </button>
                                                         {!IS_DEMO && (
-                                                            <button onClick={() => handleDelete(item.id)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#932c2e] hover:border-[#932c2e] hover:bg-[#932c2e]/10 transition-all shadow-sm bg-white active:scale-90" title="Delete">
+                                                            <button onClick={() => handleDelete(item)} className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#eaeaec] text-[#932c2e] hover:border-[#932c2e] hover:bg-[#932c2e]/10 transition-all shadow-sm bg-white active:scale-90" title="Delete">
                                                                 <Icons.Trash2 size={16} />
                                                             </button>
                                                         )}

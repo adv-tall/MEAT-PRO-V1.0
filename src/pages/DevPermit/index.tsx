@@ -126,10 +126,10 @@ export default function DevPermit() {
 
   const filteredModules = useMemo(() => {
       if (!search) return SYSTEM_MODULES;
-      const s = search.toLowerCase();
+      const s = (search || "").toLowerCase();
       return SYSTEM_MODULES.map((m: any) => {
-          const matchParent = m.label.toLowerCase().includes(s);
-          const matchedSubs = m.subItems ? m.subItems.filter((sub: any) => sub.label.toLowerCase().includes(s)) : [];
+          const matchParent = (m.label || "").toLowerCase().includes(s);
+          const matchedSubs = m.subItems ? m.subItems.filter((sub: any) => (sub.label || "").toLowerCase().includes(s)) : [];
           if (matchParent || matchedSubs.length > 0) return { ...m, subItems: m.subItems ? matchedSubs : undefined, isSearchMatch: true };
           return null;
       }).filter(Boolean);

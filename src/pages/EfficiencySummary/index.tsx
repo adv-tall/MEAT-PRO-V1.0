@@ -222,14 +222,14 @@ export default function EfficiencySummary() {
   // Handle Search Filtering
   const filteredRecords = useMemo(() => {
     return records.filter(rec => {
-      const q = search.toLowerCase();
+      const q = (search || "").toLowerCase();
       return (
-        rec.id.toLowerCase().includes(q) ||
-        rec.productName.toLowerCase().includes(q) ||
-        rec.lineId.toLowerCase().includes(q) ||
-        rec.shift.toLowerCase().includes(q) ||
-        rec.supervisor.toLowerCase().includes(q) ||
-        (rec.remarks && rec.remarks.toLowerCase().includes(q))
+        (rec.id || "").toLowerCase().includes(q) ||
+        (rec.productName || "").toLowerCase().includes(q) ||
+        (rec.lineId || "").toLowerCase().includes(q) ||
+        (rec.shift || "").toLowerCase().includes(q) ||
+        (rec.supervisor || "").toLowerCase().includes(q) ||
+        (rec.remarks && (rec.remarks || "").toLowerCase().includes(q))
       );
     });
   }, [records, search]);

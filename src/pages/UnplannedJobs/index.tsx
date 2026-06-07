@@ -107,14 +107,14 @@ export default function UnplannedJobs() {
 
   // Filtering list based on search Input
   const filteredProblems = useMemo(() => {
-    const q = searchTerm.toLowerCase().trim();
+    const q = (searchTerm || "").toLowerCase().trim();
     if (!q) return problems;
     return problems.filter(
-      p => p.id.toLowerCase().includes(q) ||
-           p.planId.toLowerCase().includes(q) ||
-           p.product.toLowerCase().includes(q) ||
-           p.type.toLowerCase().includes(q) ||
-           p.reportedBy.toLowerCase().includes(q)
+      p => (p.id || "").toLowerCase().includes(q) ||
+           (p.planId || "").toLowerCase().includes(q) ||
+           (p.product || "").toLowerCase().includes(q) ||
+           (p.type || "").toLowerCase().includes(q) ||
+           (p.reportedBy || "").toLowerCase().includes(q)
     );
   }, [problems, searchTerm]);
 

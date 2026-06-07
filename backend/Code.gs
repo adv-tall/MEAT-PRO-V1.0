@@ -30,9 +30,11 @@ const GLOBAL_SHEETS_CONFIG = {
     
     // PROD CONFIG MODULE
     'Master_Item': ['id', 'sku', 'name', 'category', 'subCategory', 'type', 'brand', 'weight', 'pieces', 'status', 'createdAt', 'updatedAt'],
-    'Product_Matrix': ['id', 'name', 'batterConfig', 'fgs', 'createdAt', 'updatedAt'],
+    'Batter_Matrix': ['id', 'name', 'batterConfig', 'fgs', 'createdAt', 'updatedAt'],
     'Meat_Formula': ['id', 'formulaId', 'sku', 'recipeData', 'standardYield', 'createdAt', 'updatedAt'],
-    'Equipment_Registry': ['id', 'machineId', 'name', 'type', 'status', 'line', 'createdAt', 'updatedAt'],
+    'Equipment_Registry': ['id', 'name', 'step', 'qty', 'note', 'createdAt', 'updatedAt'],
+    'Equipment_Breakdowns': ['id', 'machineId', 'breakdownType', 'description', 'reportedBy', 'severity', 'status', 'createdAt', 'updatedAt'],
+    'Std_Process_Time': ['id', 'name', 'category', 'status', 'updateDate', 'rawWeightPerBatch', 'yieldPercent', 'specPiecesPerKg', 'mixingStandards', 'formingStandards', 'cookingStandards', 'coolingStandards', 'peelingStandards', 'cuttingStandards', 'packingStandards', 'packVariants', 'createdAt', 'updatedAt'],
     
     // DAILY BOARD & PROCESS LOGS
     'Process_Logs': ['id', 'orderId', 'step', 'status', 'operatorId', 'startTime', 'endTime', 'inputKg', 'outputKg', 'rejectKg', 'createdAt', 'updatedAt'],
@@ -235,18 +237,16 @@ function readData(sheet, params, headersObj) {
     sheetHeaders.forEach((_, i) => {
       const key = headerMap[i];
       let val = row[i];
-      if ((key === 'groups' || key === 'history' || key === 'permissions' || key === 'items') && typeof val === 'string') {
+      if (typeof val === 'string') {
         const trimmed = val.trim();
-        if (trimmed.startsWith('[')) {
-          try { val = JSON.parse(trimmed); } catch(e) { val = []; }
-        } else if (trimmed.startsWith('{')) {
-          try { val = JSON.parse(trimmed); } catch(e) { val = {}; }
+        if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+          try { val = JSON.parse(trimmed); } catch(e) {}
+        } else if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+          try { val = JSON.parse(trimmed); } catch(e) {}
         } else if (trimmed.includes('java.lang.Object')) {
           val = ["Format Error"];
-        } else if (trimmed !== '') {
+        } else if ((key === 'groups' || key === 'history' || key === 'permissions' || key === 'items') && trimmed !== '') {
           val = trimmed.split(',').map(s => s.trim()).filter(Boolean);
-        } else {
-          val = [];
         }
       }
       obj[key] = val;

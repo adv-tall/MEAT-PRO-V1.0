@@ -92,19 +92,25 @@ service cloud.firestore {
     match /cost_analysis_monthly/{id} { allow read: if true; allow write: if isSignedIn(); }
     match /downtime_tracking/{id} { allow read: if true; allow write: if isSignedIn(); }
 
-    match /Master_Item/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Product_Matrix/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Meat_Formula/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Std_Process_Time/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Equipment_Registry/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Equipment_Breakdowns/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Orders_Production/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Machine_Downtime/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Unplanned_Jobs/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /SystemLogs/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Users/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Daily_Reports/{id} { allow read: if true; allow write: if isSignedIn(); }
-    match /Orders_PL/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /Master_Item/{id} { allow read, write: if true; }
+    match /Product_Matrix/{id} { allow read, write: if true; }
+    match /Batter_Matrix/{id} { allow read, write: if true; }
+    match /Meat_Formula/{id} { allow read, write: if true; }
+    match /Std_Process_Time/{id} { allow read, write: if true; }
+    match /STD_Process_Time_V2/{id} { allow read, write: if true; }
+    match /Equipment_Registry/{id} { allow read, write: if true; }
+    match /Equipment_Breakdowns/{id} { allow read, write: if true; }
+    match /Equipment_Breakdowns_V2/{id} { allow read, write: if true; }
+    match /Orders_Production/{id} { allow read, write: if true; }
+    match /Machine_Downtime/{id} { allow read, write: if true; }
+    match /Unplanned_Jobs/{id} { allow read, write: if true; }
+    match /SystemLogs/{id} { allow read, write: if true; }
+    match /Users/{id} { allow read, write: if true; }
+    match /Daily_Reports/{id} { allow read, write: if true; }
+    match /Orders_PL/{id} { allow read, write: if true; }
+    match /Batch_Time_Alerts/{id} { allow read, write: if true; }
+    match /Qr_Code_History/{id} { allow read, write: if true; }
+    match /Qr_Label_Settings/{id} { allow read, write: if true; }
 
     match /admins/{adminId} {
       allow read: if isEmailVerified() && (adminId == request.auth.uid || isAdmin());

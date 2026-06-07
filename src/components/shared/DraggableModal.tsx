@@ -13,6 +13,7 @@ interface DraggableModalProps {
   headerClassName?: string;
   hideHeader?: boolean;
   hideDefaultHeader?: boolean;
+  hideCloseButton?: boolean;
   width?: string;
 }
 
@@ -25,6 +26,7 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
   headerClassName = '',
   hideHeader = false,
   hideDefaultHeader = false,
+  hideCloseButton = false,
   width
 }) => {
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -61,16 +63,20 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
                 {!shouldHideHeader && (
                   <div className={`drag-handle cursor-move flex justify-between items-center p-4 md:p-6 pb-4 ${headerClassName}`}>
                     <div className="text-[#212c46] font-black uppercase tracking-widest text-sm md:text-[13px] flex-1 pointer-events-none flex items-center gap-2">{title}</div>
-                    <button onPointerDown={(e) => e.stopPropagation()} onClick={onClose} className="text-[#7a8b95] hover:text-[#a94228] transition-colors rounded-full hover:bg-gray-100 p-1 shrink-0 z-10 cursor-pointer">
-                      <X size={18} />
-                    </button>
+                    {!hideCloseButton && (
+                      <button onPointerDown={(e) => e.stopPropagation()} onClick={onClose} className="text-[#7a8b95] hover:text-[#a94228] transition-colors rounded-full hover:bg-gray-100 p-1 shrink-0 z-10 cursor-pointer">
+                        <X size={18} />
+                      </button>
+                    )}
                   </div>
                 )}
-                {shouldHideHeader && (
-                  <div className="drag-handle absolute top-0 left-0 right-0 h-16 z-10 cursor-move flex justify-end items-start pt-4 px-4">
-                    <button onPointerDown={(e) => e.stopPropagation()} onClick={onClose} className="text-[#7a8b95] hover:text-[#a94228] transition-colors rounded-full hover:bg-gray-100/50 p-1 z-10 cursor-pointer backdrop-blur-md">
-                      <X size={20} />
-                    </button>
+                {shouldHideHeader && !hideDefaultHeader && (
+                  <div className="drag-handle absolute top-0 left-0 right-0 h-16 z-10 cursor-move flex justify-end items-start pt-4 px-4 pointer-events-none">
+                    {!hideCloseButton && (
+                      <button onPointerDown={(e) => e.stopPropagation()} onClick={onClose} className="text-[#7a8b95] hover:text-[#a94228] transition-colors rounded-full hover:bg-gray-100/50 p-1 z-10 cursor-pointer backdrop-blur-md pointer-events-auto">
+                        <X size={20} />
+                      </button>
+                    )}
                   </div>
                 )}
                 <div className="overflow-y-auto w-full flex-1 min-h-0 px-4 md:px-6 pb-6" style={{ overscrollBehavior: 'contain' }}>

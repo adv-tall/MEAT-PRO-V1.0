@@ -230,8 +230,8 @@ export default function ProductionCalendar() {
     return allEvents
       .filter((ev) => {
         const matchSearch =
-          ev.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          ev.type.toLowerCase().includes(searchQuery.toLowerCase());
+          (ev.title || "").toLowerCase().includes((searchQuery || "").toLowerCase()) ||
+          (ev.type || "").toLowerCase().includes((searchQuery || "").toLowerCase());
         const evMonth = ev.date?.substring(0, 7) || "";
         const currMonth = currentDate.toISOString().substring(0, 7);
         return (

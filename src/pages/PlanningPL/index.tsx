@@ -239,8 +239,8 @@ export default function PlanningPL() {
   const filteredData = useMemo(() => {
     return syncedData.filter((item) => {
       const matchSearch =
-        item.plNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.customer.toLowerCase().includes(searchTerm.toLowerCase());
+        (item.plNo || "").toLowerCase().includes((searchTerm || "").toLowerCase()) ||
+        (item.customer || "").toLowerCase().includes((searchTerm || "").toLowerCase());
       const matchStatus =
         statusFilter === "ALL" || item.status === statusFilter;
       const matchDate = !dateFilter || item.date === dateFilter;

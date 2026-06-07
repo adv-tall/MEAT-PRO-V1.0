@@ -157,12 +157,12 @@ export default function AccessLogs() {
             res = res.filter(l => l.status === statusFilter);
         }
         if (searchQuery) {
-            const q = searchQuery.toLowerCase();
+            const q = (searchQuery || "").toLowerCase();
             res = res.filter(l => 
-                l.user.toLowerCase().includes(q) || 
-                l.module.toLowerCase().includes(q) || 
-                l.action.toLowerCase().includes(q) ||
-                l.ip.includes(q)
+                (l.user || "").toLowerCase().includes(q) || 
+                (l.module || "").toLowerCase().includes(q) || 
+                (l.action || "").toLowerCase().includes(q) ||
+                (l.ip || "").includes(q)
             );
         }
         return res;

@@ -28,9 +28,13 @@ class OrdersStore {
       }
 
       let gasOrders: any[] = [];
-      const response = await GASService.read('Orders_Production');
-      if (response && response.status === 'success') {
-         gasOrders = response.data?.items || [];
+      try {
+          const response = await GASService.read('Orders_Production');
+          if (response && response.status === 'success') {
+             gasOrders = response.data?.items || [];
+          }
+      } catch (gasErr) {
+          console.error(`GAS read failed for Orders_Production:`, gasErr);
       }
 
       let mergedData = [...fbData];

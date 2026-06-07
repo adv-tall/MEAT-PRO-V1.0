@@ -200,14 +200,14 @@ export default function DailyProdReport() {
   // Filtering System
   const filteredReports = useMemo(() => {
     return reports.filter(rep => {
-      const q = search.toLowerCase();
+      const q = (search || "").toLowerCase();
       return (
-        rep.id.toLowerCase().includes(q) ||
-        rep.productName.toLowerCase().includes(q) ||
-        rep.shift.toLowerCase().includes(q) ||
-        rep.lineId.toLowerCase().includes(q) ||
-        rep.supervisor.toLowerCase().includes(q) ||
-        (rep.remarks && rep.remarks.toLowerCase().includes(q))
+        (rep.id || "").toLowerCase().includes(q) ||
+        (rep.productName || "").toLowerCase().includes(q) ||
+        (rep.shift || "").toLowerCase().includes(q) ||
+        (rep.lineId || "").toLowerCase().includes(q) ||
+        (rep.supervisor || "").toLowerCase().includes(q) ||
+        (rep.remarks && (rep.remarks || "").toLowerCase().includes(q))
       );
     });
   }, [reports, search]);

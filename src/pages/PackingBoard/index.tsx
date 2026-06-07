@@ -7,6 +7,7 @@ import UserGuideButton from '../../components/shared/UserGuideButton';
 import Swal from 'sweetalert2';
 import { useSharedOrders } from '@/src/store/ordersStore';
 import { BatchQrScannerModal } from "@/src/pages/ProductionTracking/BatchQrScannerModal";
+import { BatchQrTagModal } from "@/src/pages/ProductionTracking/BatchQrTagModal";
 
 // --- THEME ---
 const THEME = {
@@ -264,17 +265,21 @@ export default function PackingBoard() {
             <UserGuideButton onClick={() => setShowGuide(true)} />
             
             {qrPrint && (
-                <div className="fixed inset-0 bg-[#1d2636]/60 backdrop-blur-sm z-[6000] flex items-center justify-center p-4 animate-fadeIn" onClick={() => setQrPrint(null)}>
-                    <div className="bg-white shadow-2xl relative flex flex-col items-center justify-center border-4 border-dashed border-gray-300" style={{ width: '384px', height: '384px' }} onClick={(e) => e.stopPropagation()}>
-                        <div className="absolute top-2 left-2 right-2 text-center text-xs font-bold text-gray-400">4" x 4" LABEL SIMULATION</div>
-                        <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrPrint.id}`} alt="QR" className="w-[70%] h-[70%] object-contain" />
-                        <span className="mt-4 font-mono font-black text-2xl tracking-widest text-black">{qrPrint.id}</span>
-                        <div className="absolute bottom-4 right-4 flex gap-2 no-print">
-                            <button onClick={() => setQrPrint(null)} className="px-4 py-2 bg-gray-200 text-gray-700 text-[10px] font-black rounded uppercase tracking-widest hover:bg-gray-300 transition-colors">Close</button>
-                            <button onClick={() => { alert('Sending to Print Queue...'); setQrPrint(null); }} className="px-4 py-2 bg-black text-white text-[10px] font-black rounded uppercase tracking-widest hover:bg-gray-800 transition-colors flex items-center gap-2"><Icons.Printer size={12}/> Print Tag</button>
-                        </div>
-                    </div>
-                </div>
+                <BatchQrTagModal
+                    isOpen={qrPrint !== null}
+                    onClose={() => setQrPrint(null)}
+                    order={qrPrint}
+                    onSimulateScan={(id) => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'จำลองการสแกนสำเร็จ',
+                            text: `จำลองการแกนแพ็คเกจ FG รหัส: ${id} บนบอร์ดไลน์บรรจุ`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }}
+                    allOrders={activeLots}
+                />
             )}
 
             <UserGuidePanel isOpen={showGuide} onClose={() => setShowGuide(false)} title="PACKING GUIDE" subtitle="PACKING BOARD MANAGEMENT">

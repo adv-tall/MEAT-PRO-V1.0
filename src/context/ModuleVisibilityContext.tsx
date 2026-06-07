@@ -9,8 +9,13 @@ const VisibilityContext = createContext<VisibilityContextType | undefined>(undef
 
 export function VisibilityProvider({ children }: { children: React.ReactNode }) {
   const [visibility, setVisibility] = useState<Record<string, boolean>>(() => {
-    const saved = localStorage.getItem('module_visibility');
-    return saved ? JSON.parse(saved) : {};
+    try {
+      const saved = localStorage.getItem('module_visibility');
+      return saved ? JSON.parse(saved) : {};
+    } catch (e) {
+      console.error("Error parsing module_visibility from localStorage", e);
+      return {};
+    }
   });
 
   useEffect(() => {

@@ -53,6 +53,18 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "TOP",
   },
 
+  // SALE & PLANNING DEPT.
+  {
+    id: "sale_planning_dept",
+    name: "SALE & PLANNING",
+    icon: CircleDollarSign,
+    category: "SALE & PLANNING DEPT.",
+    subItems: [
+      { id: "sale_order", name: "SALE ORDER", path: "/sale/order-placeholder" },
+      { id: "plan_pl", name: "PLANNING (PL)", path: "/planning/pl" },
+    ],
+  },
+
   // OPERATIONAL MODULES
   {
     id: "planning",
@@ -60,7 +72,6 @@ export const MENU_ITEMS: MenuItem[] = [
     icon: CalendarClock,
     category: "OPERATIONAL MODULES",
     subItems: [
-      { id: "plan_pl", name: "PLANNING (PL)", path: "/planning/pl" },
       {
         id: "plan_prod",
         name: "PRODUCTION PLANNING",
@@ -115,6 +126,7 @@ export const MENU_ITEMS: MenuItem[] = [
       { id: "proc_cooling", name: "COOLING", path: "/process/cooling" },
       { id: "proc_cut_peel", name: "CUT & PEEL", path: "/process/cut-peel" },
       { id: "proc_packing", name: "PACKING", path: "/process/packing" },
+      { id: "proc_traceability", name: "BATCH TRACEABILITY", path: "/process/traceability" },
     ],
   },
   {
@@ -124,7 +136,7 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "OPERATIONAL MODULES",
     subItems: [
       { id: "conf_master", name: "MASTER ITEM", path: "/config/master" },
-      { id: "conf_matrix", name: "PRODUCT MATRIX", path: "/config/matrix" },
+      { id: "conf_batter_matrix", name: "BATTER / SFG / FG Matrix", path: "/config/batter-matrix" },
       { id: "conf_formula", name: "MEAT FORMULA", path: "/config/formula" },
       {
         id: "conf_std_time",

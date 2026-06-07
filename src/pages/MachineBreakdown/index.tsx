@@ -6,6 +6,7 @@ import KpiCard from '../../components/shared/KpiCard';
 import { UserGuidePanel } from '../../components/shared/UserGuidePanel';
 import UserGuideButton from '../../components/shared/UserGuideButton';
 import Swal from 'sweetalert2';
+import { useCollection } from '../../services/useFirestore';
 
 // --- THEME ---
 const THEME = {
@@ -69,8 +70,13 @@ const LucideIcon = ({ name, size = 16, className = "", color, style }: any) => {
 // --- MAIN APPLICATION ---
 export default function MachineBreakdown() {
     const [activeTab, setActiveTab] = useState('breakdown_list');
-    const [breakdowns, setBreakdowns] = useState<any[]>(INITIAL_BREAKDOWNS);
-    const [equipment] = useState<any[]>(MOCK_EQUIPMENT);
+    
+    const { data: dbEq } = useCollection('Equipment_Registry', MOCK_EQUIPMENT as any);
+    const { data: dbBd, add: addBdDb, update: updateBdDb, remove: removeBdDb } = useCollection('Equipment_Breakdowns', INITIAL_BREAKDOWNS as any);
+    
+    const equipment = dbEq && dbEq.length > 0 ? dbEq : MOCK_EQUIPMENT;
+    const breakdowns = dbBd && dbBd.length > 0 ? dbBd : INITIAL_BREAKDOWNS;
+
     const [showGuide, setShowGuide] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -92,10 +98,10 @@ export default function MachineBreakdown() {
 
     const filteredData = useMemo(() => {
         return breakdowns.filter(item => {
-            const matchSearch = item.machineName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                item.problem.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                item.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                item.reportedBy.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchSearch = (item.machineName || "").toLowerCase().includes((searchTerm || "").toLowerCase()) || 
+                                (item.problem || "").toLowerCase().includes((searchTerm || "").toLowerCase()) ||
+                                (item.id || "").toLowerCase().includes((searchTerm || "").toLowerCase()) ||
+                                (item.reportedBy || "").toLowerCase().includes((searchTerm || "").toLowerCase());
             return matchSearch;
         });
     }, [searchTerm, breakdowns]);
@@ -149,7 +155,7 @@ export default function MachineBreakdown() {
             return;
         }
 
-        const selectedMachine = equipment.find(e => e.id === formMachineId);
+        const selectedMachine = equipment.find((e:any) => e.id === formMachineId);
         const machineName = selectedMachine ? selectedMachine.name : formMachineId;
 
         const newItem = {
@@ -165,9 +171,9 @@ export default function MachineBreakdown() {
         };
 
         if (editingItem) {
-            setBreakdowns(prev => prev.map(b => b.id === newItem.id ? newItem : b));
+            updateBdDb(newItem.id, newItem).catch(console.error);
         } else {
-            setBreakdowns(prev => [newItem, ...prev]);
+            addBdDb(newItem).catch(console.error);
         }
 
         setIsModalOpen(false);
@@ -193,7 +199,7 @@ export default function MachineBreakdown() {
             cancelButtonText: 'ยกเลิก'
         }).then((result: any) => { 
             if (result.isConfirmed) { 
-                setBreakdowns(prev => prev.filter(item => item.id !== id)); 
+                removeBdDb(id).catch(console.error);
                 Swal.fire({
                     icon: 'success', 
                     title: 'ลบล็อกสำเร็จแล้ว', 

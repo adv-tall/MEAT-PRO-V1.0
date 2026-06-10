@@ -401,7 +401,7 @@ export default function PackingBoard() {
             </div>
 
             {/* MAIN CONTENT WRAPPER */}
-            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px] transition-all">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px] transition-all flex flex-col flex-1 min-h-0">
                 
                 {/* KPI STATS - Styled like UserPermissions */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 shrink-0">

@@ -9,7 +9,9 @@ import { BatchQrTagModal } from "./BatchQrTagModal";
 import Swal from "sweetalert2";
 import { useNotifications } from "../../context/NotificationContext";
 import { useCollection } from "../../services/useFirestore";
+import { useAuth } from "../../context/AuthContext";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { useMachineAlert } from "../../hooks/useMachineAlert";
 
 // --- Global Styles ---
 const globalStyles = `
@@ -1035,8 +1037,11 @@ const JUSTIFICATION_CAUSES = [
 
 // --- MAIN APPLICATION ---
 export default function ProductionTracking() {
+  const { user } = useAuth();
+  useMachineAlert();
   const [activeTab, setActiveTab] = useState("daily");
   const [showGuide, setShowGuide] = useState(false);
+  const [showPrintMode, setShowPrintMode] = useState(false);
 
   // QR Scanner / Tag Modal States
   const [selectedTagOrder, setSelectedTagOrder] = useState<any | null>(null);
@@ -1045,6 +1050,7 @@ export default function ProductionTracking() {
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [searchDaily, setSearchDaily] = useState("");
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const [tableDensity, setTableDensity] = useState('normal');
 
   // Derived filtered data for Daily Monitor
   const [orders, , updateOrder] = useSharedOrders();
@@ -1458,12 +1464,85 @@ export default function ProductionTracking() {
                 </button>
               ))}
             </div>
+
+            {user?.employeeId === 'DEV001' && (
+              <button
+                onClick={() => setShowPrintMode(!showPrintMode)}
+                className={`px-4 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border shadow-sm ${
+                  showPrintMode
+                    ? "bg-[#212c46] text-white border-[#212c46]"
+                    : "bg-white text-[#7a8b95] hover:text-[#212c46] border-[#eaeaec] hover:bg-slate-50"
+                }`}
+              >
+                <Icons.Printer size={16} />
+                {showPrintMode ? "Close Print View" : "Print View (DEV001)"}
+              </button>
+            )}
           </div>
         </div>
 
         <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
           <main className="w-full flex flex-col animate-fadeIn min-h-0">
-            {pendingIAReplans.length > 0 && (
+            {showPrintMode ? (
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-[#eaeaec] flex-1 min-h-[500px]">
+                <div className="flex justify-between items-center border-b-2 border-black pb-4 mb-6">
+                  <div>
+                    <h2 className="text-2xl font-black uppercase tracking-widest text-[#212c46]">PRODUCTION WORK ORDER</h2>
+                    <p className="text-[11px] font-bold text-[#7a8b95] mt-1 uppercase tracking-widest">Daily Production Manufacturing Order details for shop-floor display.</p>
+                  </div>
+                  <button className="px-6 py-2.5 bg-[#212c46] hover:bg-black text-white text-[12px] font-black uppercase tracking-widest rounded-lg flex items-center gap-2 print:hidden transition-all shadow-md hover:shadow-xl" onClick={() => window.print()}>
+                    <Icons.Printer size={16} /> Print Document
+                  </button>
+                </div>
+                
+                <div className="space-y-6">
+                  {trackItems.filter((o: any) => o.status !== 'COMPLETED').map((order: any, idx: number) => (
+                    <div key={idx} className="border-2 border-[#212c46] rounded-2xl p-6 break-inside-avoid shadow-sm mb-6 pb-6">
+                      <div className="flex justify-between items-start mb-4 border-b border-[#eaeaec] pb-4">
+                        <div>
+                          <h3 className="text-2xl font-black text-[#212c46] tracking-widest uppercase flex items-center gap-3">
+                            <span className="text-[#a94228]">I</span> ORDER {order.id}
+                          </h3>
+                          <div className="flex items-center gap-3 mt-3">
+                             <span className="bg-slate-100 px-3 py-1.5 text-[11px] font-bold text-[#414757] border border-slate-200 rounded-md uppercase tracking-widest leading-none shadow-sm">SKU: {order.sku}</span>
+                             <span className="bg-[#4d87a8]/10 px-3 py-1.5 text-[11px] font-bold text-[#3f809e] border border-[#4d87a8]/30 rounded-md uppercase tracking-widest leading-none shadow-sm">SHIFT: {order.shift}</span>
+                             <span className="bg-[#a94228]/10 px-3 py-1.5 text-[11px] font-bold text-[#932c2e] border border-[#a94228]/20 rounded-md uppercase tracking-widest leading-none shadow-sm">DEADLINE: {order.deadline}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-5xl font-black text-[#212c46] leading-none tracking-tighter">{order.qty} <span className="text-2xl tracking-widest font-bold text-[#b7a159]">KG</span></p>
+                          <p className="text-[11px] font-black text-[#7a8b95] uppercase tracking-[0.2em] mt-3">Total Target</p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-6 gap-4 mt-6">
+                        {['MIXING', 'FORMING', 'COOKING', 'COOLING', 'CUTTING', 'PACKING'].map((step, i) => (
+                           <div key={i} className="border border-dashed border-[#d7d7d7] p-4 rounded-xl relative h-28 flex flex-col items-center justify-center bg-slate-50/50">
+                             <p className="absolute top-2 left-3 text-[10px] font-black text-[#7a8b95] font-mono select-none">0{i+1}</p>
+                             <p className="text-sm font-black text-[#d7d7d7] transform -rotate-12 uppercase tracking-widest">{step}</p>
+                           </div>
+                        ))}
+                      </div>
+                      <div className="mt-6 border border-[#eaeaec] rounded-xl p-5 bg-slate-50 flex items-start gap-4">
+                        <Icons.AlertCircle className="shrink-0 text-[#212c46] mt-0.5" size={18} />
+                        <div className="w-full">
+                           <p className="text-[11px] font-black text-[#212c46] uppercase tracking-widest mb-3">Supervisor Notes / Remarks</p>
+                           <p className="w-full border-b-2 border-dotted border-[#b58c4f]/50 mt-6"></p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {trackItems.filter((o:any) => o.status !== 'COMPLETED').length === 0 && (
+                     <div className="text-center py-16 border-2 border-dashed border-[#eaeaec] rounded-2xl bg-slate-50 flex flex-col items-center justify-center h-[300px]">
+                       <Icons.PackageOpen size={48} className="text-[#d7d7d7] mb-4" />
+                       <p className="text-[12px] font-bold text-[#a8aebc] uppercase tracking-widest">No active orders to print.</p>
+                     </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                {pendingIAReplans.length > 0 && (
               <div className="bg-[#a94228]/5 border border-[#a94228]/20 p-4 rounded-xl shrink-0 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm animate-fadeIn mb-3">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-[#a94228]/10 flex items-center justify-center text-[#a94228] shrink-0">
@@ -1582,24 +1661,49 @@ export default function ProductionTracking() {
                         </>
                       )}
                     </div>
-                    <div className="relative w-72 hidden md:block">
-                      <Icons.Search
-                        size={16}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a8b95]"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Search Active Order..."
-                        value={searchDaily}
-                        onChange={(e) => setSearchDaily(e.target.value)}
-                        className="w-full pl-11 pr-4 py-2.5 text-[12px] font-bold text-[#212c46] bg-white border border-[#eaeaec] rounded-xl outline-none focus:border-[#212c46] focus:ring-1 focus:ring-[#212c46] transition-all shadow-sm"
-                      />
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-72 hidden md:block">
+                        <Icons.Search
+                          size={16}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-[#7a8b95]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Search Active Order..."
+                          value={searchDaily}
+                          onChange={(e) => setSearchDaily(e.target.value)}
+                          className="w-full pl-11 pr-4 py-2.5 text-[12px] font-bold text-[#212c46] bg-white border border-[#eaeaec] rounded-xl outline-none focus:border-[#212c46] focus:ring-1 focus:ring-[#212c46] transition-all shadow-sm"
+                        />
+                      </div>
+                      <div className="flex bg-white border border-[#eaeaec] rounded-xl shadow-sm p-1 ml-2">
+                        <button 
+                          onClick={() => setTableDensity('compact')}
+                          className={`p-1.5 rounded-lg transition-colors ${tableDensity === 'compact' ? 'bg-[#f8f9fa] text-[#212c46] shadow-sm' : 'text-[#7a8b95] hover:text-[#212c46]'}`}
+                          title="Compact"
+                        >
+                          <Icons.AlignJustify size={16} />
+                        </button>
+                        <button 
+                          onClick={() => setTableDensity('normal')}
+                          className={`p-1.5 rounded-lg transition-colors ${tableDensity === 'normal' ? 'bg-[#f8f9fa] text-[#212c46] shadow-sm' : 'text-[#7a8b95] hover:text-[#212c46]'}`}
+                          title="Normal"
+                        >
+                          <Icons.Menu size={16} />
+                        </button>
+                        <button 
+                          onClick={() => setTableDensity('cozy')}
+                          className={`p-1.5 rounded-lg transition-colors ${tableDensity === 'cozy' ? 'bg-[#f8f9fa] text-[#212c46] shadow-sm' : 'text-[#7a8b95] hover:text-[#212c46]'}`}
+                          title="Cozy"
+                        >
+                          <Icons.List size={16} />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
                   {/* Main Table */}
                   <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar">
-                    <table className="w-full text-left border-collapse min-w-[1100px] table-font">
+                    <table className={`w-full text-left border-collapse min-w-[1100px] table-font density-${tableDensity}`}>
                       <thead className="sys-table-header sticky top-0 z-20 ">
                     <tr className="bg-[#212c46] text-white">
                           <th className="pl-8  font-black uppercase tracking-widest w-[25%] min-w-[280px]">
@@ -2290,6 +2394,8 @@ export default function ProductionTracking() {
                 </div>
               )}
             </div>
+            </>
+            )}
           </main>
         </div>
       </div>

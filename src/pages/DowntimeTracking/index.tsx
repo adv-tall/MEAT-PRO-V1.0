@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as Icons from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis } from 'recharts';
 import { DraggableModal } from '../../components/shared/DraggableModal';
 import KpiCard from '../../components/shared/KpiCard';
 import { UserGuidePanel } from '../../components/shared/UserGuidePanel';
@@ -187,6 +187,29 @@ export default function DowntimeTracking() {
         Minutes: sum
       };
     });
+  }, [downtimes]);
+
+  const heatmapData = useMemo(() => {
+    const mapping: any[] = [];
+    const machines = Array.from(new Set(downtimes.map(d => d.machineName)));
+    const dates = Array.from(new Set(downtimes.map(d => d.date))).sort();
+
+    dates.forEach((date: any) => {
+      machines.forEach((machine: any) => {
+         const sum = downtimes
+            .filter(d => d.date === date && d.machineName === machine)
+            .reduce((s, d) => s + (Number(d.durationMinutes) || 0), 0);
+         
+         if (sum > 0) {
+            mapping.push({
+               x: date,
+               y: machine,
+               z: sum
+            });
+         }
+      });
+    });
+    return mapping;
   }, [downtimes]);
 
   // Save Config handler
@@ -533,6 +556,28 @@ export default function DowntimeTracking() {
                     <Tooltip contentStyle={{ background: '#212c46', borderRadius: '16px', border: 'none', color: '#fff', fontSize: '11px', fontFamily: 'monospace' }} />
                     <Line type="monotone" dataKey="Minutes" stroke="#3f809e" strokeWidth={3} dot={{ stroke: '#3f809e', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
                   </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* HEATMAP SCATTER */}
+            <div className="col-span-1 lg:col-span-12 bg-white p-6 rounded-xl shadow-lg border border-[#eaeaec]">
+              <div className="border-b-2 border-[#b7a159] pb-4 mb-6">
+                <h4 className="text-[14px] font-black uppercase text-[#212c46] tracking-widest flex items-center gap-3">
+                  <Icons.Flame size={20} className="text-[#d96245]" /> Line Disruption Heatmap
+                </h4>
+                <p className="text-[11px] font-bold text-[#7a8b95] uppercase tracking-widest mt-1">แผนภาพความร้อนของเวลาสูญเสียแยกตามสายการผลิตหลัก</p>
+              </div>
+              <div className="h-[350px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ScatterChart margin={{ top: 20, right: 30, left: 60, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#eaeaec" vertical={false} />
+                    <XAxis type="category" dataKey="x" name="Date" stroke="#7a8b95" fontSize={10} tickLine={false} axisLine={false} />
+                    <YAxis type="category" dataKey="y" name="Machine/Line" stroke="#7a8b95" fontSize={10} tickLine={false} axisLine={false} tick={{ fontWeight: 'bold' }} />
+                    <ZAxis type="number" dataKey="z" range={[50, 800]} name="Downtime Mins" />
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ background: '#212c46', borderRadius: '12px', border: 'none', color: '#fff', fontSize: '12px', fontWeight: 'bold', padding: '10px 14px' }} />
+                    <Scatter name="Downtime" data={heatmapData} fill="#d96245" fillOpacity={0.8} />
+                  </ScatterChart>
                 </ResponsiveContainer>
               </div>
             </div>

@@ -7,6 +7,7 @@ import { UserGuidePanel } from '../../components/shared/UserGuidePanel';
 import UserGuideButton from '../../components/shared/UserGuideButton';
 
 import { useCollection } from '../../services/useFirestore';
+import { useMachineAlert } from "../../hooks/useMachineAlert";
 
 // --- SYSTEM COLOR PALETTE (Matched with Main Home Theme) ---
 const THEME = {
@@ -65,6 +66,7 @@ const INITIAL_PROBLEMS = [
 ];
 
 export default function UnplannedJobs() {
+  useMachineAlert();
   const { data: dbProblems, add, update, remove } = useCollection('Unplanned_Jobs', INITIAL_PROBLEMS);
   const problems = dbProblems && dbProblems.length > 0 ? dbProblems : INITIAL_PROBLEMS;
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,13 +98,22 @@ export default function UnplannedJobs() {
     lossKg: '' 
   });
 
+  const [isIssueTypeConfigOpen, setIsIssueTypeConfigOpen] = useState(false);
+  const { data: customIssueTypes, add: addCustomIssueType, remove: removeCustomIssueType } = useCollection('Unplanned_Issue_Types', [
+    { id: '1', name: "QC Failed (Weight Var)", sort: 1 },
+    { id: '2', name: "Spill / Dropped (ตกหล่น/รั่วไหล)", sort: 2 },
+    { id: '3', name: "Machine Error (สายพาน/ชำรุด)", sort: 3 },
+    { id: '4', name: "Other (อื่น ๆ)", sort: 4 }
+  ]);
+  const [newIssueType, setNewIssueType] = useState('');
+
   // KPI Calculations
   const pendingReplansCount = useMemo(() => {
     return problems.filter(p => p.status === 'Pending Replan').length;
   }, [problems]);
 
   const totalLossesToday = useMemo(() => {
-    return problems.reduce((sum, p) => sum + p.lossKg, 0);
+    return problems.reduce((sum, p) => sum + (Number(p.lossKg) || 0), 0);
   }, [problems]);
 
   // Filtering list based on search Input
@@ -269,7 +280,7 @@ export default function UnplannedJobs() {
                     <Icons.AlertTriangle size={16} className="text-[#a94228]" /> 1. ความเข้าใจระบบการรายงาน (Overview)
                 </h3>
                 <p className="mb-4 text-[#414757]">
-                    เมื่อมีข้อผิดพลาดหน้าเตาผสม (Mixing Line) หรือด่านควบคุม QC เช่น ตรวจสอบพบเศษส่วนตกหล่น (Spilled/Dropped) หรือน้ำหนักสายผลิตไม่คงที่ต่ำกว่ามาตรฐาน ผู้ปฏิบัติงานจะต้องรายงานลงในระบบเพื่อเข้าสู่กระบวนการจัดสรรใหม่ทันที
+                    เมื่อมีข้อผิดพลาดในการผสม ขึ้นรูป นึ่ง หรือ ตัด หรือจากการตรวจสอบของ QC แล้วไม่ผ่านมาตรฐาน เช่น ตรวจสอบพบเศษส่วนตกหล่น (Spilled/Dropped) หรือน้ำหนักผลผลิตที่ได้ไม่คงที่ต่ำกว่ามาตรฐาน ผู้ปฏิบัติงานจะต้องรายงานลงในระบบเพื่อเข้าสู่กระบวนการจัดสรรใหม่ทันที
                 </p>
                 <div className="p-4 bg-[#fdf2f2] border border-[#f5c6cb] rounded-xl text-[#414757]">
                     <div className="font-bold text-[#a94228] mb-2 flex items-center gap-2"><Icons.Siren size={16} /> ACTION POINT</div>
@@ -343,6 +354,12 @@ export default function UnplannedJobs() {
 
         <div className="flex items-center gap-3 shrink-0">
           <div className="flex gap-2 p-1 bg-white/50 border border-[#eaeaec] rounded-xl shadow-sm">
+            <button
+              onClick={() => setIsIssueTypeConfigOpen(true)}
+              className="bg-white hover:bg-slate-50 border border-slate-200 text-[#212c46] px-4 py-2 rounded-lg font-black text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 outline-none"
+            >
+              <Icons.List size={14} className="text-[#3f809e]" /> Manage Issue Types
+            </button>
             <button
               onClick={openSettingsModal}
               className="bg-white hover:bg-slate-50 border border-slate-200 text-[#212c46] px-4 py-2 rounded-lg font-black text-[11px] uppercase tracking-widest transition-all flex items-center gap-2 outline-none"
@@ -438,14 +455,14 @@ export default function UnplannedJobs() {
                       <td className="px-4 font-mono font-black text-[#a94228] text-xs py-2.5">{p.id}</td>
                       <td className="px-4 text-slate-500 font-bold text-xs py-2.5">{p.date}</td>
                       <td className="px-4 font-mono text-[#212c46] font-black text-xs py-2.5">{p.planId}</td>
-                      <td className="px-4 text-[#212c46] font-black text-xs uppercase tracking-tight py-2.5">{p.product}</td>
+                      <td className="px-4 text-[#212c46] font-black text-xs uppercase tracking-tight py-2.5">{p.product || '-'}</td>
                       <td className="px-4 py-2.5">
                         <span className="bg-red-50 text-[#932c2e] border border-red-100 px-2.5 py-1 rounded-md text-[9.5px] font-black uppercase tracking-wider">
-                          {p.type}
+                          {p.type || 'Unknown'}
                         </span>
                       </td>
                       <td className="px-4 text-right font-mono font-black text-[#932c2e] text-xs py-2.5">
-                        -{p.lossKg} <span className="text-[10px] text-slate-400">Kg</span>
+                        -{Number(p.lossKg) || 0} <span className="text-[10px] text-slate-400">Kg</span>
                       </td>
                       <td className="px-4 text-center py-2.5">
                         <span className={`px-3 py-1 rounded-full text-[9.5px] font-black uppercase tracking-widest border ${
@@ -492,7 +509,7 @@ export default function UnplannedJobs() {
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         title="REPORT DAILY QUALITY LOSS"
-        width="600px"
+        width="max-w-[600px]"
         customHeader={
           <div className="bg-[#212c46] px-6 py-4 flex justify-between items-center shrink-0 border-b-2 border-[#b7a159] modal-handle cursor-move w-full select-none">
             <div className="flex items-center gap-3">
@@ -534,17 +551,25 @@ export default function UnplannedJobs() {
           </div>
 
           <div>
-            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Issue Type (ประเภทข้อบกพร่องที่พบ)</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-wider">Issue Type (ประเภทข้อบกพร่องที่พบ)</label>
+              <button 
+                onClick={() => setIsIssueTypeConfigOpen(true)}
+                className="text-[9px] font-bold text-[#b7a159] hover:text-[#212c46] uppercase flex items-center gap-1 transition-colors"
+                type="button"
+              >
+                <Icons.Settings2 size={10} /> Config
+              </button>
+            </div>
             <select 
               className="w-full bg-[#f8f9fa] border border-[#eaeaec] rounded-xl px-4 py-3 text-xs font-bold text-[#212c46] outline-none focus:border-[#b7a159] cursor-pointer" 
               value={newProblem.type} 
               onChange={e => setNewProblem({...newProblem, type: e.target.value})}
             >
               <option value="">-- Click to Select Issue Type --</option>
-              <option value="QC Failed (Weight Var)">QC Failed (Weight Var)</option>
-              <option value="Spill / Dropped">Spill / Dropped (ตกหล่น/รั่วไหล)</option>
-              <option value="Machine Error">Machine Error (สายพาน/ชำรุด)</option>
-              <option value="Other">Other (อื่น ๆ)</option>
+              {customIssueTypes.map((t: any, idx) => (
+                <option key={t.id || idx} value={t.name}>{t.name}</option>
+              ))}
             </select>
           </div>
 
@@ -800,6 +825,97 @@ export default function UnplannedJobs() {
             </div>
           </DraggableModal>
         </div>
+      )}
+
+      {/* ISSUE TYPE CONFIG MODAL */}
+      {isIssueTypeConfigOpen && (
+        <DraggableModal
+          isOpen={isIssueTypeConfigOpen}
+          onClose={() => setIsIssueTypeConfigOpen(false)}
+          title="ISSUE TYPES (ตั้งค่าประเภท)"
+          width="max-w-[400px]"
+          customHeader={
+            <div className="bg-[#212c46] px-5 py-4 flex justify-between items-center shrink-0 border-b border-[#b7a159]/20 modal-handle cursor-move w-full select-none">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/10 text-[#b7a159] flex items-center justify-center border border-white/20 shadow-sm">
+                  <Icons.Settings2 size={16} />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-white text-sm font-black uppercase tracking-widest leading-none mb-0.5">Custom Types</h2>
+                  <p className="text-[#a8aebc] text-[10px] font-bold">ประเภทปัญหาที่พบ</p>
+                </div>
+              </div>
+              <button onClick={() => setIsIssueTypeConfigOpen(false)} className="text-[#a8aebc] hover:text-white transition-colors bg-white/5 hover:bg-white/20 p-2 rounded-lg"><Icons.X size={16} strokeWidth={2.5} /></button>
+            </div>
+          }
+        >
+          <div className="p-5 flex flex-col min-h-0 bg-white">
+            <div className="flex flex-col gap-3 mb-4 shrink-0">
+              <div className="flex items-center gap-2">
+                <input 
+                  type="text" 
+                  value={newIssueType}
+                  onChange={(e) => setNewIssueType(e.target.value)}
+                  className="flex-1 bg-slate-50 border border-[#eaeaec] rounded-lg px-3 py-2.5 text-xs font-bold text-[#212c46] outline-none focus:border-[#b7a159]"
+                  placeholder="New Issue Type..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newIssueType.trim()) {
+                      addCustomIssueType({ name: newIssueType.trim() });
+                      setNewIssueType('');
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newIssueType.trim()) {
+                      addCustomIssueType({ name: newIssueType.trim() });
+                      setNewIssueType('');
+                    }
+                  }}
+                  className="bg-[#212c46] hover:bg-[#3f809e] text-white px-4 py-2.5 rounded-lg shrink-0 text-[10px] font-black uppercase tracking-wider transition-colors"
+                >
+                  <Icons.Plus size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar pr-2 min-h-[150px] max-h-[300px]">
+              {customIssueTypes.map((type: any, idx) => (
+                <div key={type.id || idx} className="flex items-center justify-between bg-slate-50 border border-[#eaeaec] rounded-lg px-3 py-2">
+                  <span className="text-xs font-bold text-[#212c46]">{type.name}</span>
+                  <button
+                    onClick={() => {
+                      if (type.id) removeCustomIssueType(type.id);
+                      
+                      // Also reset selected type in form if it was deleted
+                      if (newProblem.type === type.name) {
+                        setNewProblem(prev => ({...prev, type: ''}));
+                      }
+                    }}
+                    className="text-red-500/70 hover:text-red-600 bg-white hover:bg-red-50 p-1.5 rounded-md transition-colors"
+                  >
+                    <Icons.Trash2 size={12} />
+                  </button>
+                </div>
+              ))}
+              {customIssueTypes.length === 0 && (
+                <div className="text-center py-6 text-slate-400 text-xs font-medium border-2 border-dashed border-slate-200 rounded-lg">
+                  No custom issue types added yet.
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="bg-slate-50 border-t border-[#eaeaec] flex justify-end gap-3 px-5 py-3 shrink-0">
+             <button
+                type="button"
+                onClick={() => setIsIssueTypeConfigOpen(false)}
+                className="bg-white border border-[#eaeaec] hover:bg-slate-100 px-5 py-2.5 rounded-xl font-bold text-[10.5px] uppercase tracking-wider transition-colors active:scale-95"
+              >
+                Close
+              </button>
+          </div>
+        </DraggableModal>
       )}
 
     </div>

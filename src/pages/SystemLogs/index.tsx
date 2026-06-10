@@ -265,8 +265,8 @@ export default function AccessLogs() {
                 </div>
             </div>
 
-            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px]">
-                <div className="w-full">
+            <div className="mx-auto px-4 sm:px-8 w-full mt-[2px] flex flex-col flex-1 min-h-0">
+                <div className="w-full flex flex-col flex-1 min-h-0 pb-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-5 shrink-0">
                         <KpiCard label="Total Requests" value={totalLogs.toLocaleString()} icon={Activity} colorAccent={THEME.primaryLight} colorValue={THEME.primary} desc="All Logged Events" />
                         <KpiCard label="Successful Actions" value={successLogs.toLocaleString()} icon={CheckCircle} colorAccent={THEME.success} colorValue={THEME.success} desc="Authorized Operations" />
@@ -274,7 +274,7 @@ export default function AccessLogs() {
                         <KpiCard label="Unique Users" value={uniqueUsers} icon={UserCheck} colorAccent={THEME.accent} colorValue={THEME.primary} desc="Active Identities" />
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm border border-[#eaeaec]/60 overflow-hidden flex flex-col animate-fadeIn">
+                    <div className="bg-white rounded-xl shadow-sm border border-[#eaeaec]/60 overflow-hidden flex flex-col animate-fadeIn flex-1 min-h-0">
                         
                         <div className="px-4 py-4 border-b border-[#eaeaec] bg-white flex flex-col md:flex-row justify-between items-center gap-4 shrink-0">
                             <div className="flex items-center gap-3 w-full md:w-auto">

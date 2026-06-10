@@ -79,13 +79,13 @@ const INITIAL_YIELD_BATCHES = [
 
 // Graph Trend Data (Yield Analysis Trend over past week)
 const INITIAL_YIELD_TREND_DATA = [
-  { name: 'Mon', averageYield: 91.2, sausageYield: 88.2, meatballYield: 94.5, hamYield: 97.4, target: 92.0 },
-  { name: 'Tue', averageYield: 92.5, sausageYield: 89.1, meatballYield: 95.0, hamYield: 97.8, target: 92.0 },
-  { name: 'Wed', averageYield: 91.8, sausageYield: 88.0, meatballYield: 94.8, hamYield: 98.1, target: 92.0 },
-  { name: 'Thu', averageYield: 93.4, sausageYield: 89.5, meatballYield: 95.8, hamYield: 98.0, target: 92.0 },
-  { name: 'Fri', averageYield: 90.5, sausageYield: 87.2, meatballYield: 91.2, hamYield: 97.6, target: 92.0 },
-  { name: 'Sat', averageYield: 94.1, sausageYield: 90.8, meatballYield: 96.2, hamYield: 98.5, target: 92.0 },
-  { name: 'Sun', averageYield: 92.6, sausageYield: 88.5, meatballYield: 95.1, hamYield: 97.9, target: 92.0 }
+  { name: 'Mon', averageYield: 91.2, sausageYield: 88.2, meatballYield: 94.5, hamYield: 97.4, target: 92.0, scrapRate: 8.8, scrapTarget: 8.0 },
+  { name: 'Tue', averageYield: 92.5, sausageYield: 89.1, meatballYield: 95.0, hamYield: 97.8, target: 92.0, scrapRate: 7.5, scrapTarget: 8.0 },
+  { name: 'Wed', averageYield: 91.8, sausageYield: 88.0, meatballYield: 94.8, hamYield: 98.1, target: 92.0, scrapRate: 8.2, scrapTarget: 8.0 },
+  { name: 'Thu', averageYield: 93.4, sausageYield: 89.5, meatballYield: 95.8, hamYield: 98.0, target: 92.0, scrapRate: 6.6, scrapTarget: 8.0 },
+  { name: 'Fri', averageYield: 90.5, sausageYield: 87.2, meatballYield: 91.2, hamYield: 97.6, target: 92.0, scrapRate: 9.5, scrapTarget: 8.0 },
+  { name: 'Sat', averageYield: 94.1, sausageYield: 90.8, meatballYield: 96.2, hamYield: 98.5, target: 92.0, scrapRate: 5.9, scrapTarget: 8.0 },
+  { name: 'Sun', averageYield: 92.6, sausageYield: 88.5, meatballYield: 95.1, hamYield: 97.9, target: 92.0, scrapRate: 7.4, scrapTarget: 8.0 }
 ];
 
 export default function YieldAnalysis() {
@@ -380,13 +380,16 @@ export default function YieldAnalysis() {
                 <LineChart data={trendData}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eaeaec" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#7a8b95', fontWeight: 'bold' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#7a8b95', fontWeight: 'bold' }} domain={[80, 100]} />
+                  <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#7a8b95', fontWeight: 'bold' }} domain={[80, 100]} />
+                  <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#a94228', fontWeight: 'bold' }} domain={[0, 20]} />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #eaeaec', fontSize: '11px', boxShadow: '0 8px 30px rgba(0,0,0,0.06)' }} />
                   <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', paddingTop: '15px' }} />
-                  <Line type="monotone" dataKey="averageYield" name="Aggregate Average %" stroke={THEME.primary} strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: 'white' }} activeDot={{ r: 6, fill: THEME.primary, stroke: 'white' }} />
-                  <Line type="monotone" dataKey="sausageYield" name="Sausage average %" stroke={THEME.accent} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
-                  <Line type="monotone" dataKey="meatballYield" name="Meatball average %" stroke={THEME.success} strokeWidth={1.5} dot={false} strokeDasharray="3 3" />
-                  <Line type="monotone" dataKey="target" name={`Standard Target (${activeSettings.globalTargetYield}%)`} stroke="#db2777" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                  <Line yAxisId="left" type="monotone" dataKey="averageYield" name="Aggregate Average %" stroke={THEME.primary} strokeWidth={3} dot={{ r: 4, strokeWidth: 2, fill: 'white' }} activeDot={{ r: 6, fill: THEME.primary, stroke: 'white' }} />
+                  <Line yAxisId="left" type="monotone" dataKey="sausageYield" name="Sausage average %" stroke={THEME.accent} strokeWidth={1.5} dot={false} strokeDasharray="4 4" />
+                  <Line yAxisId="left" type="monotone" dataKey="meatballYield" name="Meatball average %" stroke={THEME.success} strokeWidth={1.5} dot={false} strokeDasharray="3 3" />
+                  <Line yAxisId="left" type="monotone" dataKey="target" name={`Standard Target (${activeSettings.globalTargetYield}%)`} stroke="#db2777" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                  <Line yAxisId="right" type="monotone" dataKey="scrapRate" name="Scrap Rate %" stroke="#d97706" strokeWidth={2.5} dot={{ r: 3, fill: '#d97706' }} />
+                  <Line yAxisId="right" type="step" dataKey="scrapTarget" name={`Scrap Target (8%)`} stroke="#dc2626" strokeWidth={1.5} strokeDasharray="3 3" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

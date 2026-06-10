@@ -12,6 +12,7 @@ import { DraggableModal } from '@/src/components/shared/DraggableModal';
 import { useSharedOrders } from '@/src/store/ordersStore';
 import { FG_DATABASE, MOCK_ORDERS } from '@/src/data/mockOrders';
 import { useCollection } from '@/src/services/useFirestore';
+import { useMachineAlert } from "../../hooks/useMachineAlert";
 
 const SHIFTS = [
     { id: 'Morning', icon: 'sun', activeColor: 'bg-[#4d87a8] text-white shadow-md border-[#4d87a8]' },
@@ -126,6 +127,7 @@ const StandardModalWrapper = ({ children, className }: any) => (
 
 // --- MAIN APPLICATION ---
 export default function ProductionPlanning() {
+    useMachineAlert();
     const navigate = useNavigate();
     const [activeMainTab, setActiveMainTab] = useState('Entry');
     const [activeShift, setActiveShift] = useState('All Day');

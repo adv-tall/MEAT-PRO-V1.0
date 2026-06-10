@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { GASService } from './GoogleAppsScriptService';
 import { db } from './firebaseConfig';
 import { collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { logSystemActivity } from './logger';
 
 const pendingSyncs = new Set<string>();
 
@@ -179,6 +180,14 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
     return false;
   };
 
+  const getCurrentUser = () => {
+    try {
+      const savedUserStr = localStorage.getItem('user');
+      if (savedUserStr) return JSON.parse(savedUserStr);
+    } catch(e) {}
+    return null;
+  };
+
   const add = async (item: Omit<T, 'id'>) => {
     const itemId = (item as any).id || `temp-${Date.now()}`;
     const newItem = { ...item, id: itemId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as T;
@@ -197,6 +206,7 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
     try {
       // Create in Firebase
       await setDoc(doc(db, collectionName, itemId), newItem);
+      await logSystemActivity(getCurrentUser(), collectionName, 'CREATE', `Added new record ID: ${itemId}`);
     } catch(e) {
       console.error(`Firebase add failed for ${collectionName}`, e);
     }
@@ -228,6 +238,7 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
       // Update in Firebase
       if (id && String(id).trim() !== '') {
           await setDoc(doc(db, collectionName, String(id).trim()), updatedItem, { merge: true });
+          await logSystemActivity(getCurrentUser(), collectionName, 'UPDATE', `Updated record ID: ${id}`);
       }
     } catch(e) {
       console.error(`Firebase update failed for ${id} in ${collectionName}`, e);
@@ -257,6 +268,7 @@ export function useCollection<T = any>(collectionName: string, initialSeedData?:
       // Delete in Firebase
       if (id && String(id).trim() !== '') {
           await deleteDoc(doc(db, collectionName, String(id).trim()));
+          await logSystemActivity(getCurrentUser(), collectionName, 'DELETE', `Deleted record ID: ${id}`);
       }
     } catch(e) {
       console.error(`Firebase delete failed for ${id} in ${collectionName}`, e);

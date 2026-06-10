@@ -73,8 +73,14 @@ export class GASService {
             },
             body: JSON.stringify({ url: GAS_WEB_APP_URL, payload }),
           });
-          if (!response.ok && response.status >= 500) {
-              throw new Error(`Server Error: ${response.status}`);
+          if (!response.ok) {
+              const text = await response.text().catch(() => "");
+              throw new Error(`Server Error: ${response.status} ${response.statusText} - ${text.substring(0, 100)}`);
+          }
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+              const text = await response.text().catch(() => "");
+              throw new Error(`Invalid Content-Type from API Proxy. Expected JSON but got ${contentType}. Status: ${response.status}. Body preview: ${text.substring(0, 100)}`);
           }
           break;
         } catch (e: any) {

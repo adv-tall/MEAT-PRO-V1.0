@@ -37,7 +37,7 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
   }, []);
   
   const shouldHideHeader = hideHeader || hideDefaultHeader;
-  const containerClass = width || 'max-w-lg';
+  const containerClass = width || 'w-full max-w-lg md:max-w-2xl lg:max-w-3xl';
 
   // In iframes, a dragged item can get "stuck" to the cursor if the mouse is released outside the frame.
   // react-draggable usually handles this with window mouseup listeners, but sometimes bounds="parent" breaks it.
@@ -45,20 +45,20 @@ export const DraggableModal: React.FC<DraggableModalProps> = ({
   const content = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-[#212c46]/60 backdrop-blur-sm overflow-hidden" 
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 lg:p-10 bg-[#212c46]/60 backdrop-blur-sm overflow-hidden" 
              onPointerDown={(e) => {
                  // Close when clicking the backdrop
                  if (e.target === e.currentTarget) onClose(); 
              }}>
           {/* @ts-ignore */}
           <Draggable nodeRef={nodeRef} handle=".drag-handle" cancel="button, input, select, textarea, .no-drag">
-            <div ref={nodeRef} className={`absolute w-full ${containerClass} pointer-events-auto`} style={{ zIndex: 10000 }}>
+            <div ref={nodeRef} className={`relative flex flex-col justify-center max-h-full ${containerClass} pointer-events-auto mx-auto`} style={{ zIndex: 10000 }}>
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className={`bg-white rounded-[24px] w-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh] relative ${className}`}
+                className={`bg-white rounded-[24px] w-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col max-h-[90vh] relative overflow-hidden ${className}`}
               >
                 {!shouldHideHeader && (
                   <div className={`drag-handle cursor-move flex justify-between items-center p-4 md:p-6 pb-4 ${headerClassName}`}>

@@ -142,6 +142,17 @@ const Volume90DaysChart = () => {
 
 export default function PerformanceDashboard() {
   const { user } = useAuth();
+  const [isLiveMode, setIsLiveMode] = useState(false);
+  const [lastRefreshed, setLastRefreshed] = useState(new Date());
+
+  useEffect(() => {
+    if (!isLiveMode) return;
+    const interval = setInterval(() => {
+      setLastRefreshed(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [isLiveMode]);
+
   const currentUser = {
       name: user?.name || 'MEAT PRO Developer',
       position: user?.role || 'PLANT MANAGER',
@@ -157,7 +168,21 @@ export default function PerformanceDashboard() {
               </h1>
               <p className="text-[#748ea1] text-[10px] font-black uppercase tracking-widest mt-2 flex items-center gap-1.5 leading-none">
                   <TrendingUp size={14} className="text-[#d96245]" /> Overview
+                   {isLiveMode && <span className="ml-2 text-[#2e7d32] font-black animate-pulse flex items-center gap-1">LIVE <span>●</span> updated {lastRefreshed.toLocaleTimeString()}</span>}
               </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button 
+                onClick={() => setIsLiveMode(!isLiveMode)}
+                className={`py-2 px-4 rounded-xl text-[10.5px] font-black tracking-widest uppercase transition-colors shrink-0 flex items-center gap-2 border ${
+                  isLiveMode 
+                  ? 'bg-green-50 text-green-700 border-green-200 shadow-sm' 
+                  : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                }`}
+            >
+                <div className={`w-2 h-2 rounded-full ${isLiveMode ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`} />
+                Live Mode
+            </button>
           </div>
       </div>
 

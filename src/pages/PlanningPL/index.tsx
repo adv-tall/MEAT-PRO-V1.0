@@ -11,6 +11,7 @@ import { PdfPrint } from "@/src/components/shared/PdfPrint";
 import KpiCard from "../../components/shared/KpiCard";
 import { useCollection } from "@/src/services/useFirestore";
 import { FG_DATABASE } from "@/src/data/mockOrders";
+import { useMachineAlert } from "../../hooks/useMachineAlert";
 
 const globalStyles = `
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap');
@@ -134,6 +135,7 @@ const getPriorityStyle = (priority: string) => {
 
 export default function PlanningPL() {
   const navigate = useNavigate();
+  useMachineAlert();
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");

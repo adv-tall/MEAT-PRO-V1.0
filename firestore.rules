@@ -100,9 +100,12 @@ service cloud.firestore {
     match /STD_Process_Time_V2/{id} { allow read, write: if true; }
     match /Equipment_Registry/{id} { allow read, write: if true; }
     match /Equipment_Breakdowns/{id} { allow read, write: if true; }
+    match /Machine_Breakdowns/{id} { allow read, write: if true; }
+    match /Performance_Analytics/{id} { allow read, write: if true; }
     match /Equipment_Breakdowns_V2/{id} { allow read, write: if true; }
     match /Orders_Production/{id} { allow read, write: if true; }
     match /Machine_Downtime/{id} { allow read, write: if true; }
+    match /Unplanned_Issue_Types/{id} { allow read, write: if true; }
     match /Unplanned_Jobs/{id} { allow read, write: if true; }
     match /SystemLogs/{id} { allow read, write: if true; }
     match /Users/{id} { allow read, write: if true; }

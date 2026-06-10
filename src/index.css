@@ -130,6 +130,19 @@ table tbody td:last-child, .sys-table-td:last-child {
 
 
 
+table.density-compact .sys-table-td {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+table.density-normal .sys-table-td {
+  padding-top: 0.625rem !important;
+  padding-bottom: 0.625rem !important;
+}
+table.density-cozy .sys-table-td {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
 table.table-font, .table-font th, .table-font td {
   font-family: var(--font-table) !important;
 }

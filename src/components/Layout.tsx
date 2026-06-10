@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import SecurityGuard from './SecurityGuard';
@@ -9,6 +9,7 @@ import { PhoneCall, Mail } from 'lucide-react';
 export default function Layout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
 
   return (
     <SecurityGuard>
@@ -18,10 +19,10 @@ export default function Layout() {
           <Header />
           <div className="flex-1 custom-scrollbar overflow-y-auto flex flex-col min-h-0">
             <div className="flex-1 flex flex-col w-full pt-0">
-               <main id="sys-main-content" className="shrink-0 bg-transparent flex flex-col w-full">
+               <main id="sys-main-content" className="flex-1 shrink-0 bg-transparent flex flex-col w-full">
                 <Outlet />
               </main>
-              <footer className="mt-8 shrink-0 py-3.5 flex flex-col items-center gap-0.5 text-center text-[#212c46] w-full bg-transparent">
+              <footer className="mt-auto shrink-0 py-3.5 flex flex-col items-center gap-0.5 text-center text-[#212c46] w-full bg-transparent">
                   <div className="flex items-center justify-center">
                       <span className="text-[12px] font-black uppercase tracking-widest opacity-80 font-mono">
                           MEAT PRO • PRODUCTION MANAGEMENT SYSTEM • ISO 9001, GHPs, HACCP, HALAL CERTIFIED

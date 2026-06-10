@@ -4,6 +4,7 @@ import * as Icons from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Swal from 'sweetalert2';
 import { useSharedOrders } from '@/src/store/ordersStore';
+import { BatchStatusHistory } from './BatchStatusHistory';
 
 // Matching fallback records with the page component for consistency
 const MODAL_LINEAGE_FALLBACKS: Record<string, any> = {
@@ -600,7 +601,7 @@ export function BatchTraceabilityModal({ isOpen, onClose, initialBatchId }: Batc
                 </div>
 
               </div>
-
+              <BatchStatusHistory batchId={selectedOrder.id} />
             </div>
           ) : (
             <div className="flex-1 p-10 border border-dashed border-slate-300 rounded-xl bg-slate-100 text-center flex flex-col items-center justify-center gap-2">

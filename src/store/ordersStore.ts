@@ -3,6 +3,7 @@ import { GASService } from '../services/GoogleAppsScriptService';
 import { MOCK_ORDERS as initialMockOrders } from '../data/mockOrders';
 import { db } from '../services/firebaseConfig';
 import { collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { logSystemActivity } from '../services/logger';
 
 type Order = any;
 
@@ -178,6 +179,19 @@ class OrdersStore {
     this.orders = this.orders.map(o => o.id === id ? { ...o, ...updates } : o);
     localStorage.setItem('prod_orders', JSON.stringify(this.orders));
     this.listeners.forEach(l => l());
+
+    if (updates.status && updates.status !== currentOrder.status) {
+        try {
+            const userStr = localStorage.getItem('user');
+            const currentUser = userStr ? JSON.parse(userStr) : null;
+            logSystemActivity(
+                currentUser,
+                'Orders_Production',
+                'STATUS_CHANGE',
+                `Changed status of batch/order ${id} from "${currentOrder.status}" to "${updates.status}"`
+            );
+        } catch (err) {}
+    }
 
     if (this.isDemo) {
       console.log(`DEMO user bypassed order update (${id})`);
